@@ -167,6 +167,19 @@ export class CalendarSettingsTab extends PluginSettingTab {
     }
 
     this.containerEl.createEl("h3", {
+      text: "Periodic Notes",
+    });
+    this.containerEl.createEl("p", {
+      cls: "setting-item-description",
+      text: "Calendar manages periodic notes directly. To use existing notes, enter the same folder and date format you already use.",
+    });
+    this.displayPeriodicNoteSettings("daily", "Daily notes", DEFAULT_DAILY_NOTE_FORMAT);
+    this.displayPeriodicNoteSettings("weekly", "Weekly notes", DEFAULT_WEEKLY_NOTE_FORMAT);
+    this.displayPeriodicNoteSettings("monthly", "Monthly notes", DEFAULT_MONTHLY_NOTE_FORMAT);
+    this.displayPeriodicNoteSettings("quarterly", "Quarterly notes", DEFAULT_QUARTERLY_NOTE_FORMAT);
+    this.displayPeriodicNoteSettings("yearly", "Yearly notes", DEFAULT_YEARLY_NOTE_FORMAT);
+
+    this.containerEl.createEl("h3", {
       text: "Advanced Settings",
     });
     this.addLocaleOverrideSetting();
@@ -320,6 +333,70 @@ export class CalendarSettingsTab extends PluginSettingTab {
         toggle.onChange(async (value) => {
           this.plugin.writeOptions(() => ({ showWeeklyNoteRight: value }));
           this.display(); // show/hide weekly settings
+        });
+      });
+  }
+
+  private displayPeriodicNoteSettings(
+    periodicity: Periodicity,
+    label: string,
+    defaultFormat: string
+  ): void {
+    const pnSettings = this.plugin.options[periodicity];
+
+    new Setting(this.containerEl).setName(label).setHeading();
+
+    new Setting(this.containerEl)
+      .setName("Enable")
+      .setDesc(`Create and manage ${label.toLowerCase()} from Calendar`)
+      .addToggle((toggle) => {
+        toggle.setValue(pnSettings.enabled);
+        toggle.onChange(async (value) => {
+          await this.plugin.writeOptions((prev) => ({
+            [periodicity]: { ...prev[periodicity], enabled: value },
+          } as Partial<ISettings>));
+          this.display();
+        });
+      });
+
+    if (!pnSettings.enabled) return;
+
+    new Setting(this.containerEl)
+      .setName("Date format")
+      .setDesc("Moment.js format string for note filenames")
+      .addText((text) => {
+        text.setPlaceholder(defaultFormat);
+        text.setValue(pnSettings.format);
+        text.onChange(async (value) => {
+          await this.plugin.writeOptions((prev) => ({
+            [periodicity]: { ...prev[periodicity], format: value },
+          } as Partial<ISettings>));
+        });
+      });
+
+    new Setting(this.containerEl)
+      .setName("Folder")
+      .setDesc("Notes are created here. Leave blank for vault root.")
+      .addText((text) => {
+        text.setPlaceholder("Example: folder/subfolder");
+        text.setValue(pnSettings.folder);
+        text.onChange(async (value) => {
+          await this.plugin.writeOptions((prev) => ({
+            [periodicity]: { ...prev[periodicity], folder: value },
+          } as Partial<ISettings>));
+        });
+      });
+
+    new Setting(this.containerEl)
+      .setName("Template file")
+      .setDesc("Path to template file. Leave blank for no template.")
+      .addText((text) => {
+        text.setPlaceholder("Example: templates/daily");
+        text.setValue(pnSettings.template);
+        text.onChange(async (value) => {
+          await this.plugin.writeOptions((prev) => ({
+            [periodicity]: { ...prev[periodicity], template: value },
+          } as Partial<ISettings>));
         });
       });
   }
