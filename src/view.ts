@@ -1,8 +1,6 @@
 import type { Moment } from "moment";
 import {
   getDateFromFile,
-  getMonthlyNote,
-  getMonthlyNoteSettings,
   getYearlyNote,
   getYearlyNoteSettings,
   getQuarterlyNote,
@@ -192,11 +190,11 @@ export default class CalendarView extends ItemView {
     targetEl: EventTarget,
     isMetaPressed: boolean
   ): void {
-    if (!isMetaPressed) {
+    if (!isMetaPressed || !this.settings.monthly.enabled) {
       return;
     }
-    const note = getMonthlyNote(date, get(monthlyNotes));
-    const { format } = getMonthlyNoteSettings();
+    const format = this.settings.monthly.format;
+    const note = helperGetPeriodicNote(date, "monthly", get(monthlyNotes) ?? {});
     this.app.workspace.trigger(
       "link-hover",
       this,
@@ -269,7 +267,8 @@ export default class CalendarView extends ItemView {
   }
 
   private onContextMenuMonth(date: Moment, event: MouseEvent): void {
-    const note = getMonthlyNote(date, get(monthlyNotes));
+    if (!this.settings.monthly.enabled) return;
+    const note = helperGetPeriodicNote(date, "monthly", get(monthlyNotes) ?? {});
     if (!note) {
       return;
     }
@@ -319,7 +318,7 @@ export default class CalendarView extends ItemView {
       weeklyNotes.reindex();
       this.updateActiveFile();
     }
-    if (getDateFromFile(file, "month")) {
+    if (this.settings.monthly.enabled && helperGetDateFromFile(file, "monthly", this.settings.monthly.format)) {
       monthlyNotes.reindex();
       this.updateActiveFile();
     }
@@ -338,7 +337,7 @@ export default class CalendarView extends ItemView {
     const date =
       (this.settings.daily.enabled ? helperGetDateFromFile(file, "daily", this.settings.daily.format) : null) ||
       (this.settings.weekly.enabled ? helperGetDateFromFile(file, "weekly", this.settings.weekly.format) : null) ||
-      getDateFromFile(file, "month") ||
+      (this.settings.monthly.enabled ? helperGetDateFromFile(file, "monthly", this.settings.monthly.format) : null) ||
       getDateFromFile(file, "quarter") || // Added line
       getDateFromFile(file, "year");
     if (date && this.calendar) {
@@ -356,7 +355,7 @@ export default class CalendarView extends ItemView {
         weeklyNotes.reindex();
         this.calendar.tick();
       }
-      if (getDateFromFile(file, "month")) {
+      if (this.settings.monthly.enabled && helperGetDateFromFile(file, "monthly", this.settings.monthly.format)) {
         monthlyNotes.reindex();
         this.calendar.tick();
       }
@@ -413,9 +412,10 @@ export default class CalendarView extends ItemView {
         return;
       }
 
-      const { format: monthlyFormat } = getMonthlyNoteSettings();
-      date = moment(activeLeaf.view.file.basename, monthlyFormat, true);
-      if (date.isValid()) {
+      date = this.settings.monthly.enabled
+        ? helperGetDateFromFile(activeLeaf.view.file, "monthly", this.settings.monthly.format)
+        : null;
+      if (date) {
         this.calendar.$set({ displayedMonth: date });
         return;
       }
@@ -501,11 +501,12 @@ export default class CalendarView extends ItemView {
     date: Moment,
     inNewSplit: boolean
   ): Promise<void> {
+    if (!this.settings.monthly.enabled) return;
     const { workspace } = this.app;
 
     const startOfMonth = date.clone().startOf("month");
 
-    const existingFile = getMonthlyNote(date, get(monthlyNotes));
+    const existingFile = helperGetPeriodicNote(date, "monthly", get(monthlyNotes) ?? {});
     if (!existingFile) {
       tryToCreateMonthlyNote(
         startOfMonth,

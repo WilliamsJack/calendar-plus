@@ -1,6 +1,5 @@
 import type { TFile } from "obsidian";
 import {
-  getAllMonthlyNotes,
   getAllYearlyNotes,
   getAllQuarterlyNotes,
 } from "obsidian-daily-notes-interface";
@@ -72,16 +71,22 @@ function createMonthlyNotesStore() {
   const store = writable<Record<string, TFile>>(null);
   return {
     reindex: () => {
+      const currentSettings = get(settings);
+      if (!currentSettings.monthly.enabled) {
+        store.set({});
+        hasError = false;
+        return;
+      }
       try {
-        const monthlyNotes = getAllMonthlyNotes();
-        store.set(monthlyNotes);
+        const notes = helperGetAllPeriodicNotes("monthly", currentSettings.monthly);
+        store.set(notes);
         hasError = false;
       } catch (err) {
+        store.set({});
         if (!hasError) {
           // Avoid error being shown multiple times
           console.log("[Calendar] Failed to find monthly notes folder", err);
         }
-        store.set({});
         hasError = true;
       }
     },

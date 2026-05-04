@@ -1,15 +1,19 @@
 import type { Moment } from "moment";
+import { Notice } from "obsidian";
 import type { TFile } from "obsidian";
-import {
-  createMonthlyNote,
-  getMonthlyNoteSettings,
-} from "obsidian-daily-notes-interface";
 
+import {
+  applyTemplateTokens,
+  ensureParentFolderExists,
+  getPeriodicNotePath,
+  getTemplateInfo,
+} from "./periodicNoteHelpers";
 import type { ISettings } from "src/settings";
 import { createConfirmationDialog } from "src/ui/modal";
 
 /**
- * Create a Monthly Note for a given date.
+ * Create a monthly note for the given date using Calendar-owned settings, then
+ * open it. Does not use obsidian-daily-notes-interface or core Daily Notes.
  */
 export async function tryToCreateMonthlyNote(
   date: Moment,
@@ -17,18 +21,42 @@ export async function tryToCreateMonthlyNote(
   settings: ISettings,
   cb?: (newFile: TFile) => void
 ): Promise<void> {
-  const { workspace } = window.app;
-  const { format } = getMonthlyNoteSettings();
-  const filename = date.format(format);
+  const { workspace, vault } = window.app;
+  const monthlySettings = settings.monthly;
+  const filename = date.format(monthlySettings.format);
+  const path = getPeriodicNotePath(monthlySettings, date);
 
   const createFile = async () => {
-    const monthlyNote = await createMonthlyNote(date);
+    await ensureParentFolderExists(path);
+    const { contents: rawTemplate, foldInfo } = await getTemplateInfo(
+      monthlySettings.template
+    );
+    const expanded = applyTemplateTokens(
+      rawTemplate,
+      "monthly",
+      date,
+      monthlySettings.format
+    );
+
+    let newFile: TFile;
+    try {
+      newFile = await vault.create(path, expanded);
+    } catch (err) {
+      console.error(`[Calendar] Failed to create file: '${path}'`, err);
+      new Notice("Unable to create new file.");
+      throw err;
+    }
+
+    if (foldInfo) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window.app as any).foldManager?.save?.(newFile, foldInfo);
+    }
+
     const leaf = inNewSplit
       ? workspace.splitActiveLeaf()
       : workspace.getUnpinnedLeaf();
-
-    await leaf.openFile(monthlyNote, { active: true });
-    cb?.(monthlyNote);
+    await leaf.openFile(newFile, { active: true });
+    cb?.(newFile);
   };
 
   if (settings.shouldConfirmBeforeCreate) {
