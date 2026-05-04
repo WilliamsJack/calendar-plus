@@ -31,17 +31,11 @@ export interface ISettings {
   weekStart: IWeekStartOption;
   shouldConfirmBeforeCreate: boolean;
   ctrlClickOpensInNewTab: boolean;
-  showQuarter: boolean;
-  // Weekly Note settings
-  showWeeklyNote: boolean;
   showWeeklyNoteRight: boolean;
-  weeklyNoteFormat: string;
-  weeklyNoteTemplate: string;
-  weeklyNoteFolder: string;
 
   localeOverride: ILocaleOverride;
 
-  // Calendar-owned periodic note settings (not yet wired up).
+  // Calendar-owned periodic note settings.
   daily: PeriodicNoteSettings;
   weekly: PeriodicNoteSettings;
   monthly: PeriodicNoteSettings;
@@ -66,15 +60,9 @@ export const defaultSettings = Object.freeze({
 
   wordsPerDot: DEFAULT_WORDS_PER_DOT,
 
-  showWeeklyNote: false,
   showWeeklyNoteRight: false,
-  weeklyNoteFormat: "",
-  weeklyNoteTemplate: "",
-  weeklyNoteFolder: "",
 
   localeOverride: "system-default",
-
-  showQuarter: false, // Added default value for showQuarter
 
   daily: {
     enabled: false,
@@ -227,7 +215,6 @@ export class CalendarSettingsTab extends PluginSettingTab {
         toggle.setValue(this.plugin.options.showWeeklyNoteRight);
         toggle.onChange(async (value) => {
           this.plugin.writeOptions(() => ({ showWeeklyNoteRight: value }));
-          this.display(); // show/hide weekly settings
         });
       });
   }

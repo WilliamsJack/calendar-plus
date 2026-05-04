@@ -10,12 +10,7 @@ export function getDefaultSettings(
       shouldConfirmBeforeCreate: false,
       ctrlClickOpensInNewTab: false,
       wordsPerDot: 50,
-      showWeeklyNote: false,
-      showQuarter: true,
       showWeeklyNoteRight: false,
-      weeklyNoteFolder: "",
-      weeklyNoteFormat: "",
-      weeklyNoteTemplate: "",
     },
     overrides
   );
