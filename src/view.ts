@@ -1,10 +1,5 @@
 import type { Moment } from "moment";
 import {
-  getDateFromFile,
-  getYearlyNote,
-  getYearlyNoteSettings,
-} from "obsidian-daily-notes-interface";
-import {
   getDateFromFile as helperGetDateFromFile,
   getPeriodicNote as helperGetPeriodicNote,
 } from "src/io/periodicNoteHelpers";
@@ -207,11 +202,11 @@ export default class CalendarView extends ItemView {
     targetEl: EventTarget,
     isMetaPressed: boolean
   ): void {
-    if (!isMetaPressed) {
+    if (!isMetaPressed || !this.settings.yearly.enabled) {
       return;
     }
-    const note = getYearlyNote(date, get(yearlyNotes));
-    const { format } = getYearlyNoteSettings();
+    const format = this.settings.yearly.format;
+    const note = helperGetPeriodicNote(date, "yearly", get(yearlyNotes) ?? {});
     this.app.workspace.trigger(
       "link-hover",
       this,
@@ -277,7 +272,8 @@ export default class CalendarView extends ItemView {
   }
 
   private onContextMenuYear(date: Moment, event: MouseEvent): void {
-    const note = getYearlyNote(date, get(yearlyNotes));
+    if (!this.settings.yearly.enabled) return;
+    const note = helperGetPeriodicNote(date, "yearly", get(yearlyNotes) ?? {});
     if (!note) {
       return;
     }
@@ -325,7 +321,7 @@ export default class CalendarView extends ItemView {
       quarterlyNotes.reindex();
       this.updateActiveFile();
     }
-    if (getDateFromFile(file, "year")) {
+    if (this.settings.yearly.enabled && helperGetDateFromFile(file, "yearly", this.settings.yearly.format)) {
       yearlyNotes.reindex();
       this.updateActiveFile();
     }
@@ -337,7 +333,7 @@ export default class CalendarView extends ItemView {
       (this.settings.weekly.enabled ? helperGetDateFromFile(file, "weekly", this.settings.weekly.format) : null) ||
       (this.settings.monthly.enabled ? helperGetDateFromFile(file, "monthly", this.settings.monthly.format) : null) ||
       (this.settings.quarterly.enabled ? helperGetDateFromFile(file, "quarterly", this.settings.quarterly.format) : null) ||
-      getDateFromFile(file, "year");
+      (this.settings.yearly.enabled ? helperGetDateFromFile(file, "yearly", this.settings.yearly.format) : null);
     if (date && this.calendar) {
       this.calendar.tick();
     }
@@ -361,7 +357,7 @@ export default class CalendarView extends ItemView {
         quarterlyNotes.reindex();
         this.calendar.tick();
       }
-      if (getDateFromFile(file, "year")) {
+      if (this.settings.yearly.enabled && helperGetDateFromFile(file, "yearly", this.settings.yearly.format)) {
         yearlyNotes.reindex();
         this.calendar.tick();
       }
@@ -425,9 +421,10 @@ export default class CalendarView extends ItemView {
         return;
       }
 
-      const { format: yearlyFormat } = getYearlyNoteSettings();
-      date = moment(activeLeaf.view.file.basename, yearlyFormat, true);
-      if (date.isValid()) {
+      date = this.settings.yearly.enabled
+        ? helperGetDateFromFile(activeLeaf.view.file, "yearly", this.settings.yearly.format)
+        : null;
+      if (date) {
         this.calendar.$set({ displayedMonth: date });
         return;
       }
@@ -562,11 +559,12 @@ export default class CalendarView extends ItemView {
     date: Moment,
     inNewSplit: boolean
   ): Promise<void> {
+    if (!this.settings.yearly.enabled) return;
     const { workspace } = this.app;
 
     const startOfYear = date.clone().startOf("year");
 
-    const existingFile = getYearlyNote(date, get(yearlyNotes));
+    const existingFile = helperGetPeriodicNote(date, "yearly", get(yearlyNotes) ?? {});
 
     if (!existingFile) {
       tryToCreateYearlyNote(startOfYear, inNewSplit, this.settings, (file) => {

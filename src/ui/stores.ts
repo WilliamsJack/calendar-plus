@@ -1,7 +1,4 @@
 import type { TFile } from "obsidian";
-import {
-  getAllYearlyNotes,
-} from "obsidian-daily-notes-interface";
 import { getAllPeriodicNotes as helperGetAllPeriodicNotes } from "src/io/periodicNoteHelpers";
 import { get, writable } from "svelte/store";
 
@@ -98,16 +95,22 @@ function createYearlyNotesStore() {
   const store = writable<Record<string, TFile>>(null);
   return {
     reindex: () => {
+      const currentSettings = get(settings);
+      if (!currentSettings.yearly.enabled) {
+        store.set({});
+        hasError = false;
+        return;
+      }
       try {
-        const yearlyNotes = getAllYearlyNotes();
-        store.set(yearlyNotes);
+        const notes = helperGetAllPeriodicNotes("yearly", currentSettings.yearly);
+        store.set(notes);
         hasError = false;
       } catch (err) {
+        store.set({});
         if (!hasError) {
           // Avoid error being shown multiple times
           console.log("[Calendar] Failed to find yearly notes folder", err);
         }
-        store.set({});
         hasError = true;
       }
     },
