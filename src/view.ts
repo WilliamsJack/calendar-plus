@@ -25,12 +25,7 @@ import {
   yearlyNotes,
   settings,
 } from "./ui/stores";
-import {
-  customTagsSource,
-  streakSource,
-  tasksSource,
-  wordCountSource,
-} from "./ui/sources";
+import { customTagsSource, streakSource } from "./ui/sources";
 
 export default class CalendarView extends ItemView {
   private calendar: Calendar;
@@ -100,12 +95,7 @@ export default class CalendarView extends ItemView {
   async onOpen(): Promise<void> {
     // Integration point: external plugins can listen for `calendar:open`
     // to feed in additional sources.
-    const sources = [
-      customTagsSource,
-      streakSource,
-      wordCountSource,
-      tasksSource,
-    ];
+    const sources = [customTagsSource, streakSource];
     this.app.workspace.trigger(TRIGGER_ON_OPEN, sources);
 
     this.calendar = new Calendar({

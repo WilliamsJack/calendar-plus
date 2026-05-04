@@ -9,7 +9,6 @@ export function getDefaultSettings(
       weekStart: "sunday",
       shouldConfirmBeforeCreate: false,
       ctrlClickOpensInNewTab: false,
-      wordsPerDot: 50,
       showWeeklyNoteRight: false,
     },
     overrides

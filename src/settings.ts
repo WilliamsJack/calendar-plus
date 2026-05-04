@@ -6,7 +6,6 @@ import {
   DEFAULT_MONTHLY_NOTE_FORMAT,
   DEFAULT_QUARTERLY_NOTE_FORMAT,
   DEFAULT_WEEKLY_NOTE_FORMAT,
-  DEFAULT_WORDS_PER_DOT,
   DEFAULT_YEARLY_NOTE_FORMAT,
 } from "src/constants";
 
@@ -27,7 +26,6 @@ export interface PeriodicNoteSettings {
 }
 
 export interface ISettings {
-  wordsPerDot: number;
   weekStart: IWeekStartOption;
   shouldConfirmBeforeCreate: boolean;
   ctrlClickOpensInNewTab: boolean;
@@ -57,8 +55,6 @@ export const defaultSettings = Object.freeze({
   shouldConfirmBeforeCreate: true,
   weekStart: "locale" as IWeekStartOption,
   ctrlClickOpensInNewTab: false,
-
-  wordsPerDot: DEFAULT_WORDS_PER_DOT,
 
   showWeeklyNoteRight: false,
 
@@ -110,7 +106,6 @@ export class CalendarSettingsTab extends PluginSettingTab {
     this.containerEl.createEl("h3", {
       text: "General Settings",
     });
-    this.addDotThresholdSetting();
     this.addWeekStartSetting();
     this.addCtrlClickSetting();
     this.addConfirmCreateSetting();
@@ -133,22 +128,6 @@ export class CalendarSettingsTab extends PluginSettingTab {
       text: "Advanced Settings",
     });
     this.addLocaleOverrideSetting();
-  }
-
-  addDotThresholdSetting(): void {
-    new Setting(this.containerEl)
-      .setName("Words per dot")
-      .setDesc("How many words should be represented by a single dot?")
-      .addText((textfield) => {
-        textfield.setPlaceholder(String(DEFAULT_WORDS_PER_DOT));
-        textfield.inputEl.type = "number";
-        textfield.setValue(String(this.plugin.options.wordsPerDot));
-        textfield.onChange(async (value) => {
-          this.plugin.writeOptions(() => ({
-            wordsPerDot: value !== "" ? Number(value) : undefined,
-          }));
-        });
-      });
   }
 
   addWeekStartSetting(): void {
