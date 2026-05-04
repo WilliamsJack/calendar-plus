@@ -1,28 +1,57 @@
 import type { Moment } from "moment";
+import { Notice } from "obsidian";
 import type { TFile, WorkspaceLeaf } from "obsidian";
-import {
-  createWeeklyNote,
-  getWeeklyNoteSettings,
-} from "obsidian-daily-notes-interface";
 
+import {
+  applyTemplateTokens,
+  ensureParentFolderExists,
+  getPeriodicNotePath,
+  getTemplateInfo,
+} from "./periodicNoteHelpers";
 import type { ISettings } from "src/settings";
 import { createConfirmationDialog } from "src/ui/modal";
 
 /**
- * Create a Weekly Note for a given date.
+ * Create a weekly note for the given date using Calendar-owned settings, then
+ * open it. Does not use obsidian-daily-notes-interface or core Daily Notes.
  */
 export async function tryToCreateWeeklyNote(
   date: Moment,
   ctrlPressed: boolean,
   settings: ISettings,
-  cb?: (file: TFile) => void
+  cb?: (newFile: TFile) => void
 ): Promise<void> {
-  const { workspace } = window.app;
-  const { format } = getWeeklyNoteSettings();
-  const filename = date.format(format);
+  const { workspace, vault } = window.app;
+  const weeklySettings = settings.weekly;
+  const filename = date.format(weeklySettings.format);
+  const path = getPeriodicNotePath(weeklySettings, date);
 
   const createFile = async () => {
-    const dailyNote = await createWeeklyNote(date);
+    await ensureParentFolderExists(path);
+    const { contents: rawTemplate, foldInfo } = await getTemplateInfo(
+      weeklySettings.template
+    );
+    const expanded = applyTemplateTokens(
+      rawTemplate,
+      "weekly",
+      date,
+      weeklySettings.format
+    );
+
+    let newFile: TFile;
+    try {
+      newFile = await vault.create(path, expanded);
+    } catch (err) {
+      console.error(`[Calendar] Failed to create file: '${path}'`, err);
+      new Notice("Unable to create new file.");
+      throw err;
+    }
+
+    if (foldInfo) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window.app as any).foldManager?.save?.(newFile, foldInfo);
+    }
+
     let leaf: WorkspaceLeaf;
     if (ctrlPressed) {
       if (settings.ctrlClickOpensInNewTab) {
@@ -33,8 +62,8 @@ export async function tryToCreateWeeklyNote(
     } else {
       leaf = workspace.getLeaf(false);
     }
-    await leaf.openFile(dailyNote, { active: true });
-    cb?.(dailyNote);
+    await leaf.openFile(newFile, { active: true });
+    cb?.(newFile);
   };
 
   if (settings.shouldConfirmBeforeCreate) {

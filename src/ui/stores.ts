@@ -1,11 +1,10 @@
 import type { TFile } from "obsidian";
 import {
-  getAllWeeklyNotes,
   getAllMonthlyNotes,
   getAllYearlyNotes,
   getAllQuarterlyNotes,
 } from "obsidian-daily-notes-interface";
-import { getAllPeriodicNotes as helperGetAllDailyNotes } from "src/io/periodicNoteHelpers";
+import { getAllPeriodicNotes as helperGetAllPeriodicNotes } from "src/io/periodicNoteHelpers";
 import { get, writable } from "svelte/store";
 
 import { defaultSettings, ISettings } from "src/settings";
@@ -24,7 +23,7 @@ function createDailyNotesStore() {
         return;
       }
       try {
-        const notes = helperGetAllDailyNotes("daily", currentSettings.daily);
+        const notes = helperGetAllPeriodicNotes("daily", currentSettings.daily);
         store.set(notes);
         hasError = false;
       } catch (err) {
@@ -45,16 +44,22 @@ function createWeeklyNotesStore() {
   const store = writable<Record<string, TFile>>(null);
   return {
     reindex: () => {
+      const currentSettings = get(settings);
+      if (!currentSettings.weekly.enabled) {
+        store.set({});
+        hasError = false;
+        return;
+      }
       try {
-        const weeklyNotes = getAllWeeklyNotes();
-        store.set(weeklyNotes);
+        const notes = helperGetAllPeriodicNotes("weekly", currentSettings.weekly);
+        store.set(notes);
         hasError = false;
       } catch (err) {
+        store.set({});
         if (!hasError) {
           // Avoid error being shown multiple times
           console.log("[Calendar] Failed to find weekly notes folder", err);
         }
-        store.set({});
         hasError = true;
       }
     },

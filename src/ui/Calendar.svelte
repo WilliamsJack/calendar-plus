@@ -75,7 +75,7 @@
   bind:displayedMonth
   localeData={today.localeData()}
   selectedId={$activeFile}
-  showWeekNums={$settings.showWeeklyNote}
+  showWeekNums={$settings.weekly.enabled}
   showWeekNumsRight={$settings.showWeeklyNoteRight}
   quarterVisible={$settings.showQuarter}
 />
