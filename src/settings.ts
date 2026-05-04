@@ -2,9 +2,31 @@ import { App, PluginSettingTab, Setting } from "obsidian";
 import { appHasDailyNotesPluginLoaded } from "obsidian-daily-notes-interface";
 import type { ILocaleOverride, IWeekStartOption } from "obsidian-calendar-ui";
 
-import { DEFAULT_WEEK_FORMAT, DEFAULT_WORDS_PER_DOT } from "src/constants";
+import {
+  DEFAULT_DAILY_NOTE_FORMAT,
+  DEFAULT_MONTHLY_NOTE_FORMAT,
+  DEFAULT_QUARTERLY_NOTE_FORMAT,
+  DEFAULT_WEEK_FORMAT,
+  DEFAULT_WEEKLY_NOTE_FORMAT,
+  DEFAULT_WORDS_PER_DOT,
+  DEFAULT_YEARLY_NOTE_FORMAT,
+} from "src/constants";
 
 import type CalendarPlugin from "./main";
+
+export type Periodicity =
+  | "daily"
+  | "weekly"
+  | "monthly"
+  | "quarterly"
+  | "yearly";
+
+export interface PeriodicNoteSettings {
+  enabled: boolean;
+  format: string;
+  folder: string;
+  template: string;
+}
 
 export interface ISettings {
   wordsPerDot: number;
@@ -20,6 +42,13 @@ export interface ISettings {
   weeklyNoteFolder: string;
 
   localeOverride: ILocaleOverride;
+
+  // Calendar-owned periodic note settings (not yet wired up).
+  daily: PeriodicNoteSettings;
+  weekly: PeriodicNoteSettings;
+  monthly: PeriodicNoteSettings;
+  quarterly: PeriodicNoteSettings;
+  yearly: PeriodicNoteSettings;
 }
 
 const weekdays = [
@@ -48,6 +77,37 @@ export const defaultSettings = Object.freeze({
   localeOverride: "system-default",
 
   showQuarter: false, // Added default value for showQuarter
+
+  daily: {
+    enabled: false,
+    format: DEFAULT_DAILY_NOTE_FORMAT,
+    folder: "",
+    template: "",
+  } as PeriodicNoteSettings,
+  weekly: {
+    enabled: false,
+    format: DEFAULT_WEEKLY_NOTE_FORMAT,
+    folder: "",
+    template: "",
+  } as PeriodicNoteSettings,
+  monthly: {
+    enabled: false,
+    format: DEFAULT_MONTHLY_NOTE_FORMAT,
+    folder: "",
+    template: "",
+  } as PeriodicNoteSettings,
+  quarterly: {
+    enabled: false,
+    format: DEFAULT_QUARTERLY_NOTE_FORMAT,
+    folder: "",
+    template: "",
+  } as PeriodicNoteSettings,
+  yearly: {
+    enabled: false,
+    format: DEFAULT_YEARLY_NOTE_FORMAT,
+    folder: "",
+    template: "",
+  } as PeriodicNoteSettings,
 });
 
 export function appHasPeriodicNotesPluginLoaded(): boolean {
