@@ -1,7 +1,6 @@
 import type { TFile } from "obsidian";
 import {
   getAllYearlyNotes,
-  getAllQuarterlyNotes,
 } from "obsidian-daily-notes-interface";
 import { getAllPeriodicNotes as helperGetAllPeriodicNotes } from "src/io/periodicNoteHelpers";
 import { get, writable } from "svelte/store";
@@ -121,16 +120,22 @@ function createQuarterlyNotesStore() {
   const store = writable<Record<string, TFile>>(null);
   return {
     reindex: () => {
+      const currentSettings = get(settings);
+      if (!currentSettings.quarterly.enabled) {
+        store.set({});
+        hasError = false;
+        return;
+      }
       try {
-        const quarterlyNotes = getAllQuarterlyNotes();
-        store.set(quarterlyNotes);
+        const notes = helperGetAllPeriodicNotes("quarterly", currentSettings.quarterly);
+        store.set(notes);
         hasError = false;
       } catch (err) {
+        store.set({});
         if (!hasError) {
           // Avoid error being shown multiple times
           console.log("[Calendar] Failed to find quarterly notes folder", err);
         }
-        store.set({});
         hasError = true;
       }
     },

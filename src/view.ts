@@ -3,8 +3,6 @@ import {
   getDateFromFile,
   getYearlyNote,
   getYearlyNoteSettings,
-  getQuarterlyNote,
-  getQuarterlyNoteSettings,
 } from "obsidian-daily-notes-interface";
 import {
   getDateFromFile as helperGetDateFromFile,
@@ -228,11 +226,11 @@ export default class CalendarView extends ItemView {
     targetEl: EventTarget,
     isMetaPressed: boolean
   ): void {
-    if (!isMetaPressed) {
+    if (!isMetaPressed || !this.settings.quarterly.enabled) {
       return;
     }
-    const { format } = getQuarterlyNoteSettings();
-    const note = getQuarterlyNote(date, get(quarterlyNotes));
+    const format = this.settings.quarterly.format;
+    const note = helperGetPeriodicNote(date, "quarterly", get(quarterlyNotes) ?? {});
     this.app.workspace.trigger(
       "link-hover",
       this,
@@ -290,7 +288,8 @@ export default class CalendarView extends ItemView {
   }
 
   private onContextMenuQuarter(date: Moment, event: MouseEvent): void {
-    const note = getQuarterlyNote(date, get(quarterlyNotes));
+    if (!this.settings.quarterly.enabled) return;
+    const note = helperGetPeriodicNote(date, "quarterly", get(quarterlyNotes) ?? {});
     if (!note) {
       return;
     }
@@ -322,8 +321,7 @@ export default class CalendarView extends ItemView {
       monthlyNotes.reindex();
       this.updateActiveFile();
     }
-    if (getDateFromFile(file, "quarter")) {
-      // Added block
+    if (this.settings.quarterly.enabled && helperGetDateFromFile(file, "quarterly", this.settings.quarterly.format)) {
       quarterlyNotes.reindex();
       this.updateActiveFile();
     }
@@ -338,7 +336,7 @@ export default class CalendarView extends ItemView {
       (this.settings.daily.enabled ? helperGetDateFromFile(file, "daily", this.settings.daily.format) : null) ||
       (this.settings.weekly.enabled ? helperGetDateFromFile(file, "weekly", this.settings.weekly.format) : null) ||
       (this.settings.monthly.enabled ? helperGetDateFromFile(file, "monthly", this.settings.monthly.format) : null) ||
-      getDateFromFile(file, "quarter") || // Added line
+      (this.settings.quarterly.enabled ? helperGetDateFromFile(file, "quarterly", this.settings.quarterly.format) : null) ||
       getDateFromFile(file, "year");
     if (date && this.calendar) {
       this.calendar.tick();
@@ -359,8 +357,7 @@ export default class CalendarView extends ItemView {
         monthlyNotes.reindex();
         this.calendar.tick();
       }
-      if (getDateFromFile(file, "quarter")) {
-        // Added block
+      if (this.settings.quarterly.enabled && helperGetDateFromFile(file, "quarterly", this.settings.quarterly.format)) {
         quarterlyNotes.reindex();
         this.calendar.tick();
       }
@@ -420,9 +417,10 @@ export default class CalendarView extends ItemView {
         return;
       }
 
-      const { format: quarterlyFormat } = getQuarterlyNoteSettings(); // Added block
-      date = moment(activeLeaf.view.file.basename, quarterlyFormat, true);
-      if (date.isValid()) {
+      date = this.settings.quarterly.enabled
+        ? helperGetDateFromFile(activeLeaf.view.file, "quarterly", this.settings.quarterly.format)
+        : null;
+      if (date) {
         this.calendar.$set({ displayedMonth: date });
         return;
       }
@@ -532,11 +530,12 @@ export default class CalendarView extends ItemView {
     date: Moment,
     inNewSplit: boolean
   ): Promise<void> {
+    if (!this.settings.quarterly.enabled) return;
     const { workspace } = this.app;
 
     const startOfQuarter = date.clone().startOf("quarter");
 
-    const existingFile = getQuarterlyNote(date, get(quarterlyNotes));
+    const existingFile = helperGetPeriodicNote(date, "quarterly", get(quarterlyNotes) ?? {});
 
     if (!existingFile) {
       tryToCreateQuarterlyNote(

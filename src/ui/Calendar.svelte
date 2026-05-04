@@ -77,5 +77,5 @@
   selectedId={$activeFile}
   showWeekNums={$settings.weekly.enabled}
   showWeekNumsRight={$settings.showWeeklyNoteRight}
-  quarterVisible={$settings.showQuarter}
+  quarterVisible={$settings.quarterly.enabled}
 />
