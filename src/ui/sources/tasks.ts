@@ -1,7 +1,7 @@
 import type { Moment } from "moment";
 import type { TFile } from "obsidian";
 import type { ICalendarSource, IDayMetadata, IDot } from "obsidian-calendar-ui";
-import { getDailyNote, getWeeklyNote } from "obsidian-daily-notes-interface";
+import { getPeriodicNote as helperGetPeriodicNote } from "src/io/periodicNoteHelpers";
 import { get } from "svelte/store";
 
 import { dailyNotes, weeklyNotes } from "../stores";
@@ -37,7 +37,7 @@ export async function getDotsForDailyNote(
 
 export const tasksSource: ICalendarSource = {
   getDailyMetadata: async (date: Moment): Promise<IDayMetadata> => {
-    const file = getDailyNote(date, get(dailyNotes));
+    const file = helperGetPeriodicNote(date, "daily", get(dailyNotes) ?? {});
     const dots = await getDotsForDailyNote(file);
     return {
       dots,
@@ -45,7 +45,7 @@ export const tasksSource: ICalendarSource = {
   },
 
   getWeeklyMetadata: async (date: Moment): Promise<IDayMetadata> => {
-    const file = getWeeklyNote(date, get(weeklyNotes));
+    const file = helperGetPeriodicNote(date, "weekly", get(weeklyNotes) ?? {});
     const dots = await getDotsForDailyNote(file);
 
     return {

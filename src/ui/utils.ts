@@ -1,5 +1,9 @@
 import type { TFile } from "obsidian";
-import { getDateFromFile, getDateUID } from "obsidian-daily-notes-interface";
+import {
+  getDateFromFile as helperGetDateFromFile,
+  getDateUID as helperGetDateUID,
+} from "src/io/periodicNoteHelpers";
+import type { ISettings } from "src/settings";
 
 export const classList = (obj: Record<string, boolean>): string[] => {
   return Object.entries(obj)
@@ -36,24 +40,26 @@ export function partition(
 /**
  * Lookup the dateUID for a given file. It compares the filename
  * to the daily and weekly note formats to find a match.
- *
- * @param file
  */
-export function getDateUIDFromFile(file: TFile | null): string {
+export function getDateUIDFromFile(file: TFile | null, settings: ISettings): string {
   if (!file) {
     return null;
   }
 
-  // TODO: I'm not checking the path!
-  let date = getDateFromFile(file, "day");
-  if (date) {
-    return getDateUID(date, "day");
+  if (settings.daily.enabled) {
+    const date = helperGetDateFromFile(file, "daily", settings.daily.format);
+    if (date) {
+      return helperGetDateUID(date, "daily");
+    }
   }
 
-  date = getDateFromFile(file, "week");
-  if (date) {
-    return getDateUID(date, "week");
+  if (settings.weekly.enabled) {
+    const date = helperGetDateFromFile(file, "weekly", settings.weekly.format);
+    if (date) {
+      return helperGetDateUID(date, "weekly");
+    }
   }
+
   return null;
 }
 

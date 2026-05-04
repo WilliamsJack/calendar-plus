@@ -159,7 +159,7 @@ function createSelectedFileStore() {
 
   return {
     setFile: (file: TFile) => {
-      const id = getDateUIDFromFile(file);
+      const id = getDateUIDFromFile(file, get(settings));
       store.set(id);
     },
     ...store,
