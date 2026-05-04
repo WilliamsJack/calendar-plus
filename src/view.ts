@@ -1,7 +1,5 @@
 import type { Moment } from "moment";
 import {
-  getDailyNote,
-  getDailyNoteSettings,
   getDateFromFile,
   getWeeklyNote,
   getWeeklyNoteSettings,
@@ -12,6 +10,10 @@ import {
   getQuarterlyNote,
   getQuarterlyNoteSettings,
 } from "obsidian-daily-notes-interface";
+import {
+  getDateFromFile as helperGetDateFromFile,
+  getPeriodicNote as helperGetPeriodicNote,
+} from "src/io/periodicNoteHelpers";
 import { FileView, TFile, ItemView, WorkspaceLeaf } from "obsidian";
 import { get } from "svelte/store";
 
@@ -154,11 +156,11 @@ export default class CalendarView extends ItemView {
     targetEl: EventTarget,
     isMetaPressed: boolean
   ): void {
-    if (!isMetaPressed) {
+    if (!isMetaPressed || !this.settings.daily.enabled) {
       return;
     }
-    const { format } = getDailyNoteSettings();
-    const note = getDailyNote(date, get(dailyNotes));
+    const format = this.settings.daily.format;
+    const note = helperGetPeriodicNote(date, "daily", get(dailyNotes) ?? {});
     this.app.workspace.trigger(
       "link-hover",
       this,
@@ -245,7 +247,8 @@ export default class CalendarView extends ItemView {
   }
 
   private onContextMenuDay(date: Moment, event: MouseEvent): void {
-    const note = getDailyNote(date, get(dailyNotes));
+    if (!this.settings.daily.enabled) return;
+    const note = helperGetPeriodicNote(date, "daily", get(dailyNotes) ?? {});
     if (!note) {
       return;
     }
@@ -309,7 +312,7 @@ export default class CalendarView extends ItemView {
   }
 
   private async onFileDeleted(file: TFile): Promise<void> {
-    if (getDateFromFile(file, "day")) {
+    if (this.settings.daily.enabled && helperGetDateFromFile(file, "daily", this.settings.daily.format)) {
       dailyNotes.reindex();
       this.updateActiveFile();
     }
@@ -334,7 +337,7 @@ export default class CalendarView extends ItemView {
 
   private async onFileModified(file: TFile): Promise<void> {
     const date =
-      getDateFromFile(file, "day") ||
+      (this.settings.daily.enabled ? helperGetDateFromFile(file, "daily", this.settings.daily.format) : null) ||
       getDateFromFile(file, "week") ||
       getDateFromFile(file, "month") ||
       getDateFromFile(file, "quarter") || // Added line
@@ -346,7 +349,7 @@ export default class CalendarView extends ItemView {
 
   private onFileCreated(file: TFile): void {
     if (this.app.workspace.layoutReady && this.calendar) {
-      if (getDateFromFile(file, "day")) {
+      if (this.settings.daily.enabled && helperGetDateFromFile(file, "daily", this.settings.daily.format)) {
         dailyNotes.reindex();
         this.calendar.tick();
       }
@@ -395,7 +398,9 @@ export default class CalendarView extends ItemView {
     const { activeLeaf } = this.app.workspace;
 
     if (activeLeaf.view instanceof FileView) {
-      let date = getDateFromFile(activeLeaf.view.file, "day");
+      let date = this.settings.daily.enabled
+        ? helperGetDateFromFile(activeLeaf.view.file, "daily", this.settings.daily.format)
+        : null;
       if (date) {
         this.calendar.$set({ displayedMonth: date });
         return;
@@ -465,8 +470,9 @@ export default class CalendarView extends ItemView {
     date: Moment,
     ctrlPressed: boolean
   ): Promise<void> {
+    if (!this.settings.daily.enabled) return;
     const { workspace } = this.app;
-    const existingFile = getDailyNote(date, get(dailyNotes));
+    const existingFile = helperGetPeriodicNote(date, "daily", get(dailyNotes) ?? {});
     if (!existingFile) {
       tryToCreateDailyNote(
         date,
