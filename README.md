@@ -1,4 +1,6 @@
-# obsidian-calendar-plugin
+# Calendar Plus
+
+Calendar Plus is a fork of [Liam Cain's Calendar plugin](https://github.com/liamcain/obsidian-calendar-plugin), with integrated periodic note functionality inspired by and merged from [Liam Cain's Periodic Notes plugin](https://github.com/liamcain/obsidian-periodic-notes). Calendar Plus manages daily, weekly, monthly, quarterly, and yearly notes directly, without depending on the original Calendar or Periodic Notes plugins.
 
 This plugin for [Obsidian](https://obsidian.md/) creates a simple Calendar view for visualizing and navigating between your daily notes.
 
@@ -8,7 +10,7 @@ This plugin for [Obsidian](https://obsidian.md/) creates a simple Calendar view 
 
 After enabling the plugin in the settings menu, you should see the calendar view appear in the right sidebar.
 
-The plugin reads your Daily Note settings to know your date format, your daily note template location, and the location for new daily notes it creates.
+Calendar Plus manages its own settings for daily, weekly, monthly, quarterly, and yearly notes. Enable each note type and configure its date format, folder, and template from the plugin settings — Calendar Plus does not read from Obsidian's core Daily Notes plugin or the Periodic Notes plugin.
 
 ## Features
 
@@ -70,7 +72,7 @@ If you use "Inspect Element" on the calendar, you will notice that the CSS class
 
 ## Installation
 
-You can install the plugin via the Community Plugins tab within Obsidian. Just search for "Calendar."
+Calendar Plus is a fork and is not published in the Obsidian Community Plugins catalog. To install manually, copy the built `main.js`, `manifest.json`, and `styles.css` into your vault at `<vault>/.obsidian/plugins/calendar-plus/`, then enable Calendar Plus from Settings → Community plugins.
 
 ## FAQ
 
@@ -96,7 +98,7 @@ Just like other sidebar views (e.g. Backlinks, Outline), the calendar view can b
 
 ### I accidentally closed the calendar. How do I reopen it?
 
-If you close the calendar widget (right-clicking on the panel nav and clicking close), you can always reopen the view from the Command Palette. Just search for `Calendar: Open view`.
+If you close the calendar widget (right-clicking on the panel nav and clicking close), you can always reopen the view from the Command Palette. Just search for `Calendar Plus: Open view`.
 
 ![how-to-reopen](./images/how-to-reopen.png)
 
@@ -108,11 +110,9 @@ From the Settings menu, you can toggle "Start week on Monday".
 
 If you want the weekly note format to include a word (e.g. "Week 21 of Year 2020") you can do so by surrounding the words with `[]` brackets. This tells [moment](https://momentjs.com/docs/#/displaying/format/) to ignore the words. So for the example above, you would set your format to `[Week] ww [of Year] gggg`.
 
-### I don't like showing the week numbers but I still want to use weekly notes. Can I still use them?
+### How do I use weekly notes?
 
-You can open the current weekly note from the command palette by searching `Calendar: Open weekly Note`. This will open the weekly note for the current week.
-
-To configure the `format`, `folder`, and `template`, you will temporarily need to toggle on "Show weekly numbers" in the settings, but if you toggle it back off, your settings will persist.
+Enable Weekly notes in the Calendar Plus settings, then configure its date format, folder, and template. You can open the current weekly note via the command `Calendar Plus: Open Weekly Note`, or by clicking a week-number cell in the calendar. Week-number cells appear when Weekly notes are enabled.
 
 ## Protips
 
@@ -148,7 +148,7 @@ If you `Ctrl/Command`-Click on a note in your calendar, it will open daily note 
 
 ### Reveal open note on calendar
 
-If you open a note from a different month, you might want to see it on the calendar view. To do so, you can run the command `Calendar: Reveal open note` from the command palette.
+If you open a note from a different month, you might want to see it on the calendar view. To do so, you can run the command `Calendar Plus: Reveal active note` from the command palette.
 
 ### Add custom styling for weekends
 
@@ -156,26 +156,11 @@ If you want to style weekends to be distinguishable from weekdays, you can set t
 
 ![how-to-weekend](./images/how-to-weekend.png)
 
-### Weekly Notes (deprecated)
+### Weekly Notes
 
-#### Weekly notes have a new home
+Weekly notes are integrated into Calendar Plus. Enable Weekly notes in the plugin settings and configure its folder, date format, and template. The default format is `gggg-[W]ww`. If you use `DD` in the week format, it refers to the first day of the week (Sunday or Monday, depending on your settings).
 
-The weekly note functionality has been split out into its [very own plugin](https://github.com/liamcain/obsidian-periodic-notes/). In the future, the functionality will be removed from the Calendar plugin; so if you're currently using weekly notes, I encourage you to make the switch. Don't worry, the behavior is functionally identical and will still integrate with the calendar view!
-
-This split was inspired by the [One Thing Well](https://en.wikipedia.org/wiki/Unix_philosophy) philosophy. Plugins should be as modular. Some users might want weekly notes and have no use for a calendar view. And vice versa.
-
-If you are currently using weekly notes within the Calendar plugin, the new Periodic Notes plugin will migrate your settings for you automatically.
-
-### Usage
-
-You can open **weekly notes** in 2 ways: searching `Calendar: open weekly note` in the command palette or by clicking on the week number. Weekly notes can be configured from the Calendar settings. There are 3 settings:
-
-- **Folder:** The folder that your weekly notes go into. It can be the same or different from your daily notes. By default they are placed in your vault root.
-- **Template:** Configure a template for weekly notes. Weekly notes have slightly different template tags than daily notes. See here for the list of supported [weekly note template tags](#template-tags).
-
-> Note: The path here won't autocomplete for you, you'll need to enter the full path.
-
-- **Format:** The date format for the weekly note filename. Defaults to `"gggg-[W]ww`. If you use `DD` in the week format, this will refer to first day of the week (Sunday or Monday, depending on your settings).
+You can open the current weekly note via `Calendar Plus: Open Weekly Note` or by clicking a week-number cell in the calendar.
 
 #### Template Tags
 
@@ -191,12 +176,3 @@ You can open **weekly notes** in 2 ways: searching `Calendar: open weekly note` 
 - [Santi Younger demos how Calendar + Periodic Notes can be used for weekly review](https://www.youtube.com/watch?v=T9y8JABS9_Q)
 - [Filipe Donadio uses the calendar to plan his day](https://www.youtube.com/watch?v=hxf3_dXIcqc)
 
-## Say Thanks 🙏
-
-If you like this plugin and would like to buy me a coffee, you can!
-
-[<img src="https://cdn.buymeacoffee.com/buttons/v2/default-violet.png" alt="BuyMeACoffee" width="100">](https://www.buymeacoffee.com/liamcain)
-
-Like my work and want to see more like it? You can sponsor me.
-
-[![GitHub Sponsors](https://img.shields.io/github/sponsors/liamcain?style=social)](https://github.com/sponsors/liamcain)

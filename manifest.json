@@ -1,11 +1,9 @@
 {
-  "id": "calendar",
-  "name": "Calendar",
-  "description": "Calendar view of your daily notes",
+  "id": "calendar-plus",
+  "name": "Calendar Plus",
+  "description": "Calendar view with integrated daily, weekly, monthly, quarterly, and yearly notes.",
   "version": "1.5.12",
-  "author": "Liam Cain & FBarrca",
-  "authorUrl": "https://github.com/liamcain/",
-  "fundingUrl": "https://www.buymeacoffee.com/liamcain",
+  "author": "Matt Maiorana",
   "isDesktopOnly": false,
   "minAppVersion": "0.9.11"
 }
