@@ -36,6 +36,12 @@
   min-height: 6px;
 }
 
+/* Subtle opacity hover for the TODAY button and the prev/next month arrows */
+.calendar-plus-wrapper #calendar-container .reset-button:hover,
+.calendar-plus-wrapper #calendar-container .arrow:hover {
+  opacity: 0.7;
+}
+
 /* Suppress cursor:pointer from obsidian-calendar-ui for disabled note types */
 .calendar-plus-wrapper #calendar-container .month,
 .calendar-plus-wrapper #calendar-container .year,
