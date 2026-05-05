@@ -63,14 +63,17 @@ export default class CalendarView extends ItemView {
     this.registerEvent(this.app.workspace.on("file-open", this.onFileOpen));
 
     this.settings = null;
-    settings.subscribe((val) => {
-      this.settings = val;
+    this.register(
+      settings.subscribe((val) => {
+        this.settings = val;
 
-      // Refresh the calendar if settings change
-      if (this.calendar) {
-        this.calendar.tick();
-      }
-    });
+        // Refresh the calendar if settings change. tick is a Svelte getter that
+        // reads $$.ctx, which is emptied on $destroy — guard against that case.
+        if (this.calendar && typeof this.calendar.tick === "function") {
+          this.calendar.tick();
+        }
+      })
+    );
   }
 
   getViewType(): string {
