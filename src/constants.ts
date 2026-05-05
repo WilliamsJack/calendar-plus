@@ -1,6 +1,6 @@
-export const VIEW_TYPE_CALENDAR = "calendar";
+export const VIEW_TYPE_CALENDAR = "calendar-plus-view";
 
-export const TRIGGER_ON_OPEN = "calendar:open";
+export const TRIGGER_ON_OPEN = "calendar-plus:open";
 
 export const DEFAULT_DAILY_NOTE_FORMAT = "YYYY-MM-DD";
 export const DEFAULT_WEEKLY_NOTE_FORMAT = "gggg-[W]ww";
