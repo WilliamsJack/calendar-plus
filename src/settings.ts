@@ -204,11 +204,22 @@ export class CalendarSettingsTab extends PluginSettingTab {
     label: string,
     defaultFormat: string
   ): void {
+    const sectionEl = this.containerEl.createDiv();
+    this.renderPeriodicNoteSection(sectionEl, periodicity, label, defaultFormat);
+  }
+
+  private renderPeriodicNoteSection(
+    sectionEl: HTMLElement,
+    periodicity: Periodicity,
+    label: string,
+    defaultFormat: string
+  ): void {
+    sectionEl.empty();
     const pnSettings = this.plugin.options[periodicity];
 
-    new Setting(this.containerEl).setName(label).setHeading();
+    new Setting(sectionEl).setName(label).setHeading();
 
-    new Setting(this.containerEl)
+    new Setting(sectionEl)
       .setName("Enable")
       .setDesc(`Create and manage ${label.toLowerCase()} from Calendar`)
       .addToggle((toggle) => {
@@ -217,13 +228,15 @@ export class CalendarSettingsTab extends PluginSettingTab {
           await this.plugin.writeOptions((prev) => ({
             [periodicity]: { ...prev[periodicity], enabled: value },
           } as Partial<ISettings>));
-          this.display();
+          // Re-render only this section's wrapper. Calling this.display()
+          // would empty the entire tab and reset the scroll container.
+          this.renderPeriodicNoteSection(sectionEl, periodicity, label, defaultFormat);
         });
       });
 
     if (!pnSettings.enabled) return;
 
-    new Setting(this.containerEl)
+    new Setting(sectionEl)
       .setName("Date format")
       .setDesc("Moment.js format string for note filenames")
       .addText((text) => {
@@ -236,7 +249,7 @@ export class CalendarSettingsTab extends PluginSettingTab {
         });
       });
 
-    new Setting(this.containerEl)
+    new Setting(sectionEl)
       .setName("Folder")
       .setDesc("Notes are created here. Leave blank for vault root.")
       .addText((text) => {
@@ -250,7 +263,7 @@ export class CalendarSettingsTab extends PluginSettingTab {
         new FolderSuggest(this.app, text.inputEl);
       });
 
-    new Setting(this.containerEl)
+    new Setting(sectionEl)
       .setName("Template file")
       .setDesc("Path to template file. Leave blank for no template.")
       .addText((text) => {
