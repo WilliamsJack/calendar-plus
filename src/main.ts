@@ -40,7 +40,12 @@ export default class CalendarPlugin extends Plugin {
     );
 
     this.addRibbonIcon("calendar-with-checkmark", "Open Calendar Plus", () => {
-      this.initLeaf();
+      const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_CALENDAR);
+      if (leaves.length) {
+        this.app.workspace.revealLeaf(leaves[0]);
+      } else {
+        this.initLeaf();
+      }
     });
 
     this.addCommand({
