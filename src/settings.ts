@@ -8,6 +8,7 @@ import {
   DEFAULT_WEEKLY_NOTE_FORMAT,
   DEFAULT_YEARLY_NOTE_FORMAT,
 } from "src/constants";
+import { FileSuggest, FolderSuggest } from "src/ui/file-suggest";
 
 import type CalendarPlugin from "./main";
 
@@ -246,6 +247,7 @@ export class CalendarSettingsTab extends PluginSettingTab {
             [periodicity]: { ...prev[periodicity], folder: value },
           } as Partial<ISettings>));
         });
+        new FolderSuggest(this.app, text.inputEl);
       });
 
     new Setting(this.containerEl)
@@ -259,6 +261,7 @@ export class CalendarSettingsTab extends PluginSettingTab {
             [periodicity]: { ...prev[periodicity], template: value },
           } as Partial<ISettings>));
         });
+        new FileSuggest(this.app, text.inputEl);
       });
   }
 
