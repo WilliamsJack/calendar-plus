@@ -80,7 +80,7 @@
     {onClickYear}
     {onClickQuarter}
     bind:displayedMonth
-    localeData={today.localeData()}
+    localeData={{...today.localeData()}}
     selectedId={$activeFile}
     showWeekNums={$settings.weekly.enabled}
     showWeekNumsRight={$settings.showWeeklyNoteRight}
