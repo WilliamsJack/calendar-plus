@@ -1,3 +1,70 @@
+/* Match week-number font size to day-number font size (library sets 0.65em vs 0.8em) */
+.calendar-plus-wrapper #calendar-container .week-num {
+  font-size: 0.8em;
+}
+
+/* Disable text selection drag highlighting across all calendar cells */
+.calendar-plus-wrapper #calendar-container {
+  user-select: none;
+}
+
+/* Subtle weekend column shading */
+.calendar-plus-wrapper #calendar-container {
+  --color-background-weekend: var(--color-base-25);
+}
+
+/* When daily notes disabled: no pointer cursor or hover background on day cells */
+.calendar-plus-wrapper:not(.daily-enabled) #calendar-container .day {
+  cursor: default;
+}
+.calendar-plus-wrapper:not(.daily-enabled) #calendar-container .day:hover {
+  background-color: var(--color-background-day);
+}
+
+/* Suppress transient purple :active flash on day cells during click-drag */
+.calendar-plus-wrapper #calendar-container .day:active:not(.active) {
+  background-color: var(--color-background-day);
+}
+
+/* Fix weekly dot-container: WeekNum.svelte has no scoped dot-container CSS, so its
+   dot-container collapses to 0px when empty and jumps to 6px when a dot appears.
+   This reserves consistent space so week numbers do not shift position. */
+.calendar-plus-wrapper #calendar-container .week-num .dot-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  min-height: 6px;
+}
+
+/* Suppress cursor:pointer from obsidian-calendar-ui for disabled note types */
+.calendar-plus-wrapper #calendar-container .month,
+.calendar-plus-wrapper #calendar-container .year,
+.calendar-plus-wrapper #calendar-container .quarter {
+  cursor: default;
+}
+
+/* Restore pointer + subtle hover when each note type is enabled */
+.calendar-plus-wrapper.monthly-enabled #calendar-container .month {
+  cursor: pointer;
+}
+.calendar-plus-wrapper.monthly-enabled #calendar-container .month:hover {
+  opacity: 0.7;
+}
+
+.calendar-plus-wrapper.yearly-enabled #calendar-container .year {
+  cursor: pointer;
+}
+.calendar-plus-wrapper.yearly-enabled #calendar-container .year:hover {
+  opacity: 0.7;
+}
+
+.calendar-plus-wrapper.quarterly-enabled #calendar-container .quarter {
+  cursor: pointer;
+}
+.calendar-plus-wrapper.quarterly-enabled #calendar-container .quarter:hover {
+  opacity: 0.7;
+}
+
 .settings-banner {
   background-color: var(--background-secondary-alt);
   border-radius: 4px;

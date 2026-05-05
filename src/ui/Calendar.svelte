@@ -60,22 +60,30 @@
   });
 </script>
 
-<CalendarBase
-  {sources}
-  {today}
-  {onHoverDay}
-  {onHoverWeek}
-  {onContextMenuDay}
-  {onContextMenuWeek}
-  {onClickDay}
-  {onClickWeek}
-  {onClickMonth}
-  {onClickYear}
-  {onClickQuarter}
-  bind:displayedMonth
-  localeData={today.localeData()}
-  selectedId={$activeFile}
-  showWeekNums={$settings.weekly.enabled}
-  showWeekNumsRight={$settings.showWeeklyNoteRight}
-  quarterVisible={$settings.quarterly.enabled}
-/>
+<div
+  class="calendar-plus-wrapper"
+  class:daily-enabled={$settings.daily.enabled}
+  class:monthly-enabled={$settings.monthly.enabled}
+  class:quarterly-enabled={$settings.quarterly.enabled}
+  class:yearly-enabled={$settings.yearly.enabled}
+>
+  <CalendarBase
+    {sources}
+    {today}
+    {onHoverDay}
+    {onHoverWeek}
+    {onContextMenuDay}
+    {onContextMenuWeek}
+    {onClickDay}
+    {onClickWeek}
+    {onClickMonth}
+    {onClickYear}
+    {onClickQuarter}
+    bind:displayedMonth
+    localeData={today.localeData()}
+    selectedId={$activeFile}
+    showWeekNums={$settings.weekly.enabled}
+    showWeekNumsRight={$settings.showWeeklyNoteRight}
+    quarterVisible={$settings.quarterly.enabled}
+  />
+</div>
