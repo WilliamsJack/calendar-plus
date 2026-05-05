@@ -39,6 +39,10 @@ export default class CalendarPlugin extends Plugin {
       (leaf: WorkspaceLeaf) => (this.view = new CalendarView(leaf))
     );
 
+    this.addRibbonIcon("calendar-with-checkmark", "Open Calendar Plus", () => {
+      this.initLeaf();
+    });
+
     this.addCommand({
       id: "show-calendar-view",
       name: "Open view",
