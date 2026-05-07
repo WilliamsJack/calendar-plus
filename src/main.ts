@@ -123,13 +123,19 @@ export default class CalendarPlugin extends Plugin {
   }
 
   async loadOptions(): Promise<void> {
-    const options = await this.loadData();
-    settings.update((old) => {
-      return {
-        ...old,
-        ...(options || {}),
-      };
-    });
+    const options = (await this.loadData()) ?? {};
+    settings.update((old) => ({
+      ...old,
+      ...options,
+      // Per-period objects need a one-level merge so a partial saved object
+      // (e.g. { enabled: true, format: "YYYY-MM-DD" }) doesn't wipe folder /
+      // template defaults from the parent spread above.
+      daily:     { ...old.daily,     ...(options.daily     ?? {}) },
+      weekly:    { ...old.weekly,    ...(options.weekly    ?? {}) },
+      monthly:   { ...old.monthly,   ...(options.monthly   ?? {}) },
+      quarterly: { ...old.quarterly, ...(options.quarterly ?? {}) },
+      yearly:    { ...old.yearly,    ...(options.yearly    ?? {}) },
+    }));
 
     await this.saveData(this.options);
   }
