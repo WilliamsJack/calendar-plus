@@ -1,4 +1,5 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
+import { configureGlobalMomentLocale } from "obsidian-calendar-ui";
 import type { ILocaleOverride, IWeekStartOption } from "obsidian-calendar-ui";
 
 import {
@@ -103,6 +104,14 @@ export class CalendarSettingsTab extends PluginSettingTab {
 
   display(): void {
     this.containerEl.empty();
+
+    // Ensure window._bundledLocaleWeekSpec is initialized before
+    // addWeekStartSetting reads it. Normally Calendar.svelte's getToday()
+    // does this, but the user can open settings before the view mounts.
+    configureGlobalMomentLocale(
+      this.plugin.options.localeOverride,
+      this.plugin.options.weekStart
+    );
 
     this.containerEl.createEl("h3", {
       text: "General Settings",
