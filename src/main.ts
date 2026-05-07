@@ -19,7 +19,6 @@ declare global {
 
 export default class CalendarPlugin extends Plugin {
   public options: ISettings;
-  private view: CalendarView;
 
   onunload(): void {
     this.app.workspace
@@ -36,7 +35,7 @@ export default class CalendarPlugin extends Plugin {
 
     this.registerView(
       VIEW_TYPE_CALENDAR,
-      (leaf: WorkspaceLeaf) => (this.view = new CalendarView(leaf))
+      (leaf: WorkspaceLeaf) => new CalendarView(leaf)
     );
 
     this.addRibbonIcon("calendar-with-checkmark", "Open Calendar Plus", () => {
@@ -68,14 +67,22 @@ export default class CalendarPlugin extends Plugin {
         if (checking) {
           return this.options.weekly.enabled;
         }
-        this.view.openOrCreateWeeklyNote(window.moment(), false);
+        // Mount the calendar view if needed, then open the weekly note on the
+        // freshly-mounted view. Fire-and-forget; no-op if no view can be made.
+        void this.ensureCalendarView().then((view) => {
+          view?.openOrCreateWeeklyNote(window.moment(), false);
+        });
       },
     });
 
     this.addCommand({
       id: "reveal-active-note",
       name: "Reveal active note",
-      callback: () => this.view.revealActiveNote(),
+      callback: () => {
+        // Don't auto-create — if the user closed the calendar, there's nothing
+        // to reveal the note on. Look up the live view fresh each invocation.
+        this.getCalendarView()?.revealActiveNote();
+      },
     });
 
     await this.loadOptions();
@@ -98,6 +105,21 @@ export default class CalendarPlugin extends Plugin {
     this.app.workspace.getRightLeaf(false).setViewState({
       type: VIEW_TYPE_CALENDAR,
     });
+  }
+
+  private getCalendarView(): CalendarView | null {
+    const leaf = this.app.workspace.getLeavesOfType(VIEW_TYPE_CALENDAR)[0];
+    if (!leaf) return null;
+    return leaf.view instanceof CalendarView ? leaf.view : null;
+  }
+
+  private async ensureCalendarView(): Promise<CalendarView | null> {
+    const existing = this.getCalendarView();
+    if (existing) return existing;
+    const right = this.app.workspace.getRightLeaf(false);
+    if (!right) return null;
+    await right.setViewState({ type: VIEW_TYPE_CALENDAR });
+    return this.getCalendarView();
   }
 
   async loadOptions(): Promise<void> {
