@@ -21,7 +21,7 @@ import {
   dailyNotes,
   weeklyNotes,
   monthlyNotes,
-  quarterlyNotes, // Added quarterlyNotes
+  quarterlyNotes,
   yearlyNotes,
   settings,
 } from "./ui/stores";
@@ -38,7 +38,7 @@ export default class CalendarView extends ItemView {
     this.openOrCreateWeeklyNote = this.openOrCreateWeeklyNote.bind(this);
     this.openOrCreateMonthlyNote = this.openOrCreateMonthlyNote.bind(this);
     this.openOrCreateYearlyNote = this.openOrCreateYearlyNote.bind(this);
-    this.openOrCreateQuarterlyNote = this.openOrCreateQuarterlyNote.bind(this); // Added binding
+    this.openOrCreateQuarterlyNote = this.openOrCreateQuarterlyNote.bind(this);
 
     this.onFileCreated = this.onFileCreated.bind(this);
     this.onFileDeleted = this.onFileDeleted.bind(this);
@@ -49,13 +49,13 @@ export default class CalendarView extends ItemView {
     this.onHoverWeek = this.onHoverWeek.bind(this);
     this.onHoverMonth = this.onHoverMonth.bind(this);
     this.onHoverYear = this.onHoverYear.bind(this);
-    this.onHoverQuarter = this.onHoverQuarter.bind(this); // Added binding
+    this.onHoverQuarter = this.onHoverQuarter.bind(this);
 
     this.onContextMenuDay = this.onContextMenuDay.bind(this);
     this.onContextMenuWeek = this.onContextMenuWeek.bind(this);
     this.onContextMenuMonth = this.onContextMenuMonth.bind(this);
     this.onContextMenuYear = this.onContextMenuYear.bind(this);
-    this.onContextMenuQuarter = this.onContextMenuQuarter.bind(this); // Added binding
+    this.onContextMenuQuarter = this.onContextMenuQuarter.bind(this);
 
     this.registerEvent(this.app.vault.on("create", this.onFileCreated));
     this.registerEvent(this.app.vault.on("delete", this.onFileDeleted));
@@ -96,8 +96,8 @@ export default class CalendarView extends ItemView {
   }
 
   async onOpen(): Promise<void> {
-    // Integration point: external plugins can listen for `calendar:open`
-    // to feed in additional sources.
+    // Integration point: external plugins can listen for `calendar-plus:open`
+    // (TRIGGER_ON_OPEN) to feed in additional sources.
     const sources = [customTagsSource, streakSource];
     this.app.workspace.trigger(TRIGGER_ON_OPEN, sources);
 
