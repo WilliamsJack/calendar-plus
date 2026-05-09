@@ -148,6 +148,7 @@ export abstract class TextInputSuggest<T> implements ISuggestOwner<T> {
     (<any>this.app).keymap.pushScope(this.scope);
 
     container.appendChild(this.suggestEl);
+    this.popper?.destroy();
     this.popper = createPopper(inputEl, this.suggestEl, {
       placement: "bottom-start",
       modifiers: [
