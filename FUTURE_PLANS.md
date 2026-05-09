@@ -49,22 +49,6 @@ Consider migrating the settings tab to Svelte in a future branch. Potential bene
 
 Not needed for the current stable baseline; the per-section re-render approach already works well.
 
-## Optional: autocomplete lifecycle cleanup
-
-Review `src/ui/suggest.ts`. The final review noted that `open()` may create a new Popper instance on every input event without destroying the previous one. Either early-return when `this.popper` already exists, or `this.popper?.destroy()` before reassigning. Inherited from the periodic-notes upstream — same bug exists there.
-
-## Optional: replace Popper-based autocomplete with no-Popper port from Daily Time Tracker
-
-Calendar Plus currently uses `@popperjs/core` for the folder/template autocomplete in settings (`src/ui/suggest.ts`, `src/ui/file-suggest.ts`). That implementation was copied/adapted from Periodic Notes.
-
-The Daily Time Tracker plugin has a simpler autocomplete implementation that works well without `@popperjs/core`. A future cleanup pass should audit that approach and potentially port it into Calendar Plus.
-
-Goals:
-- Remove the `@popperjs/core` dependency from `package.json` / `package-lock.json`.
-- Reduce dependency weight and avoid Popper lifecycle complexity (positioning, instance reuse, destroy).
-- Preserve folder and template path suggestions in the settings tab.
-- Would supersede the "autocomplete lifecycle cleanup" item above — no Popper, no popper leak to fix.
-
 ## Optional: active-file correctness for monthly / quarterly / yearly
 
 `getDateUIDFromFile` (`src/ui/utils.ts`) currently only checks daily and weekly periodicities. If a future UI change adds active-state highlighting for month / quarter / year cells, extend the function to detect those file types as well. No visible regression today because the underlying calendar UI doesn't render an active state for those cells.
