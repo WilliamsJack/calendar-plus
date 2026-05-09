@@ -7,8 +7,6 @@
   export let incrementDisplayedMonth: () => void;
   export let decrementDisplayedMonth: () => void;
   export let quarterVisible: boolean;
-  export let onClickDay: (date: Moment, isMetaPressed: boolean) => boolean;
-  export let onClickWeek: (date: Moment, isMetaPressed: boolean) => boolean;
   export let onClickMonth: (date: Moment, isMetaPressed: boolean) => boolean;
   export let onClickYear: (date: Moment, isMetaPressed: boolean) => boolean;
   export let onClickQuarter: (date: Moment, isMetaPressed: boolean) => boolean;
