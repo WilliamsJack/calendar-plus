@@ -1,182 +1,152 @@
-import { App, ISuggestOwner, Scope } from "obsidian";
-import { createPopper, Instance as PopperInstance } from "@popperjs/core";
+import { App, Scope } from "obsidian";
 
-const wrapAround = (value: number, size: number): number => {
-  return ((value % size) + size) % size;
-};
+// Lightweight folder/file autocomplete for text inputs in the settings tab.
+// Ported from the Daily Checklist plugin's no-Popper autocomplete. Visual
+// styling is inherited from Obsidian's native .suggestion-container /
+// .suggestion-item / .is-selected classes; .calendar-plus-suggest in
+// styles.css adds bounded height + z-index. Position is set inline at
+// runtime so the dropdown matches the input's bounding rect.
 
-class Suggest<T> {
-  private owner: ISuggestOwner<T>;
-  private values: T[];
-  private suggestions: HTMLDivElement[];
-  private selectedItem: number;
-  private containerEl: HTMLElement;
-
-  constructor(owner: ISuggestOwner<T>, containerEl: HTMLElement, scope: Scope) {
-    this.owner = owner;
-    this.containerEl = containerEl;
-
-    containerEl.on(
-      "click",
-      ".suggestion-item",
-      this.onSuggestionClick.bind(this)
-    );
-    containerEl.on(
-      "mousemove",
-      ".suggestion-item",
-      this.onSuggestionMouseover.bind(this)
-    );
-
-    scope.register([], "ArrowUp", (event) => {
-      if (!event.isComposing) {
-        this.setSelectedItem(this.selectedItem - 1, true);
-        return false;
-      }
-    });
-
-    scope.register([], "ArrowDown", (event) => {
-      if (!event.isComposing) {
-        this.setSelectedItem(this.selectedItem + 1, true);
-        return false;
-      }
-    });
-
-    scope.register([], "Enter", (event) => {
-      if (!event.isComposing) {
-        this.useSelectedItem(event);
-        return false;
-      }
-    });
-  }
-
-  onSuggestionClick(event: MouseEvent, el: HTMLDivElement): void {
-    event.preventDefault();
-
-    const item = this.suggestions.indexOf(el);
-    this.setSelectedItem(item, false);
-    this.useSelectedItem(event);
-  }
-
-  onSuggestionMouseover(_event: MouseEvent, el: HTMLDivElement): void {
-    const item = this.suggestions.indexOf(el);
-    this.setSelectedItem(item, false);
-  }
-
-  setSuggestions(values: T[]) {
-    this.containerEl.empty();
-    const suggestionEls: HTMLDivElement[] = [];
-
-    values.forEach((value) => {
-      const suggestionEl = this.containerEl.createDiv("suggestion-item");
-      this.owner.renderSuggestion(value, suggestionEl);
-      suggestionEls.push(suggestionEl);
-    });
-
-    this.values = values;
-    this.suggestions = suggestionEls;
-    this.setSelectedItem(0, false);
-  }
-
-  useSelectedItem(event: MouseEvent | KeyboardEvent) {
-    const currentValue = this.values[this.selectedItem];
-    if (currentValue) {
-      this.owner.selectSuggestion(currentValue, event);
-    }
-  }
-
-  setSelectedItem(selectedIndex: number, scrollIntoView: boolean) {
-    const normalizedIndex = wrapAround(selectedIndex, this.suggestions.length);
-    const prevSelectedSuggestion = this.suggestions[this.selectedItem];
-    const selectedSuggestion = this.suggestions[normalizedIndex];
-
-    prevSelectedSuggestion?.removeClass("is-selected");
-    selectedSuggestion?.addClass("is-selected");
-
-    this.selectedItem = normalizedIndex;
-
-    if (scrollIntoView) {
-      selectedSuggestion.scrollIntoView(false);
-    }
-  }
-}
-
-export abstract class TextInputSuggest<T> implements ISuggestOwner<T> {
+export abstract class TextInputSuggest<T> {
   protected app: App;
   protected inputEl: HTMLInputElement;
 
-  private popper: PopperInstance;
+  private suggestEl: HTMLDivElement;
+  private listEl: HTMLDivElement;
+  private suggestionEls: HTMLDivElement[] = [];
+  private values: T[] = [];
+  private selectedIdx = 0;
+  private isOpen = false;
   private scope: Scope;
-  private suggestEl: HTMLElement;
-  private suggest: Suggest<T>;
+  private repositionListener: () => void;
+  private blurTimeout: number | null = null;
 
   constructor(app: App, inputEl: HTMLInputElement) {
     this.app = app;
     this.inputEl = inputEl;
+
     this.scope = new Scope();
+    this.scope.register([], "ArrowDown", (e) => {
+      if (e.isComposing) return;
+      this.setSelected(this.selectedIdx + 1, true);
+      return false;
+    });
+    this.scope.register([], "ArrowUp", (e) => {
+      if (e.isComposing) return;
+      this.setSelected(this.selectedIdx - 1, true);
+      return false;
+    });
+    this.scope.register([], "Enter", (e) => {
+      if (e.isComposing) return;
+      this.commit();
+      return false;
+    });
+    this.scope.register([], "Escape", () => {
+      this.close();
+      return false;
+    });
 
-    this.suggestEl = createDiv("suggestion-container");
-    const suggestion = this.suggestEl.createDiv("suggestion");
-    this.suggest = new Suggest(this, suggestion, this.scope);
+    this.suggestEl = createDiv({ cls: "suggestion-container calendar-plus-suggest" });
+    this.listEl = this.suggestEl.createDiv({ cls: "suggestion" });
 
-    this.scope.register([], "Escape", this.close.bind(this));
+    this.inputEl.addEventListener("input", () => this.onInputChanged());
+    this.inputEl.addEventListener("focus", () => this.onInputChanged());
+    this.inputEl.addEventListener("blur", () => {
+      // Short delay so a click on a suggestion item lands before we close.
+      if (this.blurTimeout !== null) window.clearTimeout(this.blurTimeout);
+      this.blurTimeout = window.setTimeout(() => this.close(), 100);
+    });
+    this.suggestEl.addEventListener("mousedown", (e) => e.preventDefault());
 
-    this.inputEl.addEventListener("input", this.onInputChanged.bind(this));
-    this.inputEl.addEventListener("focus", this.onInputChanged.bind(this));
-    this.inputEl.addEventListener("blur", this.close.bind(this));
-    this.suggestEl.on(
-      "mousedown",
-      ".suggestion-container",
-      (event: MouseEvent) => {
-        event.preventDefault();
-      }
-    );
+    // Listeners are attached on open() and detached on close() so they don't
+    // leak each time the settings tab is reopened.
+    this.repositionListener = () => this.position();
   }
 
-  onInputChanged(): void {
-    const inputStr = this.inputEl.value;
-    const suggestions = this.getSuggestions(inputStr);
-
-    if (suggestions.length > 0) {
-      this.suggest.setSuggestions(suggestions);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      this.open((<any>this.app).dom.appContainerEl, this.inputEl);
+  private onInputChanged(): void {
+    const values = this.getSuggestions(this.inputEl.value);
+    if (values.length === 0) {
+      this.close();
+      return;
     }
+    this.values = values;
+    this.renderAll();
+    this.open();
+    this.setSelected(0, false);
   }
 
-  open(container: HTMLElement, inputEl: HTMLElement): void {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (<any>this.app).keymap.pushScope(this.scope);
-
-    container.appendChild(this.suggestEl);
-    this.popper?.destroy();
-    this.popper = createPopper(inputEl, this.suggestEl, {
-      placement: "bottom-start",
-      modifiers: [
-        {
-          name: "sameWidth",
-          enabled: true,
-          fn: ({ state, instance }) => {
-            const targetWidth = `${state.rects.reference.width}px`;
-            if (state.styles.popper.width === targetWidth) {
-              return;
-            }
-            state.styles.popper.width = targetWidth;
-            instance.update();
-          },
-          phase: "beforeWrite",
-          requires: ["computeStyles"],
-        },
-      ],
+  private renderAll(): void {
+    this.listEl.empty();
+    this.suggestionEls = this.values.map((value) => {
+      const el = this.listEl.createDiv({ cls: "suggestion-item" });
+      this.renderSuggestion(value, el);
+      el.addEventListener("click", (e) => {
+        e.preventDefault();
+        const idx = this.suggestionEls.indexOf(el);
+        if (idx === -1) return;
+        this.selectedIdx = idx;
+        this.commit();
+      });
+      el.addEventListener("mousemove", () => {
+        const idx = this.suggestionEls.indexOf(el);
+        if (idx !== -1) this.setSelected(idx, false);
+      });
+      return el;
     });
   }
 
-  close(): void {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (<any>this.app).keymap.popScope(this.scope);
+  private setSelected(idx: number, scrollIntoView: boolean): void {
+    if (this.suggestionEls.length === 0) return;
+    const n = this.suggestionEls.length;
+    const norm = ((idx % n) + n) % n;
+    this.suggestionEls[this.selectedIdx]?.removeClass("is-selected");
+    const next = this.suggestionEls[norm];
+    next?.addClass("is-selected");
+    if (scrollIntoView) next?.scrollIntoView({ block: "nearest" });
+    this.selectedIdx = norm;
+  }
 
-    this.suggest.setSuggestions([]);
-    this.popper?.destroy();
+  private commit(): void {
+    const value = this.values[this.selectedIdx];
+    if (value !== undefined) this.selectSuggestion(value);
+    this.close();
+  }
+
+  private position(): void {
+    const rect = this.inputEl.getBoundingClientRect();
+    const style = this.suggestEl.style;
+    style.position = "fixed";
+    style.left = `${rect.left}px`;
+    style.top = `${rect.bottom + 2}px`;
+    style.width = `${rect.width}px`;
+  }
+
+  private open(): void {
+    if (this.isOpen) {
+      this.position();
+      return;
+    }
+    document.body.appendChild(this.suggestEl);
+    this.position();
+    window.addEventListener("scroll", this.repositionListener, true);
+    window.addEventListener("resize", this.repositionListener);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (this.app as any).keymap?.pushScope?.(this.scope);
+    this.isOpen = true;
+  }
+
+  close(): void {
+    if (this.blurTimeout !== null) {
+      window.clearTimeout(this.blurTimeout);
+      this.blurTimeout = null;
+    }
+    if (!this.isOpen) return;
+    window.removeEventListener("scroll", this.repositionListener, true);
+    window.removeEventListener("resize", this.repositionListener);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (this.app as any).keymap?.popScope?.(this.scope);
     this.suggestEl.detach();
+    this.isOpen = false;
   }
 
   abstract getSuggestions(inputStr: string): T[];
