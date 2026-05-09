@@ -30,7 +30,7 @@ Read this before making changes. It captures project state, intentional decision
 - **Stores** (`src/ui/stores.ts`): module-level Svelte writables for `settings`, `dailyNotes`, `weeklyNotes`, `monthlyNotes`, `quarterlyNotes`, `yearlyNotes`, `activeFile`. Each per-period store has a `reindex()` method that rescans the configured folder.
 - **View / lifecycle** (`src/view.ts`): `CalendarView` extends `ItemView`. Owns the Svelte `Calendar` component, vault file events, settings subscription (registered via `this.register(...)` so it cleans up on view detach), and the periodic-note open/create methods.
 - **Plugin registration / commands** (`src/main.ts`): `CalendarPlugin` extends `Plugin`. Registers the view, ribbon icon, and three commands (`show-calendar-view`, `open-weekly-note`, `reveal-active-note`). Commands look up the live view fresh via `getCalendarView()` / `ensureCalendarView()` helpers — no stale `this.view` reference.
-- **Calendar UI**: comes from the `obsidian-calendar-ui` npm package (v0.3.12), shipped with a substantial `patch-package` patch (`patches/obsidian-calendar-ui+0.3.12.patch`) that adds quarter navigation, click handlers, and other features. CSS overrides in `styles.css` adjust styling that can't be addressed in the patched library.
+- **Calendar UI**: vendored under `src/ui/calendar-ui/` (`components/*.svelte` plus `localization.ts`, `metadata.ts`, `types.ts`, `utils.ts`). Origin: the patched `obsidian-calendar-ui` 0.3.12 source (the patch added quarter navigation, clickable month/year/quarter labels, weekend col classes, and week-num grid borders + active state). The npm dependency and the `patches/obsidian-calendar-ui+0.3.12.patch` file have been removed. `Day.svelte` and `WeekNum.svelte` use the local `getDateUID` from `src/io/periodicNoteHelpers` (with `"daily"` / `"weekly"` periodicity) instead of `obsidian-daily-notes-interface`, which is no longer a transitive dep. CSS overrides in `styles.css` still scoped via `.calendar-plus-wrapper #calendar-container` selectors — moving component-internal rules into the vendored `<style>` blocks is deferred (see `FUTURE_PLANS.md`).
 - **Autocomplete** (`src/ui/suggest.ts`, `src/ui/file-suggest.ts`): folder/template path autocomplete in settings, ported from periodic-notes' suggest implementation, depends on `@popperjs/core`.
 
 ## Important implementation notes
@@ -67,7 +67,7 @@ These are catalogued in `FUTURE_PLANS.md`. Highlights:
 - `.github/workflows/` has two near-duplicate release workflows with stale `PLUGIN_NAME` env values.
 - `.github/FUNDING.yml` still funds the upstream author.
 - Test scaffolding (`src/testUtils/`, `src/ui/__mocks__/obsidian.ts`, jest config in `package.json`) is dead — no tests exist. `getDefaultSettings` doesn't even return a valid `ISettings`.
-- `obsidian-calendar-ui` is still a heavy dependency carrying a 399KB patch and several CSS overrides scoped via `.calendar-plus-wrapper #calendar-container` selectors.
+- `styles.css` still carries overrides scoped via `.calendar-plus-wrapper #calendar-container` selectors. Some are component-internal and could move into the vendored components' `<style>` blocks; others depend on wrapper-state classes (`daily-enabled`, `monthly-enabled`, etc.) and must stay in `styles.css`.
 - `src/ui/suggest.ts` Popper instance may leak per keystroke (inherited from periodic-notes upstream).
 
 None of the above blocks shipping.
@@ -76,7 +76,7 @@ None of the above blocks shipping.
 
 See `FUTURE_PLANS.md` for full descriptions. Short list:
 
-- **Vendor `obsidian-calendar-ui` into Calendar Plus** in a future branch — would let us own UI source/styles/interactions directly and drop the patch + most CSS overrides.
+- **Move component-internal CSS overrides** from `styles.css` into the vendored components' `<style>` blocks. Wrapper-state-dependent rules (`.daily-enabled`, `.monthly-enabled`, etc.) must stay in `styles.css`.
 - **README refresh** — strip removed-feature copy, refresh setting names and identity strings.
 - **CI/release workflow cleanup** — consolidate to one workflow, fix `PLUGIN_NAME` to `calendar-plus`.
 - **Funding metadata cleanup** — update `.github/FUNDING.yml`.

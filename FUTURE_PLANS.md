@@ -2,19 +2,24 @@
 
 Non-blocking items deferred from the 1.6.0 final review. None are required for the current stable baseline.
 
-## Vendor calendar UI
+## Move component-internal CSS overrides into vendored components
 
-Calendar Plus currently uses the obsidian-calendar-ui package for the core calendar UI. A future cleanup pass should vendor that UI into Calendar Plus directly so the plugin owns the calendar source, styles, and interaction behavior without relying on dependency patches or CSS overrides.
+The calendar UI is now vendored under `src/ui/calendar-ui/` and `obsidian-calendar-ui` + its patch have been removed. `styles.css` still carries overrides scoped via `.calendar-plus-wrapper #calendar-container` selectors. A future cleanup pass should move component-internal rules into the vendored components' `<style>` blocks so the override prefix is no longer needed for those rules.
 
-Goals:
-- Remove the obsidian-calendar-ui dependency if possible.
-- Remove or reduce the patch-package patch for obsidian-calendar-ui.
-- Replace Calendar Plus CSS overrides with direct source-level styles where appropriate.
-- Preserve current Calendar Plus behavior exactly during the refactor.
+Candidates to move (single-component concerns):
+- `.week-num { font-size: 0.8em }` → `WeekNum.svelte`.
+- `.week-num .dot-container { ... min-height: 6px }` → `WeekNum.svelte` (parity with the dot-container already styled in `Day.svelte`).
+- `.reset-button:hover { opacity: 0.7 }` → `Nav.svelte`.
+- `.arrow:hover { opacity: 0.7 }` → `Arrow.svelte`.
+- `--color-background-weekend: var(--color-base-25)` default → `Calendar.svelte` `.container`.
+- `#calendar-container { user-select: none }` → `Calendar.svelte` `.container`.
+- `.day:active:not(.active) { background-color: var(--color-background-day) }` → `Day.svelte` (suppresses the upstream `.day:active` selector).
 
-Notes:
-- This should be done in a separate future branch.
-- Do not combine it with bug fixes or user-facing feature work.
+Must stay in `styles.css` (depend on wrapper-state classes set by the outer `Calendar.svelte`):
+- Disabled-state cursor / hover suppression for day cells (`:not(.daily-enabled) .day { cursor: default; ... }`).
+- Cursor + hover gating for `.month` / `.year` / `.quarter` based on `.monthly-enabled` / `.yearly-enabled` / `.quarterly-enabled`.
+
+Goal: visually identical output; render-DOM diff should be empty after the refactor.
 
 ## README refresh
 
