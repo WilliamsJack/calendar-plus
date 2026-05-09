@@ -1,6 +1,6 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
-import { configureGlobalMomentLocale } from "obsidian-calendar-ui";
-import type { ILocaleOverride, IWeekStartOption } from "obsidian-calendar-ui";
+import { configureGlobalMomentLocale } from "src/ui/calendar-ui/localization";
+import type { ILocaleOverride, IWeekStartOption } from "src/ui/calendar-ui/localization";
 
 import {
   DEFAULT_DAILY_NOTE_FORMAT,
