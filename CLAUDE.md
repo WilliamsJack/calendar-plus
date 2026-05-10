@@ -83,6 +83,26 @@ See `FUTURE_PLANS.md` for full descriptions. Short list:
 - **Optional: extend `getDateUIDFromFile`** to monthly/quarterly/yearly when active-file highlighting needs it.
 - **Optional: midnight rollover fix** in `Calendar.svelte` (`isSame(today, "day")` → `"month"`).
 
+## Release prep
+
+When the user explicitly asks to bump the plugin version, treat the changelog as part of the same release-prep task unless the user says otherwise. Update these five files together in the same commit:
+
+- `manifest.json` — `version`
+- `package.json` — `version`
+- `package-lock.json` — both `version` fields (top-level + the root `packages[""]` entry)
+- `versions.json` — add `"<new-version>": "<minAppVersion>"`
+- `CHANGELOG.md` — add a `## <new-version>` section at the top, summarizing user-facing changes, major refactors, dependency removals, and notable bug fixes since the previous version
+
+Changelog content guidance:
+- Lead with what the user will notice. Group related items under short headings if the section is long (see the 1.6.0 entry as a template).
+- Mention dependency additions/removals and architectural refactors when they're release-significant, even if user-invisible — future-you will want the context.
+- Skip implementation paths and internal symbol names unless they aid debugging.
+
+Proposing version bumps:
+- For major user-facing features, major refactors, dependency changes, or other release-significant cleanup, mention in your plan whether a changelog entry and version bump are warranted, and flag the proposed version (major / minor / patch) so the user can confirm.
+- For small fixes, do not silently invent a new version number or changelog entry. Ask, or flag the bump as optional if unclear.
+- Do not commit the version bump unless the user explicitly asks.
+
 ## Suggested workflow for future Claude sessions
 
 1. **Read this file first.** Then read `FUTURE_PLANS.md` if the user's request touches deferred work.
