@@ -149,7 +149,7 @@
     --color-background-heading: transparent;
     --color-background-day: transparent;
     --color-background-weeknum: transparent;
-    --color-background-weekend: transparent;
+    --color-background-weekend: var(--color-base-25);
 
     --color-dot: var(--text-muted);
     --color-arrow: var(--text-muted);
@@ -164,6 +164,7 @@
 
   .container {
     padding: 0 8px;
+    user-select: none;
   }
 
   .container.is-mobile {

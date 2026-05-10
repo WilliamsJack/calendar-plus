@@ -1,13 +1,3 @@
-/* Disable text selection drag highlighting across all calendar cells */
-.calendar-plus-wrapper #calendar-container {
-  user-select: none;
-}
-
-/* Subtle weekend column shading */
-.calendar-plus-wrapper #calendar-container {
-  --color-background-weekend: var(--color-base-25);
-}
-
 /* When daily notes disabled: no pointer cursor or hover background on day
    cells. The :not(.active) exception preserves the purple resting background
    on the active-file cell (which can persist after toggling daily off, since
