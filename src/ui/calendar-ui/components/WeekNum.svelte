@@ -64,7 +64,7 @@
     border-radius: 4px;
     color: var(--color-text-weeknum);
     cursor: pointer;
-    font-size: 0.65em;
+    font-size: 0.8em;
     height: 100%;
     padding: 4px;
     text-align: center;
@@ -76,6 +76,15 @@
 
   .week-num:hover {
     background-color: var(--interactive-hover);
+  }
+
+  /* Reserve consistent space so week numbers don't shift vertically when a
+     weekly-note dot appears or disappears. */
+  .dot-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    min-height: 6px;
   }
 
   th {

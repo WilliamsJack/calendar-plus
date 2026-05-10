@@ -1,8 +1,3 @@
-/* Match week-number font size to day-number font size (library sets 0.65em vs 0.8em) */
-.calendar-plus-wrapper #calendar-container .week-num {
-  font-size: 0.8em;
-}
-
 /* Disable text selection drag highlighting across all calendar cells */
 .calendar-plus-wrapper #calendar-container {
   user-select: none;
@@ -37,16 +32,6 @@
    so the press color override above doesn't flicker today's text to default. */
 .calendar-plus-wrapper:not(.daily-enabled) #calendar-container .day.today:not(.active):active {
   color: var(--color-text-today);
-}
-
-/* Fix weekly dot-container: WeekNum.svelte has no scoped dot-container CSS, so its
-   dot-container collapses to 0px when empty and jumps to 6px when a dot appears.
-   This reserves consistent space so week numbers do not shift position. */
-.calendar-plus-wrapper #calendar-container .week-num .dot-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  min-height: 6px;
 }
 
 /* Subtle opacity hover for the TODAY button and the prev/next month arrows */
