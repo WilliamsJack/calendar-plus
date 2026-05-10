@@ -107,13 +107,9 @@ Enable **Weekly notes** in the Calendar Plus settings (Settings → Calendar Plu
 
 Just like other sidebar views (e.g. Backlinks, Outline), the calendar view can be closed by right-clicking on the view icon.
 
-![how-to-close](./images/how-to-close.png)
-
 ### I accidentally closed the calendar. How do I reopen it?
 
 If you close the calendar widget (right-clicking on the panel nav and clicking close), you can always reopen the view from the Command Palette. Just search for `Calendar Plus: Open view`.
-
-![how-to-reopen](./images/how-to-reopen.png)
 
 ### How do I have the calendar start on Monday?
 
@@ -153,8 +149,6 @@ Just like the Obsidian's graph and internal links, the calendar supports page pr
 
 Just because the calendar appears in the right sidebar doesn't mean it has to stay there. Feel free to drag it to the left sidebar, or (if you have the screen real estate for it) into the main content area. If you move it out of the sidebar, the view can even be pinned; great for more advanced tile layouts!
 
-![how-to-pin](./images/how-to-pin.png)
-
 ### Open daily notes in a new split
 
 If you `Ctrl/Command`-Click on a note in your calendar, it will open daily note in a new split. Useful if you want to open a bunch of daily notes in a row (especially if you have the **Sliding Panes** plugin enabled!)
@@ -166,8 +160,6 @@ If you open a note from a different month, you might want to see it on the calen
 ### Add custom styling for weekends
 
 If you want to style weekends to be distinguishable from weekdays, you can set the `var(--color-background-weekend)` to be any color you want.
-
-![how-to-weekend](./images/how-to-weekend.png)
 
 ### Weekly Notes
 

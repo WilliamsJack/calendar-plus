@@ -3,4 +3,5 @@ dist/
 data.json
 main.js
 .vscode/
-*.code-workspace.DS_Store
+*.code-workspace
+.DS_Store
