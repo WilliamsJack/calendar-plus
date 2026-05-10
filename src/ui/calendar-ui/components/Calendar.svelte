@@ -91,13 +91,13 @@
     <thead>
       <tr>
         {#if showWeekNums && !showWeekNumsRight}
-          <th>W</th>
+          <th class="week-num-heading">W</th>
         {/if}
         {#each daysOfWeek as dayOfWeek}
           <th>{dayOfWeek}</th>
         {/each}
         {#if showWeekNums && showWeekNumsRight}
-          <th>W</th>
+          <th class="week-num-heading">W</th>
         {/if}
       </tr>
     </thead>
@@ -180,7 +180,12 @@
 
   .calendar {
     border-collapse: collapse;
+    table-layout: fixed;
     width: 100%;
+  }
+
+  .week-num-heading {
+    width: 10%;
   }
 
   th {
