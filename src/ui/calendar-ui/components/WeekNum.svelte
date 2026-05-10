@@ -78,6 +78,15 @@
     background-color: var(--interactive-hover);
   }
 
+  .week-num.active {
+    color: var(--text-on-accent);
+    background-color: var(--interactive-accent);
+  }
+
+  .week-num.active:hover {
+    background-color: var(--interactive-accent-hover);
+  }
+
   /* Reserve consistent space so week numbers don't shift vertically when a
      weekly-note dot appears or disappears. */
   .dot-container {
