@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.7.2
+
+Focus: visual polish and CSS cleanup release on top of 1.7.1.
+
+Calendar UI
+- Centered the TODAY button vertically between the previous/next navigation arrows.
+- Added the purple active-background treatment to active weekly notes — the active week-number cell now matches the active-daily-note styling instead of looking the same as a non-active cell.
+- Removed the vertical divider on the left of the week-number column when it's shown on the right side. The left-side placement still shows its right-edge divider.
+
+Internal / repo
+- Moved component-owned CSS rules out of `styles.css` and into the vendored calendar components' `<style>` blocks (week-num font size and dot-container reservation into `WeekNum.svelte`; container `user-select: none` and the weekend column shading default into `Calendar.svelte`; TODAY and arrow hover dim into `Nav.svelte` and `Arrow.svelte`). `styles.css` now contains only wrapper-state-dependent rules (gated on `.daily-enabled`/`.monthly-enabled`/etc.) and the settings autocomplete dropdown rule.
+- No user-visible change from the CSS migration — visual output is identical to 1.7.1.
+
 ## 1.7.1
 
 Focus: bug-fix and polish release on top of 1.7.0.
