@@ -8,7 +8,8 @@ Read this before making changes. It captures project state, intentional decision
 - Intentionally a **separate** plugin from the original Calendar plugin — both can be installed and enabled simultaneously.
 - Plugin id: `calendar-plus`
 - User-facing name: `Calendar Plus`
-- Current version: `1.6.0` (kept in sync across `manifest.json`, `package.json`, `package-lock.json`, `versions.json`)
+- Current version: `1.7.0` (kept in sync across `manifest.json`, `package.json`, `package-lock.json`, `versions.json`)
+- **Active branch is `main`.** Calendar Plus 1.7.0 is the current stable local baseline and lives on `main`. Earlier sessions worked on a `merge-periodic-notes` branch that has since been promoted to `main` — that name is no longer the working branch. If a branch named `old-main` exists, treat it as archival/reference only (the pre-merge upstream state); do not commit to it or use it as a base for new work.
 
 ## Important product decisions
 
