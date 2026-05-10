@@ -13,17 +13,30 @@
   --color-background-weekend: var(--color-base-25);
 }
 
-/* When daily notes disabled: no pointer cursor or hover background on day cells */
+/* When daily notes disabled: no pointer cursor or hover background on day
+   cells. The :not(.active) exception preserves the purple resting background
+   on the active-file cell (which can persist after toggling daily off, since
+   the active-file UID isn't recomputed on settings change). */
 .calendar-plus-wrapper:not(.daily-enabled) #calendar-container .day {
   cursor: default;
 }
-.calendar-plus-wrapper:not(.daily-enabled) #calendar-container .day:hover {
+.calendar-plus-wrapper:not(.daily-enabled) #calendar-container .day:not(.active):hover {
   background-color: var(--color-background-day);
 }
 
-/* Suppress transient purple :active flash on day cells during click-drag */
-.calendar-plus-wrapper #calendar-container .day:active:not(.active) {
+/* When daily notes disabled: also suppress the :active press background +
+   text color so day cells don't flash purple on click-and-hold. The vendored
+   Day.svelte :active rule sets both background-color and color, so we
+   override both. Same .active exception as above. */
+.calendar-plus-wrapper:not(.daily-enabled) #calendar-container .day:not(.active):active {
   background-color: var(--color-background-day);
+  color: var(--color-text-day);
+}
+
+/* Re-apply .today's purple text color on press for non-active today cells,
+   so the press color override above doesn't flicker today's text to default. */
+.calendar-plus-wrapper:not(.daily-enabled) #calendar-container .day.today:not(.active):active {
+  color: var(--color-text-today);
 }
 
 /* Fix weekly dot-container: WeekNum.svelte has no scoped dot-container CSS, so its
