@@ -64,9 +64,6 @@ In rough order:
 
 These are catalogued in `FUTURE_PLANS.md`. Highlights:
 
-- README still has stale copy from upstream (word-count dots, "Show Week Numbers" toggle, identity strings).
-- `.github/workflows/` has two near-duplicate release workflows with stale `PLUGIN_NAME` env values.
-- `.github/FUNDING.yml` still funds the upstream author.
 - Test scaffolding (`src/testUtils/`, `src/ui/__mocks__/obsidian.ts`, jest config in `package.json`) is dead — no tests exist. `getDefaultSettings` doesn't even return a valid `ISettings`.
 - `styles.css` still carries overrides scoped via `.calendar-plus-wrapper #calendar-container` selectors. Some are component-internal and could move into the vendored components' `<style>` blocks; others depend on wrapper-state classes (`daily-enabled`, `monthly-enabled`, etc.) and must stay in `styles.css`.
 
@@ -77,9 +74,6 @@ None of the above blocks shipping.
 See `FUTURE_PLANS.md` for full descriptions. Short list:
 
 - **Move component-internal CSS overrides** from `styles.css` into the vendored components' `<style>` blocks. Wrapper-state-dependent rules (`.daily-enabled`, `.monthly-enabled`, etc.) must stay in `styles.css`.
-- **README refresh** — strip removed-feature copy, refresh setting names and identity strings.
-- **CI/release workflow cleanup** — consolidate to one workflow, fix `PLUGIN_NAME` to `calendar-plus`.
-- **Funding metadata cleanup** — update `.github/FUNDING.yml`.
 - **Optional: Svelte settings migration** — cleaner conditional UI, slide animations.
 - **Optional: extend `getDateUIDFromFile`** to monthly/quarterly/yearly when active-file highlighting needs it.
 - **Optional: midnight rollover fix** in `Calendar.svelte` (`isSame(today, "day")` → `"month"`).
