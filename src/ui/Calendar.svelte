@@ -46,7 +46,7 @@
   let heartbeat = setInterval(() => {
     tick();
 
-    const isViewingCurrentMonth = displayedMonth.isSame(today, "day");
+    const isViewingCurrentMonth = displayedMonth.isSame(today, "month");
     if (isViewingCurrentMonth) {
       // if it's midnight on the last day of the month, this will
       // update the display to show the new month.
