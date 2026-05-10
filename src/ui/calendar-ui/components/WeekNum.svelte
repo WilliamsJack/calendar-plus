@@ -31,7 +31,7 @@
   $: startOfWeek = getStartOfWeek(days);
 </script>
 
-<td class="{gridRight ? 'grid-right' : 'grid-left'}">
+<td class:grid-right={gridRight}>
   <MetadataResolver {metadata} let:metadata>
     <div
       class="{`week-num ${metadata.classes.join(' ')}`}"
@@ -54,9 +54,6 @@
 <style>
   td.grid-right {
     border-right: 1px solid var(--background-modifier-border);
-  }
-  td.grid-left {
-    border-left: 1px solid var(--background-modifier-border);
   }
 
   .week-num {
