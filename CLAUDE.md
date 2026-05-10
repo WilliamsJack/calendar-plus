@@ -8,8 +8,8 @@ Read this before making changes. It captures project state, intentional decision
 - Intentionally a **separate** plugin from the original Calendar plugin — both can be installed and enabled simultaneously.
 - Plugin id: `calendar-plus`
 - User-facing name: `Calendar Plus`
-- Current version: `1.7.0` (kept in sync across `manifest.json`, `package.json`, `package-lock.json`, `versions.json`)
-- **Active branch is `main`.** Calendar Plus 1.7.0 is the current stable local baseline and lives on `main`. Earlier sessions worked on a `merge-periodic-notes` branch that has since been promoted to `main` — that name is no longer the working branch. If a branch named `old-main` exists, treat it as archival/reference only (the pre-merge upstream state); do not commit to it or use it as a base for new work.
+- Current version: `1.7.1` (kept in sync across `manifest.json`, `package.json`, `package-lock.json`, `versions.json`)
+- **Active branch is `main`.** Calendar Plus 1.7.1 is the current stable local baseline and lives on `main`. Earlier sessions worked on a `merge-periodic-notes` branch that has since been promoted to `main` — that name is no longer the working branch. If a branch named `old-main` exists, treat it as archival/reference only (the pre-merge upstream state); do not commit to it or use it as a base for new work.
 
 ## Important product decisions
 
@@ -38,7 +38,7 @@ Read this before making changes. It captures project state, intentional decision
 
 - **Do not edit bundled `main.js` directly.** Always edit source under `src/` and run `npm run build`. The bundled file is a build artifact.
 - **Use npm**, not yarn. The lockfile of record is `package-lock.json`. `yarn.lock` exists in the repo for historical reasons — **do not touch `yarn.lock`**, and never let `npm install` modify it (it sometimes does as a side effect; revert if so).
-- **Baseline build warnings exist** from `svelte-check` (mappings.wasm) and TypeScript reading `node_modules/obsidian/obsidian.d.ts` and `obsidian-calendar-ui` declarations. These are pre-existing and unrelated to source changes. Don't chase them unless your edits actually involve those files.
+- **Baseline build warnings exist** from `svelte-check` (mappings.wasm fires once per `.svelte` file) and TypeScript reading `node_modules/obsidian/obsidian.d.ts` and `node_modules/@codemirror/view/dist/index.d.ts`. These are pre-existing and unrelated to source changes. Don't chase them unless your edits actually involve those files.
 - **Run `git status` before and after changes** so you can confirm the diff matches intent.
 - **Keep commits small and focused.** One logical change per commit. Each commit's diff should fit on a screen.
 - **Do not run `npm audit fix`.** It can rewrite the lockfile and break the patched dependency setup.
@@ -74,9 +74,10 @@ None of the above blocks shipping.
 See `FUTURE_PLANS.md` for full descriptions. Short list:
 
 - **Move component-internal CSS overrides** from `styles.css` into the vendored components' `<style>` blocks. Wrapper-state-dependent rules (`.daily-enabled`, `.monthly-enabled`, etc.) must stay in `styles.css`.
+- **Migrate deprecated Obsidian workspace APIs** (`activeLeaf`, `splitActiveLeaf`, `getUnpinnedLeaf`) in `view.ts` and the `io/{monthly,quarterly,yearly}Notes.ts` wrappers.
+- **Serialize rapid same-date note creation** to avoid the "file already exists" Notice on a fast double-click when confirm-before-create is off.
 - **Optional: Svelte settings migration** — cleaner conditional UI, slide animations.
 - **Optional: extend `getDateUIDFromFile`** to monthly/quarterly/yearly when active-file highlighting needs it.
-- **Optional: midnight rollover fix** in `Calendar.svelte` (`isSame(today, "day")` → `"month"`).
 
 ## Release prep
 

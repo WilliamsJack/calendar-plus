@@ -55,7 +55,7 @@
   opacity: 0.7;
 }
 
-/* Suppress cursor:pointer from obsidian-calendar-ui for disabled note types */
+/* Suppress cursor:pointer from the vendored calendar UI for disabled note types */
 .calendar-plus-wrapper #calendar-container .month,
 .calendar-plus-wrapper #calendar-container .year,
 .calendar-plus-wrapper #calendar-container .quarter {
