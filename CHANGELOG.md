@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.7.1
+
+Focus: bug-fix and polish release on top of 1.7.0.
+
+Calendar UI
+- Fixed the current-month rollover check so the calendar advances at midnight on the last day of the month. The heartbeat now compares `displayedMonth` and `today` by month instead of by day.
+- Restored the purple press feedback on day cells when Daily notes are enabled. Click-and-hold on a day now shows the same purple background + light text the original Calendar plugin showed; the feedback releases naturally on mouseup.
+- Fixed disabled-Daily-note day-cell interactions so hovering or pressing a day no longer removes the purple background of an active or today cell, and pressing a today cell no longer flickers its purple text to the default text color.
+- All seven day-of-week columns now render at identical widths, so day-cell hover, press, and active backgrounds are the same size across columns. The week-number column remains slightly narrower.
+
+Internal / repo
+- Modernized the GitHub release workflow: bumped checkout/setup-node to v4, switched to Node 20, replaced the archived release-asset actions with `softprops/action-gh-release@v2`, and dropped a redundant `npx patch-package` step.
+- Removed stale inherited README screenshots (`images/`) and the unused `TESTING.md` file. Fixed `.gitignore` so `.DS_Store` is now actually ignored.
+- Pruned completed cleanup items from `FUTURE_PLANS.md` and the `CLAUDE.md` known-issues list (README refresh, CI consolidation, funding metadata cleanup — all done in earlier work).
+
 ## 1.7.0
 
 Focus: internal cleanup and refactor release after the 1.6.0 feature baseline. No user-visible behavior changes — Calendar Plus should look and act exactly as it did in 1.6.0.
