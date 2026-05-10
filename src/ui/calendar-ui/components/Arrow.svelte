@@ -35,6 +35,10 @@
     width: 24px;
   }
 
+  .arrow:hover {
+    opacity: 0.7;
+  }
+
   .arrow.is-mobile {
     width: 32px;
   }

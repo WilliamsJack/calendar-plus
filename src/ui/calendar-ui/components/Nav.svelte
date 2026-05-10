@@ -163,6 +163,10 @@
     text-transform: uppercase;
   }
 
+  .reset-button:hover {
+    opacity: 0.7;
+  }
+
   .is-mobile .reset-button {
     display: none;
   }
