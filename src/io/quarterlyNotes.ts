@@ -14,8 +14,8 @@ export async function tryToCreateQuarterlyNote(
   await tryToCreatePeriodicNote("quarterly", date, settings, async (newFile) => {
     const { workspace } = window.app;
     const leaf = inNewSplit
-      ? workspace.splitActiveLeaf()
-      : workspace.getUnpinnedLeaf();
+      ? workspace.getLeaf("split", "vertical")
+      : workspace.getLeaf(false);
     await leaf.openFile(newFile, { active: true });
     cb?.(newFile);
   });
