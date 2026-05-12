@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.7.3
+
+Focus: maintenance and Obsidian-API-compatibility release on top of 1.7.2. No user-visible UI changes.
+
+Internal / repo
+- Modernized deprecated Obsidian workspace API usage throughout `src/view.ts` and the monthly/quarterly/yearly note-creation wrappers. The five periodic-note handlers and wrappers now consistently use `workspace.getLeaf("split", "vertical")` and `workspace.getLeaf(false)` instead of `splitActiveLeaf()` and `getUnpinnedLeaf()`, and the post-create focus call uses the modern `workspace.setActiveLeaf(leaf, { focus: true })` options form. Cmd/Meta-click on a month / year / quarter label now opens the new split to the right of the active pane, matching daily/weekly behavior (previously could open below).
+- Replaced `app.workspace.activeLeaf` + `FileView` `instanceof` checks in `updateActiveFile` and `revealActiveNote` with `workspace.getActiveFile()`. Eliminates two latent null-deref paths that could throw during transient workspace states with no active leaf.
+- Removed the now-unused `FileView` import from `src/view.ts`.
+- Updated `FUTURE_PLANS.md` / `CLAUDE.md`: the deprecated-workspace-APIs item is complete and removed; a smaller follow-up to migrate the `"layout-ready"` event in `src/main.ts` to `workspace.onLayoutReady(callback)` has been tracked in its place.
+
 ## 1.7.2
 
 Focus: visual polish and CSS cleanup release on top of 1.7.1.
