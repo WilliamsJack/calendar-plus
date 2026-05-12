@@ -3,7 +3,7 @@ import {
   getDateFromFile as helperGetDateFromFile,
   getPeriodicNote as helperGetPeriodicNote,
 } from "src/io/periodicNoteHelpers";
-import { FileView, TFile, ItemView, WorkspaceLeaf } from "obsidian";
+import { TFile, ItemView, WorkspaceLeaf } from "obsidian";
 import { get } from "svelte/store";
 
 import { TRIGGER_ON_OPEN, VIEW_TYPE_CALENDAR } from "src/constants";
@@ -347,12 +347,7 @@ export default class CalendarView extends ItemView {
   }
 
   private updateActiveFile(): void {
-    const { view } = this.app.workspace.activeLeaf;
-
-    let file = null;
-    if (view instanceof FileView) {
-      file = view.file;
-    }
+    const file = this.app.workspace.getActiveFile();
     activeFile.setFile(file);
 
     if (this.calendar) {
@@ -361,49 +356,47 @@ export default class CalendarView extends ItemView {
   }
 
   public revealActiveNote(): void {
-    const { moment } = window;
-    const { activeLeaf } = this.app.workspace;
+    const file = this.app.workspace.getActiveFile();
+    if (!file) return;
 
-    if (activeLeaf.view instanceof FileView) {
-      let date = this.settings.daily.enabled
-        ? helperGetDateFromFile(activeLeaf.view.file, "daily", this.settings.daily.format)
-        : null;
-      if (date) {
-        this.calendar.$set({ displayedMonth: date });
-        return;
-      }
+    let date = this.settings.daily.enabled
+      ? helperGetDateFromFile(file, "daily", this.settings.daily.format)
+      : null;
+    if (date) {
+      this.calendar.$set({ displayedMonth: date });
+      return;
+    }
 
-      date = this.settings.weekly.enabled
-        ? helperGetDateFromFile(activeLeaf.view.file, "weekly", this.settings.weekly.format)
-        : null;
-      if (date) {
-        this.calendar.$set({ displayedMonth: date });
-        return;
-      }
+    date = this.settings.weekly.enabled
+      ? helperGetDateFromFile(file, "weekly", this.settings.weekly.format)
+      : null;
+    if (date) {
+      this.calendar.$set({ displayedMonth: date });
+      return;
+    }
 
-      date = this.settings.monthly.enabled
-        ? helperGetDateFromFile(activeLeaf.view.file, "monthly", this.settings.monthly.format)
-        : null;
-      if (date) {
-        this.calendar.$set({ displayedMonth: date });
-        return;
-      }
+    date = this.settings.monthly.enabled
+      ? helperGetDateFromFile(file, "monthly", this.settings.monthly.format)
+      : null;
+    if (date) {
+      this.calendar.$set({ displayedMonth: date });
+      return;
+    }
 
-      date = this.settings.quarterly.enabled
-        ? helperGetDateFromFile(activeLeaf.view.file, "quarterly", this.settings.quarterly.format)
-        : null;
-      if (date) {
-        this.calendar.$set({ displayedMonth: date });
-        return;
-      }
+    date = this.settings.quarterly.enabled
+      ? helperGetDateFromFile(file, "quarterly", this.settings.quarterly.format)
+      : null;
+    if (date) {
+      this.calendar.$set({ displayedMonth: date });
+      return;
+    }
 
-      date = this.settings.yearly.enabled
-        ? helperGetDateFromFile(activeLeaf.view.file, "yearly", this.settings.yearly.format)
-        : null;
-      if (date) {
-        this.calendar.$set({ displayedMonth: date });
-        return;
-      }
+    date = this.settings.yearly.enabled
+      ? helperGetDateFromFile(file, "yearly", this.settings.yearly.format)
+      : null;
+    if (date) {
+      this.calendar.$set({ displayedMonth: date });
+      return;
     }
   }
 
@@ -491,12 +484,12 @@ export default class CalendarView extends ItemView {
     }
 
     const leaf = inNewSplit
-      ? workspace.splitActiveLeaf()
-      : workspace.getUnpinnedLeaf();
+      ? workspace.getLeaf("split", "vertical")
+      : workspace.getLeaf(false);
     await leaf.openFile(existingFile);
 
     activeFile.setFile(existingFile);
-    workspace.setActiveLeaf(leaf, true, true);
+    workspace.setActiveLeaf(leaf, { focus: true });
   }
 
   async openOrCreateQuarterlyNote(
@@ -523,12 +516,12 @@ export default class CalendarView extends ItemView {
     }
 
     const leaf = inNewSplit
-      ? workspace.splitActiveLeaf()
-      : workspace.getUnpinnedLeaf();
+      ? workspace.getLeaf("split", "vertical")
+      : workspace.getLeaf(false);
     await leaf.openFile(existingFile);
 
     activeFile.setFile(existingFile);
-    workspace.setActiveLeaf(leaf, true, true);
+    workspace.setActiveLeaf(leaf, { focus: true });
   }
 
   async openOrCreateYearlyNote(
@@ -550,11 +543,11 @@ export default class CalendarView extends ItemView {
     }
 
     const leaf = inNewSplit
-      ? workspace.splitActiveLeaf()
-      : workspace.getUnpinnedLeaf();
+      ? workspace.getLeaf("split", "vertical")
+      : workspace.getLeaf(false);
     await leaf.openFile(existingFile);
 
     activeFile.setFile(existingFile);
-    workspace.setActiveLeaf(leaf, true, true);
+    workspace.setActiveLeaf(leaf, { focus: true });
   }
 }
