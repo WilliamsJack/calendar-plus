@@ -15,14 +15,14 @@ Not needed for the current stable baseline; the per-section re-render approach a
 
 `getDateUIDFromFile` (`src/ui/utils.ts`) currently only checks daily and weekly periodicities. If a future UI change adds active-state highlighting for month / quarter / year cells, extend the function to detect those file types as well. No visible regression today because the underlying calendar UI doesn't render an active state for those cells.
 
-## Migrate deprecated Obsidian workspace APIs
+## Migrate deprecated Obsidian workspace APIs (worth doing soon)
 
-A few call sites still use Obsidian APIs that have been deprecated for several versions but continue to function. Worth migrating before the deprecations are removed.
+A few call sites still use Obsidian APIs that have been deprecated for several versions but continue to function. Worth migrating soon — the deprecations could become removals in a future Obsidian release, and two of the call sites also carry a latent null-deref risk.
 
-- `app.workspace.activeLeaf` in `src/view.ts` (`updateActiveFile`, `revealActiveNote`). Modern API: `workspace.getMostRecentLeaf()` or `workspace.getActiveViewOfType(...)`. Both call sites also assume `activeLeaf` is non-null and would throw otherwise — worth guarding during the migration.
-- `workspace.splitActiveLeaf()` and `workspace.getUnpinnedLeaf()` in `src/view.ts` (monthly/quarterly/yearly handlers) and in `src/io/{monthly,quarterly,yearly}Notes.ts`. Modern API: `workspace.getLeaf("split", "vertical")` and `workspace.getLeaf(false)`. The daily and weekly handlers in `view.ts` already use the modern API — this migration also fixes that inconsistency.
+- `app.workspace.activeLeaf` in `src/view.ts` (`updateActiveFile` at line 350, `revealActiveNote` at line 365). Modern API: `workspace.getMostRecentLeaf()` or `workspace.getActiveViewOfType(...)`. Both call sites also destructure / `instanceof`-check `activeLeaf` without guarding for null — if Obsidian transiently has no active leaf, these throw. Worth guarding during the migration.
+- `workspace.splitActiveLeaf()` and `workspace.getUnpinnedLeaf()` in `src/view.ts` (monthly/quarterly/yearly handlers) and in `src/io/{monthly,quarterly,yearly}Notes.ts`. Modern API: `workspace.getLeaf("split", "vertical")` and `workspace.getLeaf(false)`. The daily and weekly handlers in `view.ts` already use the modern API — this migration also fixes the inconsistency between the periodicities.
 
-No behavior change expected; just future-compatibility.
+No behavior change expected; just future-compatibility plus the null guards.
 
 ## Serialize rapid same-date note creation
 
@@ -33,3 +33,37 @@ Not a data-loss bug — `vault.create` refuses to overwrite. Just a UI nuisance.
 - Maintain a small per-date in-flight `Set<string>` keyed by date UID and short-circuit duplicate calls.
 
 Pre-existing from upstream Calendar; low priority.
+
+## Remove dead Jest test scaffolding
+
+The repo carries inert test infrastructure with no tests against it:
+- `src/testUtils/mockApp.ts`, `src/testUtils/settings.ts`, `src/ui/__mocks__/obsidian.ts` — unreferenced by any source file.
+- `package.json` carries a `"jest"` config block, `"test"` and `"test:watch"` scripts, and the `@types/jest` / `jest` / `svelte-jester` / `ts-jest` devDependencies.
+- `"test:watch": "yarn test -- --watch"` contradicts the "use npm, not yarn" rule.
+
+`getDefaultSettings` in `src/testUtils/settings.ts` doesn't return a valid `ISettings` (missing `daily`/`weekly`/etc.), so it would fail any real test anyway. Either wire up real tests or delete the scaffolding; the latter is the right call unless there's appetite for writing tests.
+
+## Drop unused `patch-package` dependency
+
+`patch-package` is still a runtime dependency and a `postinstall` script even though the `patches/` directory was removed in 1.7.0. Every install runs the script and harmlessly logs `No patch files found`. Could be dropped from `dependencies` and from `scripts.postinstall` entirely — saves one transitive dep and one log line per install. Keep only if you expect to maintain dependency patches again.
+
+## Performance: incremental periodic-notes index updates
+
+`getAllPeriodicNotes` in `src/io/periodicNoteHelpers.ts` rescans the entire configured folder on every `*.reindex()` call. With the current callers in `src/view.ts` (vault create/delete events and settings changes), a single file create in a large vault can trigger up to five full folder scans (one per enabled period). Negligible for typical vaults; can become noticeable at 50k+ files, especially when daily folder is the vault root.
+
+Mitigations to consider:
+- Incremental updates: on `vault.create`, just add the entry by computed UID; on `vault.delete`, just remove. Fall back to a full scan on settings change only.
+- Debounce `reindex` calls within a short window (e.g. 100ms).
+- Cache by `(folder, format)` and invalidate on settings change only.
+
+## Cap and sort settings-tab autocomplete results
+
+`FolderSuggest` and `FileSuggest` in `src/ui/file-suggest.ts` iterate `getAllLoadedFiles()` on every keystroke and render every match. For a 50k-file vault that's 50k iterations + potentially 50k DOM nodes per dropdown. The Daily Checklist reference implementation we ported from in 1.7.0 had `.sort((a,b) => a.path.localeCompare(b.path))` and `.slice(0, 200)`; we left them out to preserve exact behavior. Reintroducing both is a four-line, behavior-improving change.
+
+## Polish: tighten tag-attribute emission in `tags.ts`
+
+`src/ui/sources/tags.ts:40-44` always emits `data-tags=""` on day cells without tags because the truthy check is on an array reference rather than `.length`. Themes targeting `[data-tags]` will spuriously match every day cell. Replace `if (nonEmojiTags)` / `if (emojiTags)` with `if (nonEmojiTags.length)` / `if (emojiTags.length)`.
+
+## Polish: clean up `package-lock.json` extraneous workspace entries
+
+Four `"extraneous": true` entries near the top of `package-lock.json` reference sibling-checkout workspace paths (`../obsidian-calendar-ui`, `../../../../obsidian-calendar-ui`) and declare `@popperjs/core` / `@popperjs/svelte` / `obsidian-daily-notes-interface` as deps of those orphans. Not real installed packages; just lockfile noise carried over from before the 1.7.0 vendoring. Could be scrubbed in a focused `chore:` commit; no functional impact.

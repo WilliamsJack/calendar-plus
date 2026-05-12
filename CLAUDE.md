@@ -8,8 +8,8 @@ Read this before making changes. It captures project state, intentional decision
 - Intentionally a **separate** plugin from the original Calendar plugin — both can be installed and enabled simultaneously.
 - Plugin id: `calendar-plus`
 - User-facing name: `Calendar Plus`
-- Current version: `1.7.1` (kept in sync across `manifest.json`, `package.json`, `package-lock.json`, `versions.json`)
-- **Active branch is `main`.** Calendar Plus 1.7.1 is the current stable local baseline and lives on `main`. Earlier sessions worked on a `merge-periodic-notes` branch that has since been promoted to `main` — that name is no longer the working branch. If a branch named `old-main` exists, treat it as archival/reference only (the pre-merge upstream state); do not commit to it or use it as a base for new work.
+- Current version: `1.7.2` (kept in sync across `manifest.json`, `package.json`, `package-lock.json`, `versions.json`)
+- **Active branch is `main`.** Calendar Plus 1.7.2 is the current stable local baseline and lives on `main`. Earlier sessions worked on a `merge-periodic-notes` branch that has since been promoted to `main` — that name is no longer the working branch. If a branch named `old-main` exists, treat it as archival/reference only (the pre-merge upstream state); do not commit to it or use it as a base for new work.
 
 ## Important product decisions
 
@@ -20,7 +20,7 @@ Read this before making changes. It captures project state, intentional decision
 
 ## Current architecture
 
-- **Manifest** (`manifest.json`): id `calendar-plus`, name `Calendar Plus`, version `1.6.0`, minAppVersion `0.9.11`.
+- **Manifest** (`manifest.json`): id `calendar-plus`, name `Calendar Plus`, minAppVersion `0.9.11`. (Current version is in the Project overview above.)
 - **Internal namespaces** (`src/constants.ts`):
   - `VIEW_TYPE_CALENDAR = "calendar-plus-view"`
   - `TRIGGER_ON_OPEN = "calendar-plus:open"` (event external plugins listen on to inject sources)
@@ -73,8 +73,14 @@ None of the above blocks shipping.
 
 See `FUTURE_PLANS.md` for full descriptions. Short list:
 
-- **Migrate deprecated Obsidian workspace APIs** (`activeLeaf`, `splitActiveLeaf`, `getUnpinnedLeaf`) in `view.ts` and the `io/{monthly,quarterly,yearly}Notes.ts` wrappers.
+- **Migrate deprecated Obsidian workspace APIs** (`activeLeaf`, `splitActiveLeaf`, `getUnpinnedLeaf`) in `view.ts` and the `io/{monthly,quarterly,yearly}Notes.ts` wrappers — worth doing soon. The two `activeLeaf` reads in `view.ts` will throw if no leaf is active, and the deprecations could become removals in a future Obsidian release.
 - **Serialize rapid same-date note creation** to avoid the "file already exists" Notice on a fast double-click when confirm-before-create is off.
+- **Remove dead Jest test scaffolding** (`src/testUtils/`, `src/ui/__mocks__/`, jest config + test scripts + jest devDeps in `package.json`) — no tests reference any of it.
+- **Drop unused `patch-package`** runtime dep and `postinstall` script (no patches remain).
+- **Performance: incremental periodic-notes index updates** to avoid full folder rescans on every vault file create/delete in large vaults.
+- **Cap and sort settings-tab autocomplete results** so `FolderSuggest`/`FileSuggest` don't render unbounded result lists on large vaults.
+- **Polish: tighten tag-attribute emission** in `src/ui/sources/tags.ts` so day cells without tags don't carry empty `data-tags=""`.
+- **Polish: clean up `package-lock.json` extraneous workspace entries** carried over from before the 1.7.0 vendoring.
 - **Optional: Svelte settings migration** — cleaner conditional UI, slide animations.
 - **Optional: extend `getDateUIDFromFile`** to monthly/quarterly/yearly when active-file highlighting needs it.
 
