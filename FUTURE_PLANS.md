@@ -15,14 +15,15 @@ Not needed for the current stable baseline; the per-section re-render approach a
 
 `getDateUIDFromFile` (`src/ui/utils.ts`) currently only checks daily and weekly periodicities. If a future UI change adds active-state highlighting for month / quarter / year cells, extend the function to detect those file types as well. No visible regression today because the underlying calendar UI doesn't render an active state for those cells.
 
-## Migrate deprecated Obsidian workspace APIs (worth doing soon)
+## Migrate `layout-ready` event to `workspace.onLayoutReady`
 
-A few call sites still use Obsidian APIs that have been deprecated for several versions but continue to function. Worth migrating soon — the deprecations could become removals in a future Obsidian release, and two of the call sites also carry a latent null-deref risk.
+`src/main.ts` uses `workspace.on("layout-ready", this.initLeaf.bind(this))` to mount the calendar view once the workspace is ready on plugin load. The `"layout-ready"` event name is no longer documented in the current `obsidian.d.ts` (the modern API surfaces `Workspace.onLayoutReady(callback)` instead). The legacy event name likely still functions for backwards compatibility, but it's an undocumented surface that could disappear in a future Obsidian release.
 
-- `app.workspace.activeLeaf` in `src/view.ts` (`updateActiveFile` at line 350, `revealActiveNote` at line 365). Modern API: `workspace.getMostRecentLeaf()` or `workspace.getActiveViewOfType(...)`. Both call sites also destructure / `instanceof`-check `activeLeaf` without guarding for null — if Obsidian transiently has no active leaf, these throw. Worth guarding during the migration.
-- `workspace.splitActiveLeaf()` and `workspace.getUnpinnedLeaf()` in `src/view.ts` (monthly/quarterly/yearly handlers) and in `src/io/{monthly,quarterly,yearly}Notes.ts`. Modern API: `workspace.getLeaf("split", "vertical")` and `workspace.getLeaf(false)`. The daily and weekly handlers in `view.ts` already use the modern API — this migration also fixes the inconsistency between the periodicities.
+Migration:
+- Replace the `workspace.on("layout-ready", ...)` registration with `workspace.onLayoutReady(() => this.initLeaf())`.
+- `onLayoutReady` is fire-once and idempotent — if layout is already ready, the callback fires immediately. That matches the existing `if (this.app.workspace.layoutReady) { this.initLeaf(); } else { ... }` branching, so the surrounding `if/else` can collapse into a single `onLayoutReady` call.
 
-No behavior change expected; just future-compatibility plus the null guards.
+No behavior change expected.
 
 ## Serialize rapid same-date note creation
 

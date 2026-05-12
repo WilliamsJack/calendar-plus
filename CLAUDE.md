@@ -73,7 +73,7 @@ None of the above blocks shipping.
 
 See `FUTURE_PLANS.md` for full descriptions. Short list:
 
-- **Migrate deprecated Obsidian workspace APIs** (`activeLeaf`, `splitActiveLeaf`, `getUnpinnedLeaf`) in `view.ts` and the `io/{monthly,quarterly,yearly}Notes.ts` wrappers — worth doing soon. The two `activeLeaf` reads in `view.ts` will throw if no leaf is active, and the deprecations could become removals in a future Obsidian release.
+- **Migrate `layout-ready` event to `workspace.onLayoutReady`** in `src/main.ts`. The legacy event name is undocumented in the current Obsidian d.ts; the modern API is `Workspace.onLayoutReady(callback)`.
 - **Serialize rapid same-date note creation** to avoid the "file already exists" Notice on a fast double-click when confirm-before-create is off.
 - **Remove dead Jest test scaffolding** (`src/testUtils/`, `src/ui/__mocks__/`, jest config + test scripts + jest devDeps in `package.json`) — no tests reference any of it.
 - **Drop unused `patch-package`** runtime dep and `postinstall` script (no patches remain).
