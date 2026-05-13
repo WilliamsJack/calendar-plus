@@ -7,12 +7,10 @@
   "license": "MIT",
   "scripts": {
     "lint": "svelte-check && eslint . --ext .ts",
-    "build": "npm run lint && rollup -c",
-    "postinstall": "patch-package"
+    "build": "npm run lint && rollup -c"
   },
   "dependencies": {
     "obsidian": "obsidianmd/obsidian-api#master",
-    "patch-package": "^8.0.0",
     "svelte": "3.35.0",
     "tslib": "2.1.0"
   },
