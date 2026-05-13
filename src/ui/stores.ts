@@ -2,8 +2,10 @@ import type { TFile } from "obsidian";
 import {
   getAllPeriodicNotes as helperGetAllPeriodicNotes,
   getDateFromFile,
+  getDateFromFilename,
   getDateUID,
   isFileInConfiguredFolder,
+  isPathInConfiguredFolder,
 } from "src/io/periodicNoteHelpers";
 import { get, writable } from "svelte/store";
 
@@ -64,6 +66,38 @@ function createPeriodicNotesStore(periodicity: Periodicity) {
       if (!periodSettings.enabled) return false;
       if (!isFileInConfiguredFolder(file, periodSettings)) return false;
       const date = getDateFromFile(file, periodicity, periodSettings.format);
+      if (!date) return false;
+      const uid = getDateUID(date, periodicity);
+      let removed = false;
+      store.update((current) => {
+        if (!current || !(uid in current)) return current;
+        removed = true;
+        const next = { ...current };
+        delete next[uid];
+        return next;
+      });
+      return removed;
+    },
+    // Remove the entry that the old path mapped to, given the vault `rename`
+    // event's `oldPath`. The file's current path/basename already reflect the
+    // post-rename state, so we can't derive the old UID from a TFile — we
+    // parse the old basename out of `oldPath` directly. Pairs with `addFile`
+    // in the rename handler to move dots cleanly.
+    removeByOldPath: (oldPath: string): boolean => {
+      const currentSettings = get(settings);
+      const periodSettings = currentSettings[periodicity];
+      if (!periodSettings.enabled) return false;
+      if (!isPathInConfiguredFolder(oldPath, periodSettings)) return false;
+      const lastSlash = oldPath.lastIndexOf("/");
+      const filename = lastSlash >= 0 ? oldPath.substring(lastSlash + 1) : oldPath;
+      const oldBasename = filename.endsWith(".md")
+        ? filename.substring(0, filename.length - 3)
+        : filename;
+      const date = getDateFromFilename(
+        oldBasename,
+        periodicity,
+        periodSettings.format
+      );
       if (!date) return false;
       const uid = getDateUID(date, periodicity);
       let removed = false;

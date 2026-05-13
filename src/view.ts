@@ -3,7 +3,7 @@ import {
   getDateFromFile as helperGetDateFromFile,
   getPeriodicNote as helperGetPeriodicNote,
 } from "src/io/periodicNoteHelpers";
-import { TFile, ItemView, WorkspaceLeaf } from "obsidian";
+import { TAbstractFile, TFile, ItemView, WorkspaceLeaf } from "obsidian";
 import { get } from "svelte/store";
 
 import { TRIGGER_ON_OPEN, VIEW_TYPE_CALENDAR } from "src/constants";
@@ -43,6 +43,7 @@ export default class CalendarView extends ItemView {
     this.onFileCreated = this.onFileCreated.bind(this);
     this.onFileDeleted = this.onFileDeleted.bind(this);
     this.onFileModified = this.onFileModified.bind(this);
+    this.onFileRenamed = this.onFileRenamed.bind(this);
     this.onFileOpen = this.onFileOpen.bind(this);
 
     this.onHoverDay = this.onHoverDay.bind(this);
@@ -60,6 +61,7 @@ export default class CalendarView extends ItemView {
     this.registerEvent(this.app.vault.on("create", this.onFileCreated));
     this.registerEvent(this.app.vault.on("delete", this.onFileDeleted));
     this.registerEvent(this.app.vault.on("modify", this.onFileModified));
+    this.registerEvent(this.app.vault.on("rename", this.onFileRenamed));
     this.registerEvent(this.app.workspace.on("file-open", this.onFileOpen));
 
     this.settings = null;
@@ -316,6 +318,31 @@ export default class CalendarView extends ItemView {
     ].some(Boolean);
     if (changed) {
       this.calendar.tick();
+    }
+  }
+
+  private onFileRenamed(file: TAbstractFile, oldPath: string): void {
+    if (!this.app.workspace.layoutReady || !this.calendar) return;
+    if (!(file instanceof TFile)) return;
+    // Remove the entry the old path mapped to, then add the new file. Each
+    // call is a no-op if the file doesn't match that periodicity — same
+    // gating logic as create/delete, just doubled up for the move.
+    const removed = [
+      dailyNotes.removeByOldPath(oldPath),
+      weeklyNotes.removeByOldPath(oldPath),
+      monthlyNotes.removeByOldPath(oldPath),
+      quarterlyNotes.removeByOldPath(oldPath),
+      yearlyNotes.removeByOldPath(oldPath),
+    ].some(Boolean);
+    const added = [
+      dailyNotes.addFile(file),
+      weeklyNotes.addFile(file),
+      monthlyNotes.addFile(file),
+      quarterlyNotes.addFile(file),
+      yearlyNotes.addFile(file),
+    ].some(Boolean);
+    if (removed || added) {
+      this.updateActiveFile();
     }
   }
 
