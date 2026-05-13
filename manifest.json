@@ -2,7 +2,7 @@
   "id": "calendar-plus",
   "name": "Calendar Plus",
   "description": "Calendar view with integrated daily, weekly, monthly, quarterly, and yearly notes.",
-  "version": "1.7.4",
+  "version": "1.7.5",
   "author": "Matt Maiorana",
   "isDesktopOnly": false,
   "minAppVersion": "0.9.11"

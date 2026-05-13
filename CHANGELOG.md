@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.7.5
+
+Focus: cleanup and polish release on top of 1.7.4. One small user-visible fix; the rest is internal hygiene.
+
+Calendar UI
+- Day cells without tags no longer receive an empty `data-tags=""` attribute. Themes targeting `[data-tags]` only match cells that actually carry tags now.
+
+Internal / repo
+- Removed dead Jest test scaffolding: `src/testUtils/`, `src/ui/__mocks__/`, and the `"jest"` config + `"test"` / `"test:watch"` scripts from `package.json`. None of it was referenced by source.
+- Removed four unused Jest-related devDependencies: `@types/jest`, `jest`, `svelte-jester`, `ts-jest`. Slimmer install (Calendar Plus's `node_modules` shrank by ~450 packages) and a smaller `npm audit` surface.
+- Removed the unused `patch-package` runtime dependency and the `postinstall` script that only ran it. The `patches/` directory has been gone since 1.7.0; the script has been a no-op since.
+
 ## 1.7.4
 
 Focus: small bugfix release on top of 1.7.3.
