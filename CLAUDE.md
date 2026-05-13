@@ -75,7 +75,6 @@ See `FUTURE_PLANS.md` for full descriptions. Short list:
 - **Migrate `layout-ready` event to `workspace.onLayoutReady`** in `src/main.ts`. The legacy event name is undocumented in the current Obsidian d.ts; the modern API is `Workspace.onLayoutReady(callback)`.
 - **Performance: incremental periodic-notes index updates** to avoid full folder rescans on every vault file create/delete in large vaults.
 - **Cap and sort settings-tab autocomplete results** so `FolderSuggest`/`FileSuggest` don't render unbounded result lists on large vaults.
-- **Polish: clean up `package-lock.json` extraneous workspace entries** carried over from before the 1.7.0 vendoring.
 - **Optional: Svelte settings migration** — cleaner conditional UI, slide animations.
 - **Optional: extend `getDateUIDFromFile`** to monthly/quarterly/yearly when active-file highlighting needs it.
 

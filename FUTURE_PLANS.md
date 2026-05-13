@@ -37,7 +37,3 @@ Mitigations to consider:
 ## Cap and sort settings-tab autocomplete results
 
 `FolderSuggest` and `FileSuggest` in `src/ui/file-suggest.ts` iterate `getAllLoadedFiles()` on every keystroke and render every match. For a 50k-file vault that's 50k iterations + potentially 50k DOM nodes per dropdown. The Daily Checklist reference implementation we ported from in 1.7.0 had `.sort((a,b) => a.path.localeCompare(b.path))` and `.slice(0, 200)`; we left them out to preserve exact behavior. Reintroducing both is a four-line, behavior-improving change.
-
-## Polish: clean up `package-lock.json` extraneous workspace entries
-
-Four `"extraneous": true` entries near the top of `package-lock.json` reference sibling-checkout workspace paths (`../obsidian-calendar-ui`, `../../../../obsidian-calendar-ui`) and declare `@popperjs/core` / `@popperjs/svelte` / `obsidian-daily-notes-interface` as deps of those orphans. Not real installed packages; just lockfile noise carried over from before the 1.7.0 vendoring. Could be scrubbed in a focused `chore:` commit; no functional impact.
