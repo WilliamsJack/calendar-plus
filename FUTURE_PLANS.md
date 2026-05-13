@@ -25,15 +25,6 @@ Migration:
 
 No behavior change expected.
 
-## Remove dead Jest test scaffolding
-
-The repo carries inert test infrastructure with no tests against it:
-- `src/testUtils/mockApp.ts`, `src/testUtils/settings.ts`, `src/ui/__mocks__/obsidian.ts` — unreferenced by any source file.
-- `package.json` carries a `"jest"` config block, `"test"` and `"test:watch"` scripts, and the `@types/jest` / `jest` / `svelte-jester` / `ts-jest` devDependencies.
-- `"test:watch": "yarn test -- --watch"` contradicts the "use npm, not yarn" rule.
-
-`getDefaultSettings` in `src/testUtils/settings.ts` doesn't return a valid `ISettings` (missing `daily`/`weekly`/etc.), so it would fail any real test anyway. Either wire up real tests or delete the scaffolding; the latter is the right call unless there's appetite for writing tests.
-
 ## Drop unused `patch-package` dependency
 
 `patch-package` is still a runtime dependency and a `postinstall` script even though the `patches/` directory was removed in 1.7.0. Every install runs the script and harmlessly logs `No patch files found`. Could be dropped from `dependencies` and from `scripts.postinstall` entirely — saves one transitive dep and one log line per install. Keep only if you expect to maintain dependency patches again.

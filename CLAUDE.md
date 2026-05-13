@@ -64,7 +64,6 @@ In rough order:
 
 These are catalogued in `FUTURE_PLANS.md`. Highlights:
 
-- Test scaffolding (`src/testUtils/`, `src/ui/__mocks__/obsidian.ts`, jest config in `package.json`) is dead — no tests exist. `getDefaultSettings` doesn't even return a valid `ISettings`.
 - `styles.css` is intentionally limited to wrapper-state-dependent rules (gated on `.daily-enabled` / `.monthly-enabled` / `.yearly-enabled` / `.quarterly-enabled` classes set on the outer Calendar Plus wrapper) and the `.calendar-plus-suggest` rule for the autocomplete dropdown attached to `document.body`. Component-internal styling already lives inside each vendored Svelte component's `<style>` block.
 
 None of the above blocks shipping.
@@ -74,7 +73,6 @@ None of the above blocks shipping.
 See `FUTURE_PLANS.md` for full descriptions. Short list:
 
 - **Migrate `layout-ready` event to `workspace.onLayoutReady`** in `src/main.ts`. The legacy event name is undocumented in the current Obsidian d.ts; the modern API is `Workspace.onLayoutReady(callback)`.
-- **Remove dead Jest test scaffolding** (`src/testUtils/`, `src/ui/__mocks__/`, jest config + test scripts + jest devDeps in `package.json`) — no tests reference any of it.
 - **Drop unused `patch-package`** runtime dep and `postinstall` script (no patches remain).
 - **Performance: incremental periodic-notes index updates** to avoid full folder rescans on every vault file create/delete in large vaults.
 - **Cap and sort settings-tab autocomplete results** so `FolderSuggest`/`FileSuggest` don't render unbounded result lists on large vaults.
