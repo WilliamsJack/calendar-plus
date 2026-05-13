@@ -25,10 +25,6 @@ Migration:
 
 No behavior change expected.
 
-## Drop unused `patch-package` dependency
-
-`patch-package` is still a runtime dependency and a `postinstall` script even though the `patches/` directory was removed in 1.7.0. Every install runs the script and harmlessly logs `No patch files found`. Could be dropped from `dependencies` and from `scripts.postinstall` entirely — saves one transitive dep and one log line per install. Keep only if you expect to maintain dependency patches again.
-
 ## Performance: incremental periodic-notes index updates
 
 `getAllPeriodicNotes` in `src/io/periodicNoteHelpers.ts` rescans the entire configured folder on every `*.reindex()` call. With the current callers in `src/view.ts` (vault create/delete events and settings changes), a single file create in a large vault can trigger up to five full folder scans (one per enabled period). Negligible for typical vaults; can become noticeable at 50k+ files, especially when daily folder is the vault root.
@@ -41,10 +37,6 @@ Mitigations to consider:
 ## Cap and sort settings-tab autocomplete results
 
 `FolderSuggest` and `FileSuggest` in `src/ui/file-suggest.ts` iterate `getAllLoadedFiles()` on every keystroke and render every match. For a 50k-file vault that's 50k iterations + potentially 50k DOM nodes per dropdown. The Daily Checklist reference implementation we ported from in 1.7.0 had `.sort((a,b) => a.path.localeCompare(b.path))` and `.slice(0, 200)`; we left them out to preserve exact behavior. Reintroducing both is a four-line, behavior-improving change.
-
-## Polish: tighten tag-attribute emission in `tags.ts`
-
-`src/ui/sources/tags.ts:40-44` always emits `data-tags=""` on day cells without tags because the truthy check is on an array reference rather than `.length`. Themes targeting `[data-tags]` will spuriously match every day cell. Replace `if (nonEmojiTags)` / `if (emojiTags)` with `if (nonEmojiTags.length)` / `if (emojiTags.length)`.
 
 ## Polish: clean up `package-lock.json` extraneous workspace entries
 
