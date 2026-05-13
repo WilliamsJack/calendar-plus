@@ -15,16 +15,6 @@ Not needed for the current stable baseline; the per-section re-render approach a
 
 `getDateUIDFromFile` (`src/ui/utils.ts`) currently only checks daily and weekly periodicities. If a future UI change adds active-state highlighting for month / quarter / year cells, extend the function to detect those file types as well. No visible regression today because the underlying calendar UI doesn't render an active state for those cells.
 
-## Migrate `layout-ready` event to `workspace.onLayoutReady`
-
-`src/main.ts` uses `workspace.on("layout-ready", this.initLeaf.bind(this))` to mount the calendar view once the workspace is ready on plugin load. The `"layout-ready"` event name is no longer documented in the current `obsidian.d.ts` (the modern API surfaces `Workspace.onLayoutReady(callback)` instead). The legacy event name likely still functions for backwards compatibility, but it's an undocumented surface that could disappear in a future Obsidian release.
-
-Migration:
-- Replace the `workspace.on("layout-ready", ...)` registration with `workspace.onLayoutReady(() => this.initLeaf())`.
-- `onLayoutReady` is fire-once and idempotent — if layout is already ready, the callback fires immediately. That matches the existing `if (this.app.workspace.layoutReady) { this.initLeaf(); } else { ... }` branching, so the surrounding `if/else` can collapse into a single `onLayoutReady` call.
-
-No behavior change expected.
-
 ## Performance: incremental periodic-notes index updates
 
 `getAllPeriodicNotes` in `src/io/periodicNoteHelpers.ts` rescans the entire configured folder on every `*.reindex()` call. With the current callers in `src/view.ts` (vault create/delete events and settings changes), a single file create in a large vault can trigger up to five full folder scans (one per enabled period). Negligible for typical vaults; can become noticeable at 50k+ files, especially when daily folder is the vault root.
