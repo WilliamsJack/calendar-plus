@@ -72,9 +72,8 @@ None of the above blocks shipping.
 
 See `FUTURE_PLANS.md` for full descriptions. Short list:
 
-- **Optional: review view detach behavior on plugin unload** — `src/main.ts` `onunload` detaches all calendar-plus leaves; some plugins prefer to let custom views persist as placeholders.
 - **Optional: evaluate Obsidian API dependency pinning** — `package.json` uses `obsidianmd/obsidian-api#master`; pinning to a tag would improve CI reproducibility.
-- **Optional: extend `getDateUIDFromFile`** to monthly/quarterly/yearly when active-file highlighting needs it.
+- **Optional: active-file correctness for monthly / quarterly / yearly (deferred)** — `getDateUIDFromFile` only handles daily / weekly. Nav.svelte doesn't consume `selectedId` for month / year / quarter labels, so M/Q/Y active UIDs would be dead code today. Revisit only if active-file styling for header labels is wanted.
 - **Optional: Svelte settings migration (deferred)** — cleaner conditional UI, slide animations. Not planned; the current per-section re-render in `src/settings.ts` works well. Revisit only if the settings UI becomes harder to extend.
 
 ## Release prep
