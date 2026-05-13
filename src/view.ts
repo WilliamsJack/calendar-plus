@@ -281,24 +281,14 @@ export default class CalendarView extends ItemView {
   }
 
   private async onFileDeleted(file: TFile): Promise<void> {
-    if (this.settings.daily.enabled && helperGetDateFromFile(file, "daily", this.settings.daily.format)) {
-      dailyNotes.reindex();
-      this.updateActiveFile();
-    }
-    if (this.settings.weekly.enabled && helperGetDateFromFile(file, "weekly", this.settings.weekly.format)) {
-      weeklyNotes.reindex();
-      this.updateActiveFile();
-    }
-    if (this.settings.monthly.enabled && helperGetDateFromFile(file, "monthly", this.settings.monthly.format)) {
-      monthlyNotes.reindex();
-      this.updateActiveFile();
-    }
-    if (this.settings.quarterly.enabled && helperGetDateFromFile(file, "quarterly", this.settings.quarterly.format)) {
-      quarterlyNotes.reindex();
-      this.updateActiveFile();
-    }
-    if (this.settings.yearly.enabled && helperGetDateFromFile(file, "yearly", this.settings.yearly.format)) {
-      yearlyNotes.reindex();
+    const changed = [
+      dailyNotes.removeFile(file),
+      weeklyNotes.removeFile(file),
+      monthlyNotes.removeFile(file),
+      quarterlyNotes.removeFile(file),
+      yearlyNotes.removeFile(file),
+    ].some(Boolean);
+    if (changed) {
       this.updateActiveFile();
     }
   }
@@ -316,27 +306,16 @@ export default class CalendarView extends ItemView {
   }
 
   private onFileCreated(file: TFile): void {
-    if (this.app.workspace.layoutReady && this.calendar) {
-      if (this.settings.daily.enabled && helperGetDateFromFile(file, "daily", this.settings.daily.format)) {
-        dailyNotes.reindex();
-        this.calendar.tick();
-      }
-      if (this.settings.weekly.enabled && helperGetDateFromFile(file, "weekly", this.settings.weekly.format)) {
-        weeklyNotes.reindex();
-        this.calendar.tick();
-      }
-      if (this.settings.monthly.enabled && helperGetDateFromFile(file, "monthly", this.settings.monthly.format)) {
-        monthlyNotes.reindex();
-        this.calendar.tick();
-      }
-      if (this.settings.quarterly.enabled && helperGetDateFromFile(file, "quarterly", this.settings.quarterly.format)) {
-        quarterlyNotes.reindex();
-        this.calendar.tick();
-      }
-      if (this.settings.yearly.enabled && helperGetDateFromFile(file, "yearly", this.settings.yearly.format)) {
-        yearlyNotes.reindex();
-        this.calendar.tick();
-      }
+    if (!this.app.workspace.layoutReady || !this.calendar) return;
+    const changed = [
+      dailyNotes.addFile(file),
+      weeklyNotes.addFile(file),
+      monthlyNotes.addFile(file),
+      quarterlyNotes.addFile(file),
+      yearlyNotes.addFile(file),
+    ].some(Boolean);
+    if (changed) {
+      this.calendar.tick();
     }
   }
 

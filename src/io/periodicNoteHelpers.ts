@@ -287,6 +287,22 @@ export function getDateFromFile(
   return getDateFromFilename(file.basename, periodicity, format);
 }
 
+/**
+ * Test whether a file lives inside the configured periodic-note folder.
+ * Mirrors the recurseChildren semantics of `getAllPeriodicNotes`: an empty
+ * folder or "/" means root (the whole vault); otherwise the file must be a
+ * descendant of the configured folder.
+ */
+export function isFileInConfiguredFolder(
+  file: TFile,
+  settings: PeriodicNoteSettings
+): boolean {
+  const folder = settings.folder?.trim() ?? "";
+  if (folder === "" || folder === "/") return true;
+  const normalized = normalizePath(folder);
+  return file.path.startsWith(normalized + "/");
+}
+
 // ---------------------------------------------------------------------------
 // Vault lookup
 // ---------------------------------------------------------------------------

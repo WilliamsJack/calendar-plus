@@ -1,5 +1,10 @@
 import type { TFile } from "obsidian";
-import { getAllPeriodicNotes as helperGetAllPeriodicNotes } from "src/io/periodicNoteHelpers";
+import {
+  getAllPeriodicNotes as helperGetAllPeriodicNotes,
+  getDateFromFile,
+  getDateUID,
+  isFileInConfiguredFolder,
+} from "src/io/periodicNoteHelpers";
 import { get, writable } from "svelte/store";
 
 import { defaultSettings, ISettings, Periodicity } from "src/settings";
@@ -35,6 +40,41 @@ function createPeriodicNotesStore(periodicity: Periodicity) {
         }
         hasError = true;
       }
+    },
+    // Incremental update for a single newly-created file. No-op when the
+    // periodicity is disabled, when the file is outside the configured folder,
+    // or when the basename doesn't parse against the configured format.
+    // Returns true if the store was mutated.
+    addFile: (file: TFile): boolean => {
+      const currentSettings = get(settings);
+      const periodSettings = currentSettings[periodicity];
+      if (!periodSettings.enabled) return false;
+      if (!isFileInConfiguredFolder(file, periodSettings)) return false;
+      const date = getDateFromFile(file, periodicity, periodSettings.format);
+      if (!date) return false;
+      const uid = getDateUID(date, periodicity);
+      store.update((current) => ({ ...(current ?? {}), [uid]: file }));
+      return true;
+    },
+    // Incremental remove for a single deleted file. Same guards as addFile.
+    // Returns true if the UID was actually present in the store.
+    removeFile: (file: TFile): boolean => {
+      const currentSettings = get(settings);
+      const periodSettings = currentSettings[periodicity];
+      if (!periodSettings.enabled) return false;
+      if (!isFileInConfiguredFolder(file, periodSettings)) return false;
+      const date = getDateFromFile(file, periodicity, periodSettings.format);
+      if (!date) return false;
+      const uid = getDateUID(date, periodicity);
+      let removed = false;
+      store.update((current) => {
+        if (!current || !(uid in current)) return current;
+        removed = true;
+        const next = { ...current };
+        delete next[uid];
+        return next;
+      });
+      return removed;
     },
     ...store,
   };
