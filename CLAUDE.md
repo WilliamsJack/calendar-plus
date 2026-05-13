@@ -74,7 +74,6 @@ None of the above blocks shipping.
 See `FUTURE_PLANS.md` for full descriptions. Short list:
 
 - **Migrate `layout-ready` event to `workspace.onLayoutReady`** in `src/main.ts`. The legacy event name is undocumented in the current Obsidian d.ts; the modern API is `Workspace.onLayoutReady(callback)`.
-- **Serialize rapid same-date note creation** to avoid the "file already exists" Notice on a fast double-click when confirm-before-create is off.
 - **Remove dead Jest test scaffolding** (`src/testUtils/`, `src/ui/__mocks__/`, jest config + test scripts + jest devDeps in `package.json`) — no tests reference any of it.
 - **Drop unused `patch-package`** runtime dep and `postinstall` script (no patches remain).
 - **Performance: incremental periodic-notes index updates** to avoid full folder rescans on every vault file create/delete in large vaults.

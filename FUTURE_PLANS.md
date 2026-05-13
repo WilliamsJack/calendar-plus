@@ -25,16 +25,6 @@ Migration:
 
 No behavior change expected.
 
-## Serialize rapid same-date note creation
-
-`src/view.ts` calls `tryToCreate*Note(...)` *without* awaiting in the `openOrCreate*Note` handlers and then `return`s. With `shouldConfirmBeforeCreate: false`, two rapid clicks on the same day cell race: both reach `vault.create(path, ...)` before the first resolves, and the second throws "file already exists" → the user sees a stray `Notice("Unable to create new file.")`.
-
-Not a data-loss bug — `vault.create` refuses to overwrite. Just a UI nuisance. Mitigations:
-- Await `tryToCreate*Note(...)` in the handlers, OR
-- Maintain a small per-date in-flight `Set<string>` keyed by date UID and short-circuit duplicate calls.
-
-Pre-existing from upstream Calendar; low priority.
-
 ## Remove dead Jest test scaffolding
 
 The repo carries inert test infrastructure with no tests against it:
