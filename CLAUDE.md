@@ -72,11 +72,10 @@ None of the above blocks shipping.
 
 See `FUTURE_PLANS.md` for full descriptions. Short list:
 
-- **Performance: incremental periodic-notes index updates** to avoid full folder rescans on every vault file create/delete in large vaults.
 - **Optional: review view detach behavior on plugin unload** — `src/main.ts` `onunload` detaches all calendar-plus leaves; some plugins prefer to let custom views persist as placeholders.
 - **Optional: evaluate Obsidian API dependency pinning** — `package.json` uses `obsidianmd/obsidian-api#master`; pinning to a tag would improve CI reproducibility.
-- **Optional: Svelte settings migration** — cleaner conditional UI, slide animations.
 - **Optional: extend `getDateUIDFromFile`** to monthly/quarterly/yearly when active-file highlighting needs it.
+- **Optional: Svelte settings migration (deferred)** — cleaner conditional UI, slide animations. Not planned; the current per-section re-render in `src/settings.ts` works well. Revisit only if the settings UI becomes harder to extend.
 
 ## Release prep
 

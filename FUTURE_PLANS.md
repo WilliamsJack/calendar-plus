@@ -2,27 +2,15 @@
 
 Non-blocking polish and cleanup deferred past the 1.6.0 / 1.7.0 baseline on `main`. None are required for the current stable baseline.
 
-## Optional: settings UI modernization
+## Optional: settings UI modernization (deferred)
 
-Consider migrating the settings tab to Svelte in a future branch. Potential benefits:
-- Cleaner conditional UI via `{#if}` blocks instead of imperative `.empty()` + rebuild.
-- Easier slide / fade animations on enable-toggle expansion.
-- Less imperative DOM rebuilding overall.
+Migrating the settings tab to Svelte would potentially give cleaner conditional UI (`{#if}` blocks instead of imperative `.empty()` + rebuild), easier slide / fade animations on enable-toggle expansion, and less imperative DOM rebuilding overall.
 
-Not needed for the current stable baseline; the per-section re-render approach already works well.
+**Not planned.** The current per-section re-render in `src/settings.ts` works well, doesn't scroll-jump, and is straightforward to maintain. Only worth revisiting if the settings UI grows substantially harder to extend — until then this is a "nice to have" with no concrete trigger, kept here only as a parking lot for the idea.
 
 ## Optional: active-file correctness for monthly / quarterly / yearly
 
 `getDateUIDFromFile` (`src/ui/utils.ts`) currently only checks daily and weekly periodicities. If a future UI change adds active-state highlighting for month / quarter / year cells, extend the function to detect those file types as well. No visible regression today because the underlying calendar UI doesn't render an active state for those cells.
-
-## Performance: incremental periodic-notes index updates
-
-`getAllPeriodicNotes` in `src/io/periodicNoteHelpers.ts` rescans the entire configured folder on every `*.reindex()` call. With the current callers in `src/view.ts` (vault create/delete events and settings changes), a single file create in a large vault can trigger up to five full folder scans (one per enabled period). Negligible for typical vaults; can become noticeable at 50k+ files, especially when daily folder is the vault root.
-
-Mitigations to consider:
-- Incremental updates: on `vault.create`, just add the entry by computed UID; on `vault.delete`, just remove. Fall back to a full scan on settings change only.
-- Debounce `reindex` calls within a short window (e.g. 100ms).
-- Cache by `(folder, format)` and invalidate on settings change only.
 
 ## Optional: review view detach behavior on plugin unload
 
