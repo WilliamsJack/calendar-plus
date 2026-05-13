@@ -19,9 +19,3 @@ If a future change adds active-file styling to month / quarter / year labels, th
 2. Pass `selectedId` from vendored `Calendar.svelte` through to `Nav.svelte`, add `class:active-file` bindings on `.month` / `.year` / `.quarter` (or rename the existing quarter `.active` to disambiguate the two concepts), and decide a visual treatment that doesn't conflate "displayed quarter" with "active-file quarter."
 
 Revisit only if visible active styling for header labels is wanted. Until then, the current behavior is internally consistent: cells (Day, WeekNum) highlight, header labels don't.
-
-## Optional: evaluate Obsidian API dependency pinning
-
-`package.json` currently pulls `obsidian` from `obsidianmd/obsidian-api#master` — the same git-ref pattern every Obsidian plugin uses. It resolves to the latest API d.ts at install time, which is convenient but means a CI build today and a CI build a month later could compile against slightly different `obsidian.d.ts` versions. Reproducibility-conscious projects pin to a tag (e.g. `obsidianmd/obsidian-api#v1.7.0`). The d.ts rarely changes in breaking ways, so the floating ref is generally safe.
-
-Defer unless publishing or CI reproducibility becomes a concern.
