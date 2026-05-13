@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.7.4
+
+Focus: small bugfix release on top of 1.7.3.
+
+Calendar UI
+- Rapid duplicate clicks on the same empty periodic-note cell (daily, weekly, monthly, quarterly, or yearly) no longer race on note creation. Previously, a fast double-click with confirm-before-create off could dispatch two concurrent `vault.create` calls; the second would lose the race and surface a stray "Unable to create new file" notice. Calendar Plus now tracks in-flight creates per (periodicity, date) and silently short-circuits duplicates while the first is still resolving. Clicks on different days, different periodicities, or after the first create completes continue to work normally.
+
 ## 1.7.3
 
 Focus: maintenance and Obsidian-API-compatibility release on top of 1.7.2. No user-visible UI changes.
