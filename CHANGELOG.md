@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.7.6
+
+Focus: performance, correctness, and publication-readiness release on top of 1.7.5.
+
+Calendar UI
+- Dots for periodic notes now stay correct when files are renamed or moved between folders. Previously, renaming a daily note's basename (or moving a periodic note in or out of its configured folder) could leave a stale dot in the calendar until the plugin was reloaded or settings were changed. Calendar Plus now listens for vault rename events and updates indexes incrementally.
+- Settings-tab folder and template autocomplete suggestions are now sorted alphabetically and capped at 200 results. In vaults with many folders or markdown files, the dropdown stays fast and predictable; typing one or two characters narrows results below the cap in practice.
+- Calendar view placement is now preserved across plugin disable/re-enable. If you've moved the calendar to the left sidebar, into the main pane, or pinned it elsewhere, that placement now persists through plugin reloads. Previously, Calendar Plus snapped the view back to the right sidebar every time.
+
+Internal / repo
+- Periodic-note stores are now updated incrementally on file create/delete/rename events instead of doing a full folder rescan on each event. Negligible for typical vaults, but materially faster in large vaults (50k+ files, or daily folder set to the vault root). Settings changes still do a full reindex, which is the right behavior.
+- Refactored the five per-period note stores into a single shared factory in `src/ui/stores.ts`, halving the code and centralizing the new incremental-update logic.
+- Pinned the Obsidian API dependency in `package.json` to a specific commit SHA instead of the floating `#master` ref, and switched the GitHub Actions release workflow from `npm install` to `npm ci`. CI builds are now byte-deterministic for anyone cloning the repo.
+- Pruned stale extraneous workspace entries from `package-lock.json` left over from before the 1.7.0 vendoring.
+- Added a defensive null guard around `initLeaf`'s right-sidebar lookup so the calendar view can fail gracefully if the right sidebar is unavailable.
+- `FUTURE_PLANS.md` is now down to two deferred-with-clear-trigger items; the long cleanup sequence that started with 1.7.0 vendoring is fully landed.
+
 ## 1.7.5
 
 Focus: cleanup and polish release on top of 1.7.4. One small user-visible fix; the rest is internal hygiene.
