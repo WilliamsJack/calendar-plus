@@ -89,7 +89,7 @@ Calendar Plus requires Obsidian v0.9.11 or above to work properly.
 
 Calendar Plus is distributed as the standard three-file Obsidian plugin bundle (`main.js`, `manifest.json`, `styles.css`).
 
-**From a release**: download those three files from a [GitHub release](https://github.com/), copy them into your vault at `<vault>/.obsidian/plugins/calendar-plus/`, then enable Calendar Plus from Settings → Community plugins.
+**From a release**: download those three files from a [GitHub release](https://github.com/mattmaiorana/calendar-plus/releases), copy them into your vault at `<vault>/.obsidian/plugins/calendar-plus/`, then enable Calendar Plus from Settings → Community plugins.
 
 **From source**: see the [Development](#development) section below.
 
