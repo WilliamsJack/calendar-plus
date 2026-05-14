@@ -2,6 +2,7 @@
 
 <script lang="ts">
   import type { Locale, Moment } from "moment";
+  import { Platform } from "obsidian";
 
   import Day from "./Day.svelte";
   import Nav from "./Nav.svelte";
@@ -47,8 +48,7 @@
   let month: IMonth;
   let daysOfWeek: string[];
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let isMobile = (window.app as any).isMobile;
+  let isMobile = Platform.isMobile;
 
   $: month = getMonth(displayedMonth, localeData);
   $: daysOfWeek = getDaysOfWeek(today, localeData);

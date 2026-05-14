@@ -1,10 +1,11 @@
 <script lang="ts">
+  import { Platform } from "obsidian";
+
   export let onClick: () => void;
   export let tooltip: string;
   export let direction: "left" | "right";
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let isMobile = (window.app as any).isMobile;
+  let isMobile = Platform.isMobile;
 </script>
 
 <div

@@ -2,6 +2,10 @@ import type { Moment } from "moment";
 import { Notice, normalizePath, TFile, TFolder, Vault } from "obsidian";
 
 import type { Periodicity, PeriodicNoteSettings } from "src/settings";
+import type {
+  AppWithFold,
+  LocaleDataWithWeek,
+} from "src/types/obsidian-internal";
 
 // ---------------------------------------------------------------------------
 // Periodicity → moment unit mapping
@@ -116,8 +120,8 @@ export async function getTemplateInfo(template: string): Promise<ITemplateInfo> 
     }
 
     const contents = await vault.cachedRead(templateFile);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const foldInfo = (window.app as any).foldManager?.load?.(templateFile) ?? null;
+    const foldInfo =
+      (window.app as AppWithFold).foldManager?.load(templateFile) ?? null;
     return { contents, foldInfo };
   } catch (err) {
     console.error(
@@ -146,8 +150,8 @@ const DAYS_OF_WEEK_BASE = [
 ];
 
 function getDaysOfWeek(): string[] {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let weekStart = (window.moment.localeData() as any)._week.dow as number;
+  let weekStart = (window.moment.localeData() as unknown as LocaleDataWithWeek)
+    ._week.dow;
   const days = DAYS_OF_WEEK_BASE.slice();
   while (weekStart) {
     days.push(days.shift() as string);

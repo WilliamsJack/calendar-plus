@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Moment } from "moment";
+  import { Platform } from "obsidian";
   import Arrow from "./Arrow.svelte";
   export let displayedMonth: Moment;
   export let today: Moment;
@@ -12,8 +13,7 @@
   export let onClickQuarter: (date: Moment, isMetaPressed: boolean) => boolean;
   // Get the word 'Today' but localized to the current language
   const todayDisplayStr = today.calendar().split(/\d|\s/)[0];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let isMobile = (window.app as any).isMobile;
+  let isMobile = Platform.isMobile;
 
   // Function to determine the current quarter
   function getCurrentQuarter(month: number): number {

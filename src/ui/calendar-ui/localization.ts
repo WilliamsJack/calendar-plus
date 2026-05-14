@@ -1,5 +1,7 @@
 import type { WeekSpec } from "moment";
 
+import type { LocaleDataWithWeek } from "src/types/obsidian-internal";
+
 declare global {
   interface Window {
     _bundledLocaleWeekSpec: WeekSpec;
@@ -59,8 +61,9 @@ function overrideGlobalMomentWeekStart(weekStart: IWeekStartOption): void {
   // Save the initial locale weekspec so that we can restore
   // it when toggling between the different options in settings.
   if (!window._bundledLocaleWeekSpec) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    window._bundledLocaleWeekSpec = (<any>moment.localeData())._week;
+    window._bundledLocaleWeekSpec = (
+      moment.localeData() as unknown as LocaleDataWithWeek
+    )._week;
   }
 
   if (weekStart === "locale") {

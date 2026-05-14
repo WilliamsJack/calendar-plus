@@ -7,6 +7,7 @@ import type {
   Periodicity,
   PeriodicNoteSettings,
 } from "src/settings";
+import type { AppWithFold } from "src/types/obsidian-internal";
 import { createConfirmationDialog } from "src/ui/modal";
 
 import {
@@ -69,8 +70,7 @@ export async function createPeriodicNote(
   }
 
   if (foldInfo) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (window.app as any).foldManager?.save?.(createdFile, foldInfo);
+    (window.app as AppWithFold).foldManager?.save(createdFile, foldInfo);
   }
 
   return createdFile;
