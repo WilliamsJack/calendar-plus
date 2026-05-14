@@ -128,7 +128,7 @@ export abstract class TextInputSuggest<T> {
       this.position();
       return;
     }
-    document.body.appendChild(this.suggestEl);
+    activeDocument.body.appendChild(this.suggestEl);
     this.position();
     window.addEventListener("scroll", this.repositionListener, true);
     window.addEventListener("resize", this.repositionListener);
