@@ -1,8 +1,8 @@
 # Calendar Plus
 
-Calendar Plus is an [Obsidian](https://obsidian.md/) plugin that puts a calendar in the sidebar with integrated **daily**, **weekly**, **monthly**, **quarterly**, and **yearly** periodic-note support. Click a date to open or create that day's note. Dots on day and week-number cells show at a glance which periods already have a note.
+Calendar Plus is a substantial rewrite/reworking of Liam Cain's original Calendar and Periodic Notes plugins for Obsidian, with a few important new features. Most notably, it merges the two plugins into one integrated calendar + periodic-notes workflow — a sidebar calendar with built-in daily, weekly, monthly, quarterly, and yearly notes. Other major changes include making month, quarter, and year labels in the calendar header clickable, and changing the dots so they indicate whether a note exists — and nothing else.
 
-> Screenshot coming soon.
+![Calendar Plus sidebar screenshot](images/calendar-plus-screenshot.png)
 
 ## Features
 

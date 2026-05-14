@@ -63,7 +63,7 @@ export const defaultSettings = Object.freeze({
   localeOverride: "system-default",
 
   daily: {
-    enabled: false,
+    enabled: true,
     format: DEFAULT_DAILY_NOTE_FORMAT,
     folder: "",
     template: "",
