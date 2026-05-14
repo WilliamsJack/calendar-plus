@@ -113,17 +113,13 @@ export class CalendarSettingsTab extends PluginSettingTab {
       this.plugin.options.weekStart
     );
 
-    this.containerEl.createEl("h3", {
-      text: "General Settings",
-    });
+    new Setting(this.containerEl).setName("General Settings").setHeading();
     this.addWeekStartSetting();
     this.addCtrlClickSetting();
     this.addConfirmCreateSetting();
     this.addShowWeeklyNoteRightSetting();
 
-    this.containerEl.createEl("h3", {
-      text: "Periodic Notes",
-    });
+    new Setting(this.containerEl).setName("Periodic Notes").setHeading();
     this.containerEl.createEl("p", {
       cls: "setting-item-description",
       text: "Calendar manages periodic notes directly. To use existing notes, enter the same folder and date format you already use.",
@@ -134,9 +130,7 @@ export class CalendarSettingsTab extends PluginSettingTab {
     this.displayPeriodicNoteSettings("quarterly", "Quarterly notes", DEFAULT_QUARTERLY_NOTE_FORMAT);
     this.displayPeriodicNoteSettings("yearly", "Yearly notes", DEFAULT_YEARLY_NOTE_FORMAT);
 
-    this.containerEl.createEl("h3", {
-      text: "Advanced Settings",
-    });
+    new Setting(this.containerEl).setName("Advanced Settings").setHeading();
     this.addLocaleOverrideSetting();
   }
 
