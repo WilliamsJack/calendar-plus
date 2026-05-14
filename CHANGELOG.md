@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.7.12
+
+Focus: clear the single blocking Error the Obsidian community-plugin checker raised against 1.7.11. No intended user-visible behavior change.
+
+Fix
+- Removed the inline `// eslint-disable-next-line no-restricted-imports` directive from `src/types/moment.ts`. The Obsidian checker forbids disabling that rule (similar to how it forbids `no-explicit-any` disables), regardless of whether the disable is rule-specific or carries a description — 1.7.11's targeted, described disable was rejected as an Error. The directive is now gone; the import line below it is unchanged.
+- Preserved `src/types/moment.ts` as the single type-only seam for precise `Moment`, `Locale`, `WeekSpec`, and `DurationUnit` types. Consumers continue to `import type { Moment } from "src/types/moment"`; no per-file churn.
+- Runtime usage still imports `moment` from `"obsidian"` (no `window.moment` runtime access reintroduced). All other 1.7.10 / 1.7.11 cleanups — the runtime moment migration, `Platform.isMacOS`, type tightening, fire-and-forget `void`s, arrow class properties on `CalendarView` — are preserved.
+
+Expected checker outcome
+- The blocking Error should be cleared.
+- The type-only import line may remain as a non-blocking `no-restricted-imports` warning. That single warning is acceptable; this file is intentionally the only `"moment"` import in the source tree and the block comment in the file documents the trade-off.
+- Several `unsafe-call` / `unsafe-member-access` warnings on consumer-side `moment()` calls are still expected. Those are downstream of the Obsidian checker's TypeScript not following Obsidian's transitive `import * as Moment from 'moment'` re-export — independent of the central seam, and tracked as a follow-up if warning count remains a priority.
+
 ## 1.7.11
 
 Focus: regression fix for the 1.7.10 source-code warning cleanup. No intended user-visible behavior change.
