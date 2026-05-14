@@ -8,8 +8,8 @@ Read this before making changes. It captures project state, intentional decision
 - Intentionally a **separate** plugin from the original Calendar plugin — both can be installed and enabled simultaneously.
 - Plugin id: `calendar-plus`
 - User-facing name: `Calendar Plus`
-- Current version: `1.7.6` (kept in sync across `manifest.json`, `package.json`, `package-lock.json`, `versions.json`)
-- **Active branch is `main`.** Calendar Plus 1.7.6 is the current stable local baseline and lives on `main`. Earlier sessions worked on a `merge-periodic-notes` branch that has since been promoted to `main` — that name is no longer the working branch. If a branch named `old-main` exists, treat it as archival/reference only (the pre-merge upstream state); do not commit to it or use it as a base for new work.
+- Current version: `1.7.7` (kept in sync across `manifest.json`, `package.json`, `package-lock.json`, `versions.json`)
+- **Active branch is `main`.** Calendar Plus 1.7.7 is the current stable local baseline and lives on `main`. Earlier sessions worked on a `merge-periodic-notes` branch that has since been promoted to `main` — that name is no longer the working branch. If a branch named `old-main` exists, treat it as archival/reference only (the pre-merge upstream state); do not commit to it or use it as a base for new work.
 
 ## Important product decisions
 
@@ -37,7 +37,7 @@ Read this before making changes. It captures project state, intentional decision
 ## Important implementation notes
 
 - **Do not edit bundled `main.js` directly.** Always edit source under `src/` and run `npm run build`. The bundled file is a build artifact.
-- **Use npm**, not yarn. The lockfile of record is `package-lock.json`. `yarn.lock` exists in the repo for historical reasons — **do not touch `yarn.lock`**, and never let `npm install` modify it (it sometimes does as a side effect; revert if so).
+- **Use npm**, not yarn. The lockfile of record is `package-lock.json`. This repo intentionally does not include `yarn.lock`; do not re-introduce it.
 - **Baseline build warnings exist** from `svelte-check` (mappings.wasm fires once per `.svelte` file) and TypeScript reading `node_modules/obsidian/obsidian.d.ts` and `node_modules/@codemirror/view/dist/index.d.ts`. These are pre-existing and unrelated to source changes. Don't chase them unless your edits actually involve those files.
 - **Run `git status` before and after changes** so you can confirm the diff matches intent.
 - **Keep commits small and focused.** One logical change per commit. Each commit's diff should fit on a screen.
