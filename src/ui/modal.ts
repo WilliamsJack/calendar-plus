@@ -26,9 +26,11 @@ export class ConfirmationModal extends Modal {
           cls: "mod-cta",
           text: cta,
         })
-        .addEventListener("click", async () => {
-          await onAccept();
-          this.close();
+        .addEventListener("click", () => {
+          void (async () => {
+            await onAccept();
+            this.close();
+          })();
         });
     });
   }

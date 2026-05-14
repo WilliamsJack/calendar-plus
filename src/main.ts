@@ -34,7 +34,7 @@ export default class CalendarPlugin extends Plugin {
     this.addRibbonIcon("calendar-plus", "Open Calendar Plus", () => {
       const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_CALENDAR);
       if (leaves.length) {
-        this.app.workspace.revealLeaf(leaves[0]);
+        void this.app.workspace.revealLeaf(leaves[0]);
       } else {
         this.initLeaf();
       }
@@ -63,7 +63,7 @@ export default class CalendarPlugin extends Plugin {
         // Mount the calendar view if needed, then open the weekly note on the
         // freshly-mounted view. Fire-and-forget; no-op if no view can be made.
         void this.ensureCalendarView().then((view) => {
-          view?.openOrCreateWeeklyNote(moment(), false);
+          void view?.openOrCreateWeeklyNote(moment(), false);
         });
       },
     });
@@ -91,7 +91,7 @@ export default class CalendarPlugin extends Plugin {
     }
     const right = this.app.workspace.getRightLeaf(false);
     if (!right) return;
-    right.setViewState({
+    void right.setViewState({
       type: VIEW_TYPE_CALENDAR,
     });
   }

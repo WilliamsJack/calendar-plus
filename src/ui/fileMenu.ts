@@ -18,7 +18,7 @@ export function showFileMenu(app: App, file: TFile, position: Point): void {
       .setIcon("file-plus")
       .setSection("open")
       .onClick(() => {
-        app.workspace.openLinkText(file.path, "", true);
+        void app.workspace.openLinkText(file.path, "", true);
       })
   );
   app.workspace.trigger(
