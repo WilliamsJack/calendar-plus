@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.7.11
+
+Focus: regression fix for the 1.7.10 source-code warning cleanup. No intended user-visible behavior change.
+
+What went wrong in 1.7.10
+- 1.7.10 introduced `src/types/moment.ts` with `export type Moment = ReturnType<typeof moment>` (where `moment` is imported from `"obsidian"`). The intent was to satisfy the Obsidian community-plugin checker's restricted-imports rule for `"moment"` while preserving precise Moment instance types. In practice the derivation collapsed Moment instances to effectively `any` under the checker's type-aware lint pass, because resolving `typeof moment` through Obsidian's CommonJS re-export of moment's `export = moment; export as namespace moment` namespace did not yield a precise call-signature for `ReturnType` to extract. Calendar Plus's local lint (`@typescript-eslint/recommended`, non-type-aware) did not enable the `no-unsafe-*` rules that detect this, so the regression only surfaced when the Obsidian checker re-ran the plugin. Result: ~56 net new `unsafe-member-access` / `unsafe-call` warnings, one cluster per Moment method site (`.format`, `.clone`, `.add`, `.startOf`, `.weekday`, `.locale`, `.isoWeekday`, etc.).
+
+What 1.7.11 changes
+- Restored precise `Moment`, `Locale`, and `DurationUnit` types in `src/types/moment.ts`. The module now type-imports them directly from `"moment"` (with a single targeted `// eslint-disable-next-line no-restricted-imports` directive carrying a description of why it's there) and re-exports them. Consumers still `import type { Moment } from "src/types/moment"` everywhere else — no per-file churn.
+- Runtime usage is unchanged: every source file still imports `moment` from `"obsidian"`. This release does **not** reintroduce `window.moment` runtime access. The 1.7.10 wins from the moment-runtime migration, the `Platform.isMacOS` swap, the loose-type tightening, the `void`-prefixed promises, and the arrow class properties on `CalendarView` are all preserved.
+
+Notes for future contributors
+- `src/types/moment.ts` is now the **single type-only seam** between Calendar Plus and the `"moment"` package. Any new Moment type the codebase needs should be added there and re-exported — keep the per-file `"moment"` import surface at exactly one.
+- The eslint-disable directive uses the base ESLint `no-restricted-imports` rule rather than `@typescript-eslint/no-restricted-imports` because the pinned `@typescript-eslint/eslint-plugin@4.20.0` does not register the TS-specific variant; it was added in plugin v5+. If the typescript-eslint plugin is later upgraded, the disable target should switch to `@typescript-eslint/no-restricted-imports` for tighter scoping.
+
 ## 1.7.10
 
 Focus: source-code warning cleanup pass against the Obsidian community-plugin review. No intended user-visible behavior change relative to 1.7.9.
