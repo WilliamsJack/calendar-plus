@@ -1,4 +1,4 @@
-import type { Moment } from "moment";
+import type { Moment } from "src/types/moment";
 import { parseFrontMatterTags, TFile } from "obsidian";
 import type { ICalendarSource, IDayMetadata } from "src/ui/calendar-ui/types";
 import { getPeriodicNote as helperGetPeriodicNote } from "src/io/periodicNoteHelpers";

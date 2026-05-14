@@ -1,5 +1,4 @@
-import type { Moment, WeekSpec } from "moment";
-import { App, Plugin, WorkspaceLeaf } from "obsidian";
+import { App, Plugin, WorkspaceLeaf, moment } from "obsidian";
 
 import { VIEW_TYPE_CALENDAR } from "./constants";
 import { settings } from "./ui/stores";
@@ -7,12 +6,12 @@ import {
   CalendarSettingsTab,
   ISettings,
 } from "./settings";
+import type { WeekSpec } from "./types/moment";
 import CalendarView from "./view";
 
 declare global {
   interface Window {
     app: App;
-    moment: () => Moment;
     _bundledLocaleWeekSpec: WeekSpec;
   }
 }
@@ -64,7 +63,7 @@ export default class CalendarPlugin extends Plugin {
         // Mount the calendar view if needed, then open the weekly note on the
         // freshly-mounted view. Fire-and-forget; no-op if no view can be made.
         void this.ensureCalendarView().then((view) => {
-          view?.openOrCreateWeeklyNote(window.moment(), false);
+          view?.openOrCreateWeeklyNote(moment(), false);
         });
       },
     });

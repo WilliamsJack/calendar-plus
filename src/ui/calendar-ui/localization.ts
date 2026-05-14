@@ -1,5 +1,6 @@
-import type { WeekSpec } from "moment";
+import { moment } from "obsidian";
 
+import type { WeekSpec } from "src/types/moment";
 import type { LocaleDataWithWeek } from "src/types/obsidian-internal";
 
 declare global {
@@ -55,7 +56,6 @@ const weekdays = [
 ];
 
 function overrideGlobalMomentWeekStart(weekStart: IWeekStartOption): void {
-  const { moment } = window;
   const currentLocale = moment.locale();
 
   // Save the initial locale weekspec so that we can restore
@@ -101,7 +101,7 @@ export function configureGlobalMomentLocale(
     momentLocale = systemLang;
   }
 
-  const currentLocale = window.moment.locale(momentLocale);
+  const currentLocale = moment.locale(momentLocale);
   console.debug(
     `[Calendar] Trying to switch Moment.js global locale to ${momentLocale}, got ${currentLocale}`
   );

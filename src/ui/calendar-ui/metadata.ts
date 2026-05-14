@@ -1,4 +1,4 @@
-import type { Moment } from "moment";
+import type { Moment } from "src/types/moment";
 
 import type { ICalendarSource, IDayMetadata } from "./types";
 

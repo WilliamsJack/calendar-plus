@@ -1,8 +1,9 @@
 <svelte:options immutable />
 
 <script lang="ts">
-  import type { Locale, Moment } from "moment";
-  import { Platform } from "obsidian";
+  import { Platform, moment } from "obsidian";
+
+  import type { Locale, Moment } from "src/types/moment";
 
   import Day from "./Day.svelte";
   import Nav from "./Nav.svelte";
@@ -42,7 +43,7 @@
   export let selectedId: string;
 
   // Override-able local state
-  export let today: Moment = window.moment();
+  export let today: Moment = moment();
   export let displayedMonth = today;
 
   let month: IMonth;

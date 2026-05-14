@@ -1,7 +1,7 @@
 <svelte:options immutable />
 
 <script lang="ts">
-  import type { Moment } from "moment";
+  import { moment } from "obsidian";
   import { onDestroy } from "svelte";
 
   import CalendarBase from "./calendar-ui/components/Calendar.svelte";
@@ -9,6 +9,7 @@
   import type { ICalendarSource } from "./calendar-ui/types";
 
   import type { ISettings } from "src/settings";
+  import type { Moment } from "src/types/moment";
   import { activeFile, dailyNotes, monthlyNotes, quarterlyNotes, settings, weeklyNotes, yearlyNotes } from "./stores";
 
   let today: Moment;
@@ -29,7 +30,7 @@
   export let onContextMenuWeek: (date: Moment, event: MouseEvent) => boolean;
 
   export function tick() {
-    today = window.moment();
+    today = moment();
   }
 
   function getToday(settings: ISettings) {
@@ -39,7 +40,7 @@
     monthlyNotes.reindex();
     yearlyNotes.reindex();
     quarterlyNotes.reindex();
-    return window.moment();
+    return moment();
   }
 
   // 1 minute heartbeat to keep `today` reflecting the current day

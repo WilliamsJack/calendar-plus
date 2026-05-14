@@ -1,7 +1,7 @@
-import type { Moment } from "moment";
-import { Notice, normalizePath, TFile, TFolder, Vault } from "obsidian";
+import { moment, Notice, normalizePath, TFile, TFolder, Vault } from "obsidian";
 
 import type { Periodicity, PeriodicNoteSettings } from "src/settings";
+import type { Moment } from "src/types/moment";
 import type {
   AppWithFold,
   LocaleDataWithWeek,
@@ -150,7 +150,7 @@ const DAYS_OF_WEEK_BASE = [
 ];
 
 function getDaysOfWeek(): string[] {
-  let weekStart = (window.moment.localeData() as unknown as LocaleDataWithWeek)
+  let weekStart = (moment.localeData() as unknown as LocaleDataWithWeek)
     ._week.dow;
   const days = DAYS_OF_WEEK_BASE.slice();
   while (weekStart) {
@@ -179,7 +179,7 @@ export function applyTemplateTokens(
   result = result.replace(
     PARAMETERIZED_DATE_TIME_RE,
     (_match, _which, calc, timeDelta, unit, momentFormat) => {
-      const now = window.moment();
+      const now = moment();
       const currentDate = date.clone().set({
         hour: now.get("hour"),
         minute: now.get("minute"),
@@ -198,7 +198,7 @@ export function applyTemplateTokens(
   // Plain tokens. These are mostly redundant after the parameterized pass but
   // are kept for clarity and for any token shapes the regex above misses.
   result = result.replace(/{{\s*date\s*}}/gi, filename);
-  result = result.replace(/{{\s*time\s*}}/gi, window.moment().format("HH:mm"));
+  result = result.replace(/{{\s*time\s*}}/gi, moment().format("HH:mm"));
   result = result.replace(/{{\s*title\s*}}/gi, filename);
 
   if (periodicity === "daily") {
@@ -266,13 +266,13 @@ export function getDateFromFilename(
   if (!format) return null;
 
   const effectiveFormat = format.split("/").pop() as string;
-  const noteDate = window.moment(filename, effectiveFormat, true);
+  const noteDate = moment(filename, effectiveFormat, true);
   if (!noteDate.isValid()) return null;
 
   if (isFormatAmbiguous(effectiveFormat, periodicity)) {
     const cleanFormat = removeEscapedCharacters(effectiveFormat);
     if (/w{1,2}/i.test(cleanFormat)) {
-      return window.moment(
+      return moment(
         filename,
         effectiveFormat.replace(/M{1,4}/g, "").replace(/D{1,4}/g, ""),
         false

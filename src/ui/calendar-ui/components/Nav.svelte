@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Moment } from "moment";
+  import type { Moment } from "src/types/moment";
   import { Platform } from "obsidian";
   import Arrow from "./Arrow.svelte";
   export let displayedMonth: Moment;

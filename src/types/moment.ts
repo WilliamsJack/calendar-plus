@@ -19,6 +19,12 @@ import { moment } from "obsidian";
 export type Moment = ReturnType<typeof moment>;
 
 /**
+ * A moment locale object, derived from `moment.localeData()`. Used by the
+ * vendored calendar UI to pass locale information into the calendar grid.
+ */
+export type Locale = ReturnType<typeof moment.localeData>;
+
+/**
  * Locale week specification — the shape `moment.updateLocale` accepts under
  * its `week` key. Stable across moment 2.x. Defined locally so this module
  * is the only seam between Calendar Plus and moment's internal types.

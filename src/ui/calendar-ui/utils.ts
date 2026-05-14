@@ -1,17 +1,15 @@
-import type { Moment } from "moment";
+import { Platform, moment } from "obsidian";
+
+import type { Moment } from "src/types/moment";
 
 import type { IMonth, IWeek } from "./types";
 
-function isMacOS() {
-  return navigator.appVersion.indexOf("Mac") !== -1;
-}
-
 export function isMetaPressed(e: MouseEvent): boolean {
-  return isMacOS() ? e.metaKey : e.ctrlKey;
+  return Platform.isMacOS ? e.metaKey : e.ctrlKey;
 }
 
 export function getDaysOfWeek(..._args: unknown[]): string[] {
-  return window.moment.weekdaysShort(true);
+  return moment.weekdaysShort(true);
 }
 
 export function isWeekend(date: Moment): boolean {
@@ -27,7 +25,7 @@ export function getStartOfWeek(days: Moment[]): Moment {
  * the calendar view.
  */
 export function getMonth(displayedMonth: Moment, ..._args: unknown[]): IMonth {
-  const locale = window.moment().locale();
+  const locale = moment().locale();
   const month = [];
   let week: IWeek;
 

@@ -1,7 +1,7 @@
 <svelte:options immutable />
 
 <script lang="ts">
-  import type { Moment } from "moment";
+  import type { Moment } from "src/types/moment";
   import { getDateUID } from "src/io/periodicNoteHelpers";
 
   import Dot from "./Dot.svelte";
