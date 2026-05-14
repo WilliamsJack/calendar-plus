@@ -1,54 +1,127 @@
 # Calendar Plus
 
-Calendar Plus is a fork of [Liam Cain's Calendar plugin](https://github.com/liamcain/obsidian-calendar-plugin), with integrated periodic note functionality inspired by and merged from [Liam Cain's Periodic Notes plugin](https://github.com/liamcain/obsidian-periodic-notes). Calendar Plus manages daily, weekly, monthly, quarterly, and yearly notes directly, without depending on the original Calendar or Periodic Notes plugins.
+Calendar Plus is an [Obsidian](https://obsidian.md/) plugin that puts a calendar in the sidebar with integrated **daily**, **weekly**, **monthly**, **quarterly**, and **yearly** periodic-note support. Click a date to open or create that day's note. Dots on day and week-number cells show at a glance which periods already have a note.
 
-This plugin for [Obsidian](https://obsidian.md/) creates a Calendar view for visualizing and navigating between your periodic notes.
-
-![screenshot-full](https://github.com/user-attachments/assets/191df6fe-659a-4996-beb3-28930b759fd2)
-
-## Usage
-
-After enabling the plugin in the settings menu, you should see the calendar view appear in the right sidebar.
-
-Calendar Plus manages its own settings for daily, weekly, monthly, quarterly, and yearly notes. Enable each note type and configure its date format, folder, and template from the plugin settings — Calendar Plus does not read from Obsidian's core Daily Notes plugin or the Periodic Notes plugin.
+> Screenshot coming soon.
 
 ## Features
 
-- Go to any **daily note**.
-- Create new daily notes for days that don't have one. (This is helpful for when you need to backfill old notes or if you're planning ahead for future notes! This will use your configured **daily note** template.)
-- Use **weekly, monthly, quarterly, and yearly notes** for additional organization layers — each with its own folder, date format, and template.
+- A calendar view for navigating your vault by date.
+- Built-in periodic notes for daily, weekly, monthly, quarterly, and yearly periodicities. Each periodicity has its own folder, filename format, and optional template — no separate Periodic Notes plugin required.
+- Click a day cell to open or create that day's note. Click a week-number cell to open or create the weekly note. Click the month, year, or quarter labels in the calendar header to open or create the corresponding monthly / yearly / quarterly note.
+- A filled dot on a day cell means a periodic note exists for that day. A dot on a week-number cell means a weekly note exists for that week. Dots don't represent anything else — no word counts, no task counts, no streak metadata.
+- The calendar view can live anywhere. Drag it to the left sidebar, into the main content area, pin it as a tab, or pop it into its own window — Calendar Plus preserves the placement across plugin reloads.
+- Theme-friendly: the calendar inherits Obsidian's CSS variables and respects the active theme out of the box.
 
-## Settings
+## Installation
 
-### General Settings
+Calendar Plus is distributed as the standard three-file Obsidian plugin bundle (`main.js`, `manifest.json`, `styles.css`).
 
-- **Start week on [default: Locale default]**: Choose the first day of the week. "Locale default" uses whatever your system locale specifies.
-- **Ctrl + Click Behaviour**: Controls what happens when you Ctrl/Cmd-click a date cell — either "Open in new tab" or "Open in new split".
-- **Confirm before creating new note [default: on]**: Show a confirmation modal before creating a new note. Turn off for one-click creation.
-- **Change week number side [default: off]**: When enabled, week number cells appear on the right side of the calendar instead of the left.
+**From a release**: download those three files from a [GitHub release](https://github.com/mattmaiorana/calendar-plus/releases), copy them into your vault at `<vault>/.obsidian/plugins/calendar-plus/`, then enable Calendar Plus from Settings → Community plugins.
 
-### Periodic Notes
+**From source**: see the [Development](#development) section below.
 
-Calendar Plus manages periodic notes directly. Enable each note type and configure its settings:
+## Usage
 
-- **Enable**: Activates the note type. Enabling Weekly notes also shows week-number cells in the calendar.
-- **Date format**: [Moment.js format string](https://momentjs.com/docs/#/displaying/format/) used for note filenames.
-- **Folder**: Where notes are created. Leave blank to use the vault root.
-- **Template file**: Path to a template note. Leave blank for no template.
+After enabling the plugin, the calendar appears in the right sidebar. You can drag it elsewhere or pin it — the placement is remembered.
 
-The five note types are **Daily**, **Weekly**, **Monthly**, **Quarterly**, and **Yearly**. Each has its own Enable toggle, Date format, Folder, and Template file setting.
+Configure each periodic-note type independently from Settings → Calendar Plus → Periodic Notes:
 
-### Advanced Settings
+- **Enable** turns the note type on. Enabling Weekly notes also shows the week-number column.
+- **Date format** is a [Moment.js format string](https://momentjs.com/docs/#/displaying/format/) used for note filenames.
+- **Folder** is where notes for that periodicity are created. Leave blank for the vault root.
+- **Template file** is an optional path to a template note.
 
-- **Override locale**: Force a specific locale for date formatting, independent of your system locale.
+Calendar Plus owns its own settings for all five periodic-note types and doesn't read from Obsidian's core Daily Notes plugin or other periodic-notes plugins.
+
+### Settings
+
+#### General
+
+- **Start week on**: choose the first day of the week. "Locale default" uses your system locale.
+- **Ctrl + Click behaviour**: when Ctrl/Cmd-clicking a date cell, open the note in a new tab or in a new split.
+- **Confirm before creating new note**: show a confirmation modal before creating a new note. Turn off for one-click creation.
+- **Change week number side**: show week-number cells on the right side of the calendar instead of the left.
+
+#### Periodic Notes
+
+Each of the five note types — Daily, Weekly, Monthly, Quarterly, Yearly — has its own Enable toggle, Date format, Folder, and Template file setting.
+
+#### Advanced
+
+- **Override locale**: force a specific locale for date formatting, independent of your system locale.
+
+## FAQ
+
+### What do the dots mean?
+
+A filled dot on a day cell means a periodic note exists for that day. A dot on a week-number cell means a weekly note exists for that week. Dots have no other meaning — they don't reflect word count or task status.
+
+### How do I add week numbers to the calendar?
+
+Enable **Weekly notes** in the Calendar Plus settings. Week-number cells appear automatically; clicking one opens or creates the weekly note for that week.
+
+### How do I have the calendar start on Monday?
+
+From the Settings tab, use the **Start week on** dropdown.
+
+### How do I hide the calendar without disabling the plugin?
+
+Right-click the calendar's view icon in the sidebar and choose Close. Reopen it later from the Command Palette: `Calendar Plus: Open view`.
+
+### How do I include literal words in a weekly note filename?
+
+Wrap the words in `[]` brackets in your Moment.js format string. For example, `[Week] ww [of Year] gggg` produces filenames like `Week 21 of Year 2020`. The brackets tell Moment.js to treat the enclosed text literally instead of as format tokens.
+
+## Tips
+
+### Embed each day of a week in a weekly note
+
+Add this snippet to your weekly note template to embed each day's note:
+
+```md
+## Week at a Glance
+
+![[{{sunday:gggg-MM-DD}}]]
+![[{{monday:gggg-MM-DD}}]]
+![[{{tuesday:gggg-MM-DD}}]]
+![[{{wednesday:gggg-MM-DD}}]]
+![[{{thursday:gggg-MM-DD}}]]
+![[{{friday:gggg-MM-DD}}]]
+![[{{saturday:gggg-MM-DD}}]]
+```
+
+### Hover preview
+
+Hold Ctrl or Cmd while hovering a day cell to preview the corresponding daily note.
+
+### Open in a split
+
+Ctrl/Cmd-click a date cell to open the note in a new split or new tab, depending on the **Ctrl + Click behaviour** setting.
+
+### Reveal an open periodic note on the calendar
+
+Run `Calendar Plus: Reveal active note` from the Command Palette to scroll the calendar to the month containing the currently-open periodic note.
+
+### Style weekends differently
+
+Set `--color-background-weekend` in your `obsidian.css` to any color to distinguish weekend columns.
+
+### Weekly-note template tags
+
+When a weekly note is created from a template, Calendar Plus expands these tags:
+
+| Tag | Description |
+| --- | --- |
+| `{{sunday:fmt}}` through `{{saturday:fmt}}` | Inserts the date of that day of the current week, formatted with `fmt`. Specify the format explicitly (e.g. `{{sunday:gggg-MM-DD}}`). |
+| `{{title}}` | The note's filename. |
+| `{{date:fmt}}`, `{{time:fmt}}` | The date / time of the first day of the week, formatted with `fmt`. |
 
 ## Customization
 
-The following CSS Variables can be overridden in your `obsidian.css` file.
+Calendar Plus exposes CSS variables you can override in your `obsidian.css`:
 
 ```css
-/* calendar-plus */
-
 #calendar-container {
   --color-background-heading: transparent;
   --color-background-day: transparent;
@@ -67,7 +140,7 @@ The following CSS Variables can be overridden in your `obsidian.css` file.
 }
 ```
 
-In addition to the CSS Variables, there are some classes you can override for further customization. For example, if you don't like how bright the title is, you can override it with:
+To override specific calendar classes, prefix them with `#calendar-container` so the change doesn't leak into the rest of Obsidian:
 
 ```css
 #calendar-container .year {
@@ -75,117 +148,13 @@ In addition to the CSS Variables, there are some classes you can override for fu
 }
 ```
 
-> **Note:** It's especially important when overriding the classes to prefix them with `#calendar-container` to avoid any unexpected changes within Obsidian!
+### Caution for theme authors
 
-### Caution to Theme Creators
-
-If you use "Inspect Element" on the calendar, you will notice that the CSS classes are quite illegible. For example: `.day.svelte-1lgyrog.svelte-1lgyrog`. What's going on here? The classes that begin with `svelte-` are autogenerated and are used to avoid the calendar styles affecting any other elements in the app. That being said: **ignore them!** Those CSS classes are likely to change from release to release, and your overrides _will_ break. Just target the human-readable part of the class names. So to override `.day.svelte-1lgyrog.svelte-1lgyrog`, you should use `#calendar-container .day { ... }`
+If you inspect the calendar's DOM, you'll see class names with autogenerated suffixes such as `.day.svelte-abc123.svelte-abc123`. The `svelte-…` portion is generated at build time, changes between releases, and is **not** a stable styling API. Target only the human-readable part of the class — `.day`, `.week-num`, `.month`, etc. — and prefix with `#calendar-container` so your overrides apply to Calendar Plus specifically.
 
 ## Compatibility
 
-Calendar Plus requires Obsidian v0.9.11 or above to work properly.
-
-## Installation
-
-Calendar Plus is distributed as the standard three-file Obsidian plugin bundle (`main.js`, `manifest.json`, `styles.css`).
-
-**From a release**: download those three files from a [GitHub release](https://github.com/mattmaiorana/calendar-plus/releases), copy them into your vault at `<vault>/.obsidian/plugins/calendar-plus/`, then enable Calendar Plus from Settings → Community plugins.
-
-**From source**: see the [Development](#development) section below.
-
-## FAQ
-
-### What do the dots mean?
-
-A filled dot on a day cell means a periodic note exists for that day. A dot on a week-number cell means a weekly note exists for that week. Dots have no other meaning — they do not reflect word count or task status.
-
-### How do I change the styling of the Calendar?
-
-By default, the calendar should seamlessly match your theme, but if you'd like to further customize it, you can! In your `obsidian.css` file (inside your vault) you can configure the styling to your heart's content.
-
-### Can I add week numbers to the calendar?
-
-Enable **Weekly notes** in the Calendar Plus settings (Settings → Calendar Plus → Periodic Notes → Weekly notes → Enable). Week-number cells appear automatically and clicking one opens or creates the weekly note for that week.
-
-### How do I hide the calendar plugin without disabling the plugin?
-
-Just like other sidebar views (e.g. Backlinks, Outline), the calendar view can be closed by right-clicking on the view icon.
-
-### I accidentally closed the calendar. How do I reopen it?
-
-If you close the calendar widget (right-clicking on the panel nav and clicking close), you can always reopen the view from the Command Palette. Just search for `Calendar Plus: Open view`.
-
-### How do I have the calendar start on Monday?
-
-From the Settings menu, use the **Start week on** dropdown to choose your preferred first day of the week (Locale default, Sunday, Monday, etc.).
-
-### How do I include "unformatted" words in my weekly note filenames?
-
-If you want the weekly note format to include a word (e.g. "Week 21 of Year 2020") you can do so by surrounding the words with `[]` brackets. This tells [moment](https://momentjs.com/docs/#/displaying/format/) to ignore the words. So for the example above, you would set your format to `[Week] ww [of Year] gggg`.
-
-### How do I use weekly notes?
-
-Enable Weekly notes in the Calendar Plus settings, then configure its date format, folder, and template. You can open the current weekly note via the command `Calendar Plus: Open Weekly Note`, or by clicking a week-number cell in the calendar. Week-number cells appear when Weekly notes are enabled.
-
-## Protips
-
-### Embed your entire week in a weekly note
-
-If you add the following snippet to your weekly note template, you can a seamless view of your week in a single click.
-
-```md
-## Week at a Glance
-
-![[{{sunday:gggg-MM-DD}}]]
-![[{{monday:gggg-MM-DD}}]]
-![[{{tuesday:gggg-MM-DD}}]]
-![[{{wednesday:gggg-MM-DD}}]]
-![[{{thursday:gggg-MM-DD}}]]
-![[{{friday:gggg-MM-DD}}]]
-![[{{saturday:gggg-MM-DD}}]]
-```
-
-### Hover Preview
-
-Just like the Obsidian's graph and internal links, the calendar supports page previews for your daily notes. Just hover over a cell while holding down `Ctrl/Cmd` on your keyboard!
-
-### The calendar can be moved (and pinned!) anywhere
-
-Just because the calendar appears in the right sidebar doesn't mean it has to stay there. Feel free to drag it to the left sidebar, or (if you have the screen real estate for it) into the main content area. If you move it out of the sidebar, the view can even be pinned; great for more advanced tile layouts!
-
-### Open daily notes in a new split
-
-If you `Ctrl/Command`-Click on a note in your calendar, it will open daily note in a new split. Useful if you want to open a bunch of daily notes in a row (especially if you have the **Sliding Panes** plugin enabled!)
-
-### Reveal open note on calendar
-
-If you open a note from a different month, you might want to see it on the calendar view. To do so, you can run the command `Calendar Plus: Reveal active note` from the command palette.
-
-### Add custom styling for weekends
-
-If you want to style weekends to be distinguishable from weekdays, you can set the `var(--color-background-weekend)` to be any color you want.
-
-### Weekly Notes
-
-Weekly notes are integrated into Calendar Plus. Enable Weekly notes in the plugin settings and configure its folder, date format, and template. The default format is `gggg-[W]ww`. If you use `DD` in the week format, it refers to the first day of the week (Sunday or Monday, depending on your settings).
-
-You can open the current weekly note via `Calendar Plus: Open Weekly Note` or by clicking a week-number cell in the calendar.
-
-#### Template Tags
-
-| Tag                                                                                    | Description                                                                                                                                                                                                  |
-| -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `sunday`, `monday`, `tuesday`, `wednesday`, `thursday`, `friday`, `saturday`, `sunday` | Because weekly tags refer to main days, you can refer to individual days like this `{{sunday:gggg-MM-DD}}` to automatically insert the date for that particular day. Note, you must specify the date format! |
-| `title`                                                                                | Works the same as the daily note `{{title}}`. It will insert the title of the note                                                                                                                           |
-| `date`, `time`                                                                         | Works the same as the daily note `{{date}}` and `{{time}}`. It will insert the date and time of the first day of the week. Useful for creating a heading (e.g. `# # {{date:gggg [Week] ww}}`).               |
-
-## See it in action
-
-These walkthroughs cover the original Calendar plugin, which Calendar Plus is based on. The calendar UI and daily/weekly note workflows are the same; the settings UI and dot behavior differ from what is described in these videos.
-
-- [Nick Milo provides a nice plugin walkthrough](https://www.youtube.com/watch?v=X61wRmfZU8Y&t=1099s)
-- [Santi Younger demos how Calendar + Periodic Notes can be used for weekly review](https://www.youtube.com/watch?v=T9y8JABS9_Q)
-- [Filipe Donadio uses the calendar to plan his day](https://www.youtube.com/watch?v=hxf3_dXIcqc)
+Calendar Plus requires Obsidian v0.9.11 or above.
 
 ## Development
 
@@ -198,7 +167,7 @@ npm run build   # type-check, lint, and bundle to main.js
 
 `npm run build` produces `main.js` in the repo root. Together with `manifest.json` and `styles.css`, those are the three files Obsidian needs to load the plugin.
 
-The Calendar UI is vendored under `src/ui/calendar-ui/` so Calendar Plus owns its components, types, and helpers directly — no `obsidian-calendar-ui` or `@popperjs/core` runtime dependency.
+The Calendar UI is vendored under `src/ui/calendar-ui/`, so Calendar Plus owns its components, types, and helpers directly with no calendar-UI or Popper runtime dependency.
 
 ## Changelog
 
@@ -206,11 +175,12 @@ See [CHANGELOG.md](./CHANGELOG.md) for release-by-release notes.
 
 ## License
 
-Calendar Plus is released under the [MIT License](./LICENSE). The original Obsidian Calendar plugin is also MIT-licensed; both copyright notices are preserved in `LICENSE`.
+Calendar Plus is released under the [MIT License](./LICENSE).
 
 ## Credits
 
-- [Liam Cain](https://github.com/liamcain) — author of the original [Obsidian Calendar plugin](https://github.com/liamcain/obsidian-calendar-plugin) and [Periodic Notes plugin](https://github.com/liamcain/obsidian-periodic-notes), which Calendar Plus is forked from and inspired by. The vendored calendar UI under `src/ui/calendar-ui/` originates from `obsidian-calendar-ui` (now no longer a dependency).
-- The Obsidian developer community for the plugin API and documentation.
-- The settings autocomplete implementation is adapted from a no-Popper pattern in the Daily Checklist plugin.
+Calendar Plus began as a fork of [Liam Cain's Obsidian Calendar plugin](https://github.com/liamcain/obsidian-calendar-plugin), draws on ideas from [Liam Cain's Periodic Notes plugin](https://github.com/liamcain/obsidian-periodic-notes), and was also inspired by [FBarrca's Obsidian Calendar fork](https://github.com/FBarrca/obsidian-calendar-plugin/releases). It has since evolved into its own integrated calendar + periodic-notes plugin, with the calendar UI vendored directly into the codebase and daily / weekly / monthly / quarterly / yearly note support built in.
 
+- [Liam Cain](https://github.com/liamcain) for the original Obsidian Calendar and Periodic Notes plugins.
+- [FBarrca](https://github.com/FBarrca) for an Obsidian Calendar fork that informed additional Calendar Plus features and direction.
+- The Obsidian developer community for the plugin API and documentation.
