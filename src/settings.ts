@@ -113,7 +113,7 @@ export class CalendarSettingsTab extends PluginSettingTab {
       this.plugin.options.weekStart
     );
 
-    new Setting(this.containerEl).setName("General Settings").setHeading();
+    new Setting(this.containerEl).setName("Calendar behavior").setHeading();
     this.addWeekStartSetting();
     this.addCtrlClickSetting();
     this.addConfirmCreateSetting();
@@ -130,7 +130,7 @@ export class CalendarSettingsTab extends PluginSettingTab {
     this.displayPeriodicNoteSettings("quarterly", "Quarterly notes", DEFAULT_QUARTERLY_NOTE_FORMAT);
     this.displayPeriodicNoteSettings("yearly", "Yearly notes", DEFAULT_YEARLY_NOTE_FORMAT);
 
-    new Setting(this.containerEl).setName("Advanced Settings").setHeading();
+    new Setting(this.containerEl).setName("Locale").setHeading();
     this.addLocaleOverrideSetting();
   }
 
