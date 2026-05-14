@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.7.10
+
+Focus: source-code warning cleanup pass against the Obsidian community-plugin review. No intended user-visible behavior change relative to 1.7.9.
+
+Code quality (no behavior change)
+- Migrated all `Moment` usage off the `"moment"` package. Calendar Plus now imports the runtime `moment` value from `"obsidian"` (which bundles moment) and derives the `Moment`, `Locale`, `WeekSpec`, and `DurationUnit` types locally in `src/types/moment.ts`. No source file imports types from `"moment"` directly anymore.
+- Replaced the deprecated `navigator.appVersion` macOS sniff with Obsidian's documented `Platform.isMacOS` constant for Cmd/Ctrl-click detection.
+- Tightened loose types in several hot paths: explicit `string | undefined` parameter types on the template-token regex callbacks (with a `DurationUnit` cast at the `.add()` call site), a typed `metadataReducer` accumulator with `?? []` / `?? {}` defaults, an explicit `string[]` on the tag-extraction and `partition` accumulators, a corrected `string | null` return on `getDateUIDFromFile`, and a `Partial<ISettings>` cast at the `loadData()` boundary in `loadOptions`. Two unnecessary type assertions removed (`split("/").pop() as string` → `?? format` fallback; the locale-override dropdown cast).
+- Marked the remaining intentionally fire-and-forget promise calls with `void` (`workspace.revealLeaf`, `setViewState`, the nested `openOrCreateWeeklyNote` inside the command callback, the file-menu's `openLinkText`, and the confirmation-modal click handler — the latter rewritten as a void async IIFE so the event listener has the expected `void` return type).
+- Converted the bound `CalendarView` event-handler and Svelte-prop methods to arrow class properties. The constructor's 20-line `this.X = this.X.bind(this)` block is gone; methods are `this`-bound at instance creation. The seven methods that aren't passed as callbacks (`getViewType`, `getDisplayText`, `getIcon`, `onOpen`, `onClose`, `updateActiveFile`, `revealActiveNote`) remain regular instance methods.
+
+Known deferred warnings
+- `localStorage.getItem("language")` in `src/ui/calendar-ui/localization.ts` is still flagged. Obsidian's `App.getLanguage()` is not in Calendar Plus's currently pinned Obsidian API (commit `23947b58…`, version 1.7.2); resolving this warning is paired with a future Obsidian d.ts pin bump.
+- Several `unsafe-call` warnings on the Svelte `Calendar` component's `tick`, `$set`, and `$destroy` methods are framework-typing-generation noise rather than Calendar Plus correctness issues. Deferred pending a focused Svelte typing investigation.
+
 ## 1.7.9
 
 Focus: clearing the last two Obsidian community-plugin review errors from the 1.7.8 resubmission. Settings-tab section headings renamed; no other behavior change.
