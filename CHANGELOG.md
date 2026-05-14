@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.7.7
+
+Focus: clearing Obsidian community-plugin review findings ahead of the directory submission. No user-visible behavior change; the calendar, settings, and periodic-note flows behave exactly as in 1.7.6.
+
+Code quality
+- Replaced every `@typescript-eslint/no-explicit-any` eslint-disable in the source tree with typed extension interfaces over Obsidian's internal APIs (`foldManager`, `keymap`, `fileManager.promptForFileDeletion`) and, for the mobile-detection paths in the vendored calendar UI, the documented public `Platform.isMobile`. The internal-API typings live in a new `src/types/obsidian-internal.ts`.
+- Tightened the `ConfirmationModal` accept-handler signature: `onAccept` is now typed `() => Promise<void>` instead of `(...args: any[]) => Promise<void>`, removing the unlimited eslint-disable directive in `src/ui/modal.ts`.
+- Switched the settings-tab section headings ("General Settings", "Periodic Notes", "Advanced Settings") from raw `<h3>` elements to `new Setting(...).setHeading()`, the documented Obsidian API. Section chrome now matches Obsidian's native settings styling.
+- Switched the settings autocomplete dropdown's parent from `document.body` to `activeDocument.body` so the dropdown attaches correctly when settings are opened in a popout window. No behavior change in the main window.
+- Marked intentional fire-and-forget promise calls with `void` (five `writeOptions` calls behind general-settings handlers, five `tryToCreate*Note` calls in the calendar view's open-or-create flows). No scheduling change; lint warnings silenced.
+
+Release pipeline
+- Removed the unsupported `calendar-plus-<tag>.zip` asset from the GitHub Actions release. Releases now ship only the three Obsidian-required files (`main.js`, `manifest.json`, `styles.css`).
+- Added build-provenance attestations via `actions/attest-build-provenance@v2` for `main.js`, `manifest.json`, and `styles.css`. Workflow permissions extended to `id-token: write` and `attestations: write` to support the attestation step.
+- Release notes are now extracted from the top section of `CHANGELOG.md` at release time (`awk` over the first `##` heading) and supplied to the release via `body_path: RELEASE_NOTES.md`. Tagged releases now produce populated release bodies automatically.
+
 ## 1.7.6
 
 Focus: performance, correctness, and publication-readiness release on top of 1.7.5.
