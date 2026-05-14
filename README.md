@@ -87,7 +87,11 @@ Calendar Plus requires Obsidian v0.9.11 or above to work properly.
 
 ## Installation
 
-Calendar Plus is a fork and is not published in the Obsidian Community Plugins catalog. To install manually, copy the built `main.js`, `manifest.json`, and `styles.css` into your vault at `<vault>/.obsidian/plugins/calendar-plus/`, then enable Calendar Plus from Settings → Community plugins.
+Calendar Plus is distributed as the standard three-file Obsidian plugin bundle (`main.js`, `manifest.json`, `styles.css`).
+
+**From a release**: download those three files from a [GitHub release](https://github.com/), copy them into your vault at `<vault>/.obsidian/plugins/calendar-plus/`, then enable Calendar Plus from Settings → Community plugins.
+
+**From source**: see the [Development](#development) section below.
 
 ## FAQ
 
@@ -182,4 +186,31 @@ These walkthroughs cover the original Calendar plugin, which Calendar Plus is ba
 - [Nick Milo provides a nice plugin walkthrough](https://www.youtube.com/watch?v=X61wRmfZU8Y&t=1099s)
 - [Santi Younger demos how Calendar + Periodic Notes can be used for weekly review](https://www.youtube.com/watch?v=T9y8JABS9_Q)
 - [Filipe Donadio uses the calendar to plan his day](https://www.youtube.com/watch?v=hxf3_dXIcqc)
+
+## Development
+
+Calendar Plus is a Svelte + TypeScript plugin built with Rollup. Node 20 or newer is recommended.
+
+```sh
+npm ci          # install dependencies from the lockfile
+npm run build   # type-check, lint, and bundle to main.js
+```
+
+`npm run build` produces `main.js` in the repo root. Together with `manifest.json` and `styles.css`, those are the three files Obsidian needs to load the plugin.
+
+The Calendar UI is vendored under `src/ui/calendar-ui/` so Calendar Plus owns its components, types, and helpers directly — no `obsidian-calendar-ui` or `@popperjs/core` runtime dependency.
+
+## Changelog
+
+See [CHANGELOG.md](./CHANGELOG.md) for release-by-release notes.
+
+## License
+
+Calendar Plus is released under the [MIT License](./LICENSE). The original Obsidian Calendar plugin is also MIT-licensed; both copyright notices are preserved in `LICENSE`.
+
+## Credits
+
+- [Liam Cain](https://github.com/liamcain) — author of the original [Obsidian Calendar plugin](https://github.com/liamcain/obsidian-calendar-plugin) and [Periodic Notes plugin](https://github.com/liamcain/obsidian-periodic-notes), which Calendar Plus is forked from and inspired by. The vendored calendar UI under `src/ui/calendar-ui/` originates from `obsidian-calendar-ui` (now no longer a dependency).
+- The Obsidian developer community for the plugin API and documentation.
+- The settings autocomplete implementation is adapted from a no-Popper pattern in the Daily Checklist plugin.
 

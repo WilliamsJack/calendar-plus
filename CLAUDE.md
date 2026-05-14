@@ -8,8 +8,8 @@ Read this before making changes. It captures project state, intentional decision
 - Intentionally a **separate** plugin from the original Calendar plugin — both can be installed and enabled simultaneously.
 - Plugin id: `calendar-plus`
 - User-facing name: `Calendar Plus`
-- Current version: `1.7.5` (kept in sync across `manifest.json`, `package.json`, `package-lock.json`, `versions.json`)
-- **Active branch is `main`.** Calendar Plus 1.7.5 is the current stable local baseline and lives on `main`. Earlier sessions worked on a `merge-periodic-notes` branch that has since been promoted to `main` — that name is no longer the working branch. If a branch named `old-main` exists, treat it as archival/reference only (the pre-merge upstream state); do not commit to it or use it as a base for new work.
+- Current version: `1.7.6` (kept in sync across `manifest.json`, `package.json`, `package-lock.json`, `versions.json`)
+- **Active branch is `main`.** Calendar Plus 1.7.6 is the current stable local baseline and lives on `main`. Earlier sessions worked on a `merge-periodic-notes` branch that has since been promoted to `main` — that name is no longer the working branch. If a branch named `old-main` exists, treat it as archival/reference only (the pre-merge upstream state); do not commit to it or use it as a base for new work.
 
 ## Important product decisions
 
@@ -42,7 +42,6 @@ Read this before making changes. It captures project state, intentional decision
 - **Run `git status` before and after changes** so you can confirm the diff matches intent.
 - **Keep commits small and focused.** One logical change per commit. Each commit's diff should fit on a screen.
 - **Do not run `npm audit fix`.** It can rewrite the lockfile and break the patched dependency setup.
-- **Treat `periodic-notes/` (sibling repo) as read-only reference material.** Read it for patterns; never write to it.
 - **Do not commit unless explicitly asked.** Show the diff summary and wait.
 
 ## Recent important fixes (1.6.0)
