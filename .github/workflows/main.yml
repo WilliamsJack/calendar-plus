@@ -8,6 +8,8 @@ on:
 
 permissions:
   contents: write
+  id-token: write
+  attestations: write
 
 env:
   PLUGIN_NAME: calendar-plus
@@ -28,9 +30,18 @@ jobs:
         run: |
           npm ci
           npm run build --if-present
-          mkdir ${{ env.PLUGIN_NAME }}
-          cp main.js manifest.json styles.css ${{ env.PLUGIN_NAME }}
-          zip -r ${{ env.PLUGIN_NAME }}-${{ github.ref_name }}.zip ${{ env.PLUGIN_NAME }}
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: |
+            main.js
+            manifest.json
+            styles.css
+
+      - name: Extract release notes
+        run: |
+          awk '/^## / { if (found) exit; found=1; next } found' CHANGELOG.md > RELEASE_NOTES.md
 
       - name: Create release
         uses: softprops/action-gh-release@v2
@@ -39,8 +50,8 @@ jobs:
           tag_name: ${{ github.ref_name }}
           draft: false
           prerelease: false
+          body_path: RELEASE_NOTES.md
           files: |
-            ${{ env.PLUGIN_NAME }}-${{ github.ref_name }}.zip
             main.js
             manifest.json
             styles.css
