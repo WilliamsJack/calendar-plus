@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.7.8
+
+Focus: polish pass on top of 1.7.7 — README presentation, a friendlier first-run experience, and a more recognizable sidebar icon. No code-quality or behavior regressions relative to 1.7.7.
+
+User-visible
+- Added a README screenshot showing the Calendar Plus sidebar so the GitHub page and Obsidian community-plugin listing have a visual at a glance.
+- Rewrote the README intro to describe Calendar Plus as a substantial rewrite of Liam Cain's original Calendar and Periodic Notes plugins that merges the two into a single integrated calendar + periodic-notes workflow. The new intro also highlights the clickable month / quarter / year header labels and the "dots mean a note exists, and nothing else" design.
+- Daily notes are now enabled by default. Fresh installs (and users whose saved `data.json` doesn't include a `daily` setting) get a calendar with daily-note clicking active out of the box, instead of having to find and flip the Enable toggle in settings. Existing users who have explicitly toggled Daily off keep their setting — the per-period deep-merge in `loadOptions` already preserves saved values over defaults.
+- Switched the sidebar / ribbon icon from the older `calendar-with-checkmark` to Obsidian's built-in Lucide `calendar-plus` icon. The new icon matches the plugin name and is more recognizable at sidebar scale.
+
 ## 1.7.7
 
 Focus: clearing Obsidian community-plugin review findings ahead of the directory submission. No user-visible behavior change; the calendar, settings, and periodic-note flows behave exactly as in 1.7.6.
