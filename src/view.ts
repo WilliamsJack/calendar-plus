@@ -34,30 +34,6 @@ export default class CalendarView extends ItemView {
   constructor(leaf: WorkspaceLeaf) {
     super(leaf);
 
-    this.openOrCreateDailyNote = this.openOrCreateDailyNote.bind(this);
-    this.openOrCreateWeeklyNote = this.openOrCreateWeeklyNote.bind(this);
-    this.openOrCreateMonthlyNote = this.openOrCreateMonthlyNote.bind(this);
-    this.openOrCreateYearlyNote = this.openOrCreateYearlyNote.bind(this);
-    this.openOrCreateQuarterlyNote = this.openOrCreateQuarterlyNote.bind(this);
-
-    this.onFileCreated = this.onFileCreated.bind(this);
-    this.onFileDeleted = this.onFileDeleted.bind(this);
-    this.onFileModified = this.onFileModified.bind(this);
-    this.onFileRenamed = this.onFileRenamed.bind(this);
-    this.onFileOpen = this.onFileOpen.bind(this);
-
-    this.onHoverDay = this.onHoverDay.bind(this);
-    this.onHoverWeek = this.onHoverWeek.bind(this);
-    this.onHoverMonth = this.onHoverMonth.bind(this);
-    this.onHoverYear = this.onHoverYear.bind(this);
-    this.onHoverQuarter = this.onHoverQuarter.bind(this);
-
-    this.onContextMenuDay = this.onContextMenuDay.bind(this);
-    this.onContextMenuWeek = this.onContextMenuWeek.bind(this);
-    this.onContextMenuMonth = this.onContextMenuMonth.bind(this);
-    this.onContextMenuYear = this.onContextMenuYear.bind(this);
-    this.onContextMenuQuarter = this.onContextMenuQuarter.bind(this);
-
     this.registerEvent(this.app.vault.on("create", this.onFileCreated));
     this.registerEvent(this.app.vault.on("delete", this.onFileDeleted));
     this.registerEvent(this.app.vault.on("modify", this.onFileModified));
@@ -126,11 +102,11 @@ export default class CalendarView extends ItemView {
     });
   }
 
-  onHoverDay(
+  onHoverDay = (
     date: Moment,
     targetEl: EventTarget,
     isMetaPressed: boolean
-  ): void {
+  ): void => {
     if (!isMetaPressed || !this.settings.daily.enabled) {
       return;
     }
@@ -143,13 +119,13 @@ export default class CalendarView extends ItemView {
       date.format(format),
       note?.path
     );
-  }
+  };
 
-  onHoverWeek(
+  onHoverWeek = (
     date: Moment,
     targetEl: EventTarget,
     isMetaPressed: boolean
-  ): void {
+  ): void => {
     if (!isMetaPressed || !this.settings.weekly.enabled) {
       return;
     }
@@ -162,13 +138,13 @@ export default class CalendarView extends ItemView {
       date.format(format),
       note?.path
     );
-  }
+  };
 
-  onHoverMonth(
+  onHoverMonth = (
     date: Moment,
     targetEl: EventTarget,
     isMetaPressed: boolean
-  ): void {
+  ): void => {
     if (!isMetaPressed || !this.settings.monthly.enabled) {
       return;
     }
@@ -181,13 +157,13 @@ export default class CalendarView extends ItemView {
       date.format(format),
       note?.path
     );
-  }
+  };
 
-  onHoverYear(
+  onHoverYear = (
     date: Moment,
     targetEl: EventTarget,
     isMetaPressed: boolean
-  ): void {
+  ): void => {
     if (!isMetaPressed || !this.settings.yearly.enabled) {
       return;
     }
@@ -200,13 +176,13 @@ export default class CalendarView extends ItemView {
       date.format(format),
       note?.path
     );
-  }
+  };
 
-  onHoverQuarter(
+  onHoverQuarter = (
     date: Moment,
     targetEl: EventTarget,
     isMetaPressed: boolean
-  ): void {
+  ): void => {
     if (!isMetaPressed || !this.settings.quarterly.enabled) {
       return;
     }
@@ -219,9 +195,9 @@ export default class CalendarView extends ItemView {
       date.format(format),
       note?.path
     );
-  }
+  };
 
-  private onContextMenuDay(date: Moment, event: MouseEvent): void {
+  private onContextMenuDay = (date: Moment, event: MouseEvent): void => {
     if (!this.settings.daily.enabled) return;
     const note = helperGetPeriodicNote(date, "daily", get(dailyNotes) ?? {});
     if (!note) {
@@ -231,9 +207,9 @@ export default class CalendarView extends ItemView {
       x: event.pageX,
       y: event.pageY,
     });
-  }
+  };
 
-  private onContextMenuWeek(date: Moment, event: MouseEvent): void {
+  private onContextMenuWeek = (date: Moment, event: MouseEvent): void => {
     if (!this.settings.weekly.enabled) return;
     const note = helperGetPeriodicNote(date, "weekly", get(weeklyNotes) ?? {});
     if (!note) {
@@ -243,9 +219,9 @@ export default class CalendarView extends ItemView {
       x: event.pageX,
       y: event.pageY,
     });
-  }
+  };
 
-  private onContextMenuMonth(date: Moment, event: MouseEvent): void {
+  private onContextMenuMonth = (date: Moment, event: MouseEvent): void => {
     if (!this.settings.monthly.enabled) return;
     const note = helperGetPeriodicNote(date, "monthly", get(monthlyNotes) ?? {});
     if (!note) {
@@ -255,9 +231,9 @@ export default class CalendarView extends ItemView {
       x: event.pageX,
       y: event.pageY,
     });
-  }
+  };
 
-  private onContextMenuYear(date: Moment, event: MouseEvent): void {
+  private onContextMenuYear = (date: Moment, event: MouseEvent): void => {
     if (!this.settings.yearly.enabled) return;
     const note = helperGetPeriodicNote(date, "yearly", get(yearlyNotes) ?? {});
     if (!note) {
@@ -267,9 +243,9 @@ export default class CalendarView extends ItemView {
       x: event.pageX,
       y: event.pageY,
     });
-  }
+  };
 
-  private onContextMenuQuarter(date: Moment, event: MouseEvent): void {
+  private onContextMenuQuarter = (date: Moment, event: MouseEvent): void => {
     if (!this.settings.quarterly.enabled) return;
     const note = helperGetPeriodicNote(date, "quarterly", get(quarterlyNotes) ?? {});
     if (!note) {
@@ -279,9 +255,9 @@ export default class CalendarView extends ItemView {
       x: event.pageX,
       y: event.pageY,
     });
-  }
+  };
 
-  private async onFileDeleted(file: TFile): Promise<void> {
+  private onFileDeleted = async (file: TFile): Promise<void> => {
     const changed = [
       dailyNotes.removeFile(file),
       weeklyNotes.removeFile(file),
@@ -292,9 +268,9 @@ export default class CalendarView extends ItemView {
     if (changed) {
       this.updateActiveFile();
     }
-  }
+  };
 
-  private async onFileModified(file: TFile): Promise<void> {
+  private onFileModified = async (file: TFile): Promise<void> => {
     const date =
       (this.settings.daily.enabled ? helperGetDateFromFile(file, "daily", this.settings.daily.format) : null) ||
       (this.settings.weekly.enabled ? helperGetDateFromFile(file, "weekly", this.settings.weekly.format) : null) ||
@@ -304,9 +280,9 @@ export default class CalendarView extends ItemView {
     if (date && this.calendar) {
       this.calendar.tick();
     }
-  }
+  };
 
-  private onFileCreated(file: TFile): void {
+  private onFileCreated = (file: TFile): void => {
     if (!this.app.workspace.layoutReady || !this.calendar) return;
     const changed = [
       dailyNotes.addFile(file),
@@ -318,9 +294,9 @@ export default class CalendarView extends ItemView {
     if (changed) {
       this.calendar.tick();
     }
-  }
+  };
 
-  private onFileRenamed(file: TAbstractFile, oldPath: string): void {
+  private onFileRenamed = (file: TAbstractFile, oldPath: string): void => {
     if (!this.app.workspace.layoutReady || !this.calendar) return;
     if (!(file instanceof TFile)) return;
     // Remove the entry the old path mapped to, then add the new file. Each
@@ -343,13 +319,13 @@ export default class CalendarView extends ItemView {
     if (removed || added) {
       this.updateActiveFile();
     }
-  }
+  };
 
-  public onFileOpen(_file: TFile): void {
+  public onFileOpen = (_file: TFile): void => {
     if (this.app.workspace.layoutReady) {
       this.updateActiveFile();
     }
-  }
+  };
 
   private updateActiveFile(): void {
     const file = this.app.workspace.getActiveFile();
@@ -405,10 +381,10 @@ export default class CalendarView extends ItemView {
     }
   }
 
-  async openOrCreateWeeklyNote(
+  openOrCreateWeeklyNote = async (
     date: Moment,
     ctrlPressed: boolean
-  ): Promise<void> {
+  ): Promise<void> => {
     if (!this.settings.weekly.enabled) return;
     const { workspace } = this.app;
 
@@ -432,12 +408,12 @@ export default class CalendarView extends ItemView {
       leaf = workspace.getLeaf(false);
     }
     await leaf.openFile(existingFile);
-  }
+  };
 
-  async openOrCreateDailyNote(
+  openOrCreateDailyNote = async (
     date: Moment,
     ctrlPressed: boolean
-  ): Promise<void> {
+  ): Promise<void> => {
     if (!this.settings.daily.enabled) return;
     const { workspace } = this.app;
     const existingFile = helperGetPeriodicNote(date, "daily", get(dailyNotes) ?? {});
@@ -464,12 +440,12 @@ export default class CalendarView extends ItemView {
       leaf = workspace.getLeaf(false);
     }
     await leaf.openFile(existingFile);
-  }
+  };
 
-  async openOrCreateMonthlyNote(
+  openOrCreateMonthlyNote = async (
     date: Moment,
     inNewSplit: boolean
-  ): Promise<void> {
+  ): Promise<void> => {
     if (!this.settings.monthly.enabled) return;
     const { workspace } = this.app;
 
@@ -495,12 +471,12 @@ export default class CalendarView extends ItemView {
 
     activeFile.setFile(existingFile);
     workspace.setActiveLeaf(leaf, { focus: true });
-  }
+  };
 
-  async openOrCreateQuarterlyNote(
+  openOrCreateQuarterlyNote = async (
     date: Moment,
     inNewSplit: boolean
-  ): Promise<void> {
+  ): Promise<void> => {
     if (!this.settings.quarterly.enabled) return;
     const { workspace } = this.app;
 
@@ -527,12 +503,12 @@ export default class CalendarView extends ItemView {
 
     activeFile.setFile(existingFile);
     workspace.setActiveLeaf(leaf, { focus: true });
-  }
+  };
 
-  async openOrCreateYearlyNote(
+  openOrCreateYearlyNote = async (
     date: Moment,
     inNewSplit: boolean
-  ): Promise<void> {
+  ): Promise<void> => {
     if (!this.settings.yearly.enabled) return;
     const { workspace } = this.app;
 
@@ -554,5 +530,5 @@ export default class CalendarView extends ItemView {
 
     activeFile.setFile(existingFile);
     workspace.setActiveLeaf(leaf, { focus: true });
-  }
+  };
 }
