@@ -98,7 +98,7 @@ export interface ITemplateInfo {
   contents: string;
   // `app.foldManager` is not in the public Obsidian d.ts, so we keep the
   // returned blob opaque. Callers only pass it back to `foldManager.save`.
-  foldInfo: unknown | null;
+  foldInfo: unknown;
 }
 
 export async function getTemplateInfo(template: string): Promise<ITemplateInfo> {
