@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-restricted-imports -- Central type-only seam: runtime moment is imported from "obsidian"; this file re-exports precise Moment types so the Obsidian checker does not collapse Moment instances to any. Uses the base `no-restricted-imports` rule name (the pinned `@typescript-eslint/eslint-plugin` 4.20.0 does not register the TS-specific variant); switch to `@typescript-eslint/no-restricted-imports` if the plugin is later upgraded to v5+.
 import type { Locale, Moment, unitOfTime } from "moment";
 
 // ---------------------------------------------------------------------------
@@ -12,9 +11,10 @@ import type { Locale, Moment, unitOfTime } from "moment";
 // pass, which then flags every `.format` / `.clone` / `.add` / etc. call as
 // unsafe-member-access / unsafe-call. To avoid that warning explosion AND
 // avoid scattering `"moment"` imports across the source tree, this single
-// file imports types from `"moment"` (with a documented `no-restricted-
-// imports` exception) and re-exports them. Consumers `import type { Moment }
-// from "src/types/moment"` everywhere else.
+// file imports types from `"moment"` and re-exports them. Consumers
+// `import type { Moment } from "src/types/moment"` everywhere else. The
+// import below is the only `"moment"` import in `src/`; the Obsidian checker
+// flags it as a single non-blocking `no-restricted-imports` warning.
 // ---------------------------------------------------------------------------
 
 export type { Locale, Moment };
