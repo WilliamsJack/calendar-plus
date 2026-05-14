@@ -16,7 +16,7 @@ function getNoteTags(note: TFile | null): string[] {
   const { metadataCache } = window.app;
   const frontmatter = metadataCache.getFileCache(note)?.frontmatter;
 
-  const tags = [];
+  const tags: string[] = [];
 
   if (frontmatter) {
     const frontmatterTags = parseFrontMatterTags(frontmatter) || [];

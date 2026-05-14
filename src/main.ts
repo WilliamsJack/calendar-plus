@@ -112,7 +112,7 @@ export default class CalendarPlugin extends Plugin {
   }
 
   async loadOptions(): Promise<void> {
-    const options = (await this.loadData()) ?? {};
+    const options = ((await this.loadData()) ?? {}) as Partial<ISettings>;
     settings.update((old) => ({
       ...old,
       ...options,

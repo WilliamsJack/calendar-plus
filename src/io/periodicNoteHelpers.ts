@@ -1,7 +1,7 @@
 import { moment, Notice, normalizePath, TFile, TFolder, Vault } from "obsidian";
 
 import type { Periodicity, PeriodicNoteSettings } from "src/settings";
-import type { Moment } from "src/types/moment";
+import type { DurationUnit, Moment } from "src/types/moment";
 import type {
   AppWithFold,
   LocaleDataWithWeek,
@@ -150,14 +150,12 @@ const DAYS_OF_WEEK_BASE = [
 ];
 
 function getDaysOfWeek(): string[] {
-  let weekStart = (moment.localeData() as unknown as LocaleDataWithWeek)
+  const weekStart = (moment.localeData() as unknown as LocaleDataWithWeek)
     ._week.dow;
-  const days = DAYS_OF_WEEK_BASE.slice();
-  while (weekStart) {
-    days.push(days.shift() as string);
-    weekStart--;
-  }
-  return days;
+  return [
+    ...DAYS_OF_WEEK_BASE.slice(weekStart),
+    ...DAYS_OF_WEEK_BASE.slice(0, weekStart),
+  ];
 }
 
 function getDayOfWeekNumericalValue(dayOfWeekName: string): number {
@@ -178,15 +176,22 @@ export function applyTemplateTokens(
   // must run before the plain replacements below would short-circuit it.
   result = result.replace(
     PARAMETERIZED_DATE_TIME_RE,
-    (_match, _which, calc, timeDelta, unit, momentFormat) => {
+    (
+      _match: string,
+      _which: string,
+      calc: string | undefined,
+      timeDelta: string | undefined,
+      unit: string | undefined,
+      momentFormat: string | undefined
+    ) => {
       const now = moment();
       const currentDate = date.clone().set({
         hour: now.get("hour"),
         minute: now.get("minute"),
         second: now.get("second"),
       });
-      if (calc) {
-        currentDate.add(parseInt(timeDelta, 10), unit);
+      if (calc && timeDelta && unit) {
+        currentDate.add(parseInt(timeDelta, 10), unit as DurationUnit);
       }
       if (momentFormat) {
         return currentDate.format(momentFormat.substring(1).trim());
@@ -215,7 +220,7 @@ export function applyTemplateTokens(
   if (periodicity === "weekly") {
     result = result.replace(
       WEEKDAY_TOKEN_RE,
-      (_match, dayOfWeek, momentFormat) => {
+      (_match: string, dayOfWeek: string, momentFormat: string) => {
         const day = getDayOfWeekNumericalValue(dayOfWeek);
         // Clone before calling `weekday()` — moment's setters mutate.
         return date.clone().weekday(day).format(momentFormat.trim());
@@ -265,7 +270,7 @@ export function getDateFromFilename(
 ): Moment | null {
   if (!format) return null;
 
-  const effectiveFormat = format.split("/").pop() as string;
+  const effectiveFormat = format.split("/").pop() ?? format;
   const noteDate = moment(filename, effectiveFormat, true);
   if (!noteDate.isValid()) return null;
 

@@ -5,19 +5,22 @@ import type { ICalendarSource, IDayMetadata } from "./types";
 async function metadataReducer(
   promisedMetadata: Promise<IDayMetadata>[]
 ): Promise<IDayMetadata> {
-  const meta = {
+  const initial: IDayMetadata = {
     dots: [],
     classes: [],
     dataAttributes: {},
   };
   const metas = await Promise.all(promisedMetadata);
-  return metas.reduce(
+  return metas.reduce<IDayMetadata>(
     (acc, meta) => ({
-      classes: [...acc.classes, ...(meta.classes || [])],
-      dataAttributes: Object.assign(acc.dataAttributes, meta.dataAttributes),
-      dots: [...acc.dots, ...(meta.dots || [])],
+      classes: [...(acc.classes ?? []), ...(meta.classes ?? [])],
+      dataAttributes: {
+        ...(acc.dataAttributes ?? {}),
+        ...(meta.dataAttributes ?? {}),
+      },
+      dots: [...(acc.dots ?? []), ...(meta.dots ?? [])],
     }),
-    meta
+    initial
   );
 }
 

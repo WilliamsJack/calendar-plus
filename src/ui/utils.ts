@@ -15,8 +15,8 @@ export function partition(
   arr: string[],
   predicate: (elem: string) => boolean
 ): [string[], string[]] {
-  const pass = [];
-  const fail = [];
+  const pass: string[] = [];
+  const fail: string[] = [];
 
   arr.forEach((elem) => {
     if (predicate(elem)) {
@@ -33,7 +33,7 @@ export function partition(
  * Lookup the dateUID for a given file. It compares the filename
  * to the daily and weekly note formats to find a match.
  */
-export function getDateUIDFromFile(file: TFile | null, settings: ISettings): string {
+export function getDateUIDFromFile(file: TFile | null, settings: ISettings): string | null {
   if (!file) {
     return null;
   }
