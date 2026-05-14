@@ -8,8 +8,8 @@ Read this before making changes. It captures project state, intentional decision
 - Intentionally a **separate** plugin from the original Calendar plugin — both can be installed and enabled simultaneously.
 - Plugin id: `calendar-plus`
 - User-facing name: `Calendar Plus`
-- Current version: `1.7.7` (kept in sync across `manifest.json`, `package.json`, `package-lock.json`, `versions.json`)
-- **Active branch is `main`.** Calendar Plus 1.7.7 is the current stable local baseline and lives on `main`. Earlier sessions worked on a `merge-periodic-notes` branch that has since been promoted to `main` — that name is no longer the working branch. If a branch named `old-main` exists, treat it as archival/reference only (the pre-merge upstream state); do not commit to it or use it as a base for new work.
+- Current version: `1.7.10` (kept in sync across `manifest.json`, `package.json`, `package-lock.json`, `versions.json`)
+- **Active branch is `main`.** Calendar Plus 1.7.10 is the current stable local baseline and lives on `main`. Earlier sessions worked on a `merge-periodic-notes` branch that has since been promoted to `main` — that name is no longer the working branch. If a branch named `old-main` exists, treat it as archival/reference only (the pre-merge upstream state); do not commit to it or use it as a base for new work.
 
 ## Important product decisions
 
@@ -73,6 +73,8 @@ See `FUTURE_PLANS.md` for full descriptions. Short list:
 
 - **Optional: active-file correctness for monthly / quarterly / yearly (deferred)** — `getDateUIDFromFile` only handles daily / weekly. Nav.svelte doesn't consume `selectedId` for month / year / quarter labels, so M/Q/Y active UIDs would be dead code today. Revisit only if active-file styling for header labels is wanted.
 - **Optional: Svelte settings migration (deferred)** — cleaner conditional UI, slide animations. Not planned; the current per-section re-render in `src/settings.ts` works well. Revisit only if the settings UI becomes harder to extend.
+- **Optional: Obsidian API d.ts pin bump (deferred)** — pinned d.ts (commit `23947b58…`, v1.7.2) lacks `App.getLanguage()`, the replacement for the `localStorage.getItem("language")` warning in `localization.ts`. Revisit only when intentionally upgrading the pin.
+- **Optional: Svelte component instance typing (deferred)** — Svelte 3's generated component types are loose, causing review warnings on `this.calendar.tick` / `$set` / `$destroy` in `view.ts`. Framework-typing noise, not Calendar Plus correctness. Revisit only if treated as blocking by review, or as part of a dedicated Svelte typing pass.
 
 ## Release prep
 
