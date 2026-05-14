@@ -153,7 +153,7 @@ export class CalendarSettingsTab extends PluginSettingTab {
         });
         dropdown.setValue(this.plugin.options.weekStart);
         dropdown.onChange(async (value) => {
-          this.plugin.writeOptions(() => ({
+          void this.plugin.writeOptions(() => ({
             weekStart: value as IWeekStartOption,
           }));
         });
@@ -170,7 +170,7 @@ export class CalendarSettingsTab extends PluginSettingTab {
           this.plugin.options.ctrlClickOpensInNewTab ? "new-tab" : "new-split"
         );
         dropdown.onChange(async (value) => {
-          this.plugin.writeOptions(() => ({
+          void this.plugin.writeOptions(() => ({
             ctrlClickOpensInNewTab: value === "new-tab",
           }));
         });
@@ -183,7 +183,7 @@ export class CalendarSettingsTab extends PluginSettingTab {
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.options.shouldConfirmBeforeCreate);
         toggle.onChange(async (value) => {
-          this.plugin.writeOptions(() => ({
+          void this.plugin.writeOptions(() => ({
             shouldConfirmBeforeCreate: value,
           }));
         });
@@ -197,7 +197,7 @@ export class CalendarSettingsTab extends PluginSettingTab {
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.options.showWeeklyNoteRight);
         toggle.onChange(async (value) => {
-          this.plugin.writeOptions(() => ({ showWeeklyNoteRight: value }));
+          void this.plugin.writeOptions(() => ({ showWeeklyNoteRight: value }));
         });
       });
   }
@@ -298,7 +298,7 @@ export class CalendarSettingsTab extends PluginSettingTab {
         });
         dropdown.setValue(this.plugin.options.localeOverride);
         dropdown.onChange(async (value) => {
-          this.plugin.writeOptions(() => ({
+          void this.plugin.writeOptions(() => ({
             localeOverride: value as ILocaleOverride,
           }));
         });

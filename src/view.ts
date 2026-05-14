@@ -415,7 +415,7 @@ export default class CalendarView extends ItemView {
     const existingFile = helperGetPeriodicNote(date, "weekly", get(weeklyNotes) ?? {});
 
     if (!existingFile) {
-      tryToCreateWeeklyNote(date.clone().startOf("week"), ctrlPressed, this.settings, (file) => {
+      void tryToCreateWeeklyNote(date.clone().startOf("week"), ctrlPressed, this.settings, (file) => {
         activeFile.setFile(file);
       });
       return;
@@ -442,7 +442,7 @@ export default class CalendarView extends ItemView {
     const { workspace } = this.app;
     const existingFile = helperGetPeriodicNote(date, "daily", get(dailyNotes) ?? {});
     if (!existingFile) {
-      tryToCreateDailyNote(
+      void tryToCreateDailyNote(
         date,
         ctrlPressed,
         this.settings,
@@ -477,7 +477,7 @@ export default class CalendarView extends ItemView {
 
     const existingFile = helperGetPeriodicNote(date, "monthly", get(monthlyNotes) ?? {});
     if (!existingFile) {
-      tryToCreateMonthlyNote(
+      void tryToCreateMonthlyNote(
         startOfMonth,
         inNewSplit,
         this.settings,
@@ -509,7 +509,7 @@ export default class CalendarView extends ItemView {
     const existingFile = helperGetPeriodicNote(date, "quarterly", get(quarterlyNotes) ?? {});
 
     if (!existingFile) {
-      tryToCreateQuarterlyNote(
+      void tryToCreateQuarterlyNote(
         startOfQuarter,
         inNewSplit,
         this.settings,
@@ -541,7 +541,7 @@ export default class CalendarView extends ItemView {
     const existingFile = helperGetPeriodicNote(date, "yearly", get(yearlyNotes) ?? {});
 
     if (!existingFile) {
-      tryToCreateYearlyNote(startOfYear, inNewSplit, this.settings, (file) => {
+      void tryToCreateYearlyNote(startOfYear, inNewSplit, this.settings, (file) => {
         activeFile.setFile(file);
       });
       return;
