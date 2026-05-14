@@ -1,33 +1,28 @@
-import { moment } from "obsidian";
+// eslint-disable-next-line no-restricted-imports -- Central type-only seam: runtime moment is imported from "obsidian"; this file re-exports precise Moment types so the Obsidian checker does not collapse Moment instances to any. Uses the base `no-restricted-imports` rule name (the pinned `@typescript-eslint/eslint-plugin` 4.20.0 does not register the TS-specific variant); switch to `@typescript-eslint/no-restricted-imports` if the plugin is later upgraded to v5+.
+import type { Locale, Moment, unitOfTime } from "moment";
 
 // ---------------------------------------------------------------------------
-// Local moment-related types.
+// Central moment-type seam.
 //
-// Obsidian bundles moment.js and re-exports the runtime `moment` value, but
-// it does not re-export moment's namespace types. Importing types directly
-// from the `moment` package gets flagged by Obsidian's community-plugin
-// review ("the moment package is bundled with Obsidian"), so we define what
-// we need locally — derived from `typeof moment` where possible — and have
-// source files import from this module instead.
+// Obsidian bundles moment.js and re-exports the runtime `moment` value, so
+// every source file gets the runtime `moment` via `import { moment } from
+// "obsidian"`. Type-only access, however, has to come from the moment package
+// itself: deriving `ReturnType<typeof moment>` from Obsidian's re-export
+// collapses to `any` under the community-plugin checker's type-aware lint
+// pass, which then flags every `.format` / `.clone` / `.add` / etc. call as
+// unsafe-member-access / unsafe-call. To avoid that warning explosion AND
+// avoid scattering `"moment"` imports across the source tree, this single
+// file imports types from `"moment"` (with a documented `no-restricted-
+// imports` exception) and re-exports them. Consumers `import type { Moment }
+// from "src/types/moment"` everywhere else.
 // ---------------------------------------------------------------------------
 
-/**
- * A moment instance, derived from the call signature of Obsidian's bundled
- * `moment` factory. Carries moment's full method surface (`.add`, `.clone`,
- * `.format`, etc.) without referencing the `moment` package by name.
- */
-export type Moment = ReturnType<typeof moment>;
-
-/**
- * A moment locale object, derived from `moment.localeData()`. Used by the
- * vendored calendar UI to pass locale information into the calendar grid.
- */
-export type Locale = ReturnType<typeof moment.localeData>;
+export type { Locale, Moment };
 
 /**
  * Locale week specification — the shape `moment.updateLocale` accepts under
- * its `week` key. Stable across moment 2.x. Defined locally so this module
- * is the only seam between Calendar Plus and moment's internal types.
+ * its `week` key. Stable across moment 2.x; defined locally to keep this
+ * module's surface deliberate.
  */
 export interface WeekSpec {
   dow: number;
@@ -35,19 +30,9 @@ export interface WeekSpec {
 }
 
 /**
- * Subset of moment's `unitOfTime.DurationConstructor` covering the unit
- * strings Calendar Plus passes to `.add`, `.startOf`, `.endOf`, and similar
- * methods. Wide enough to accept long names, plurals, and single-letter
- * shortcuts; defined locally so call sites don't reach into moment's types.
+ * Moment's unit-of-time strings accepted by `.add`, `.startOf`, `.endOf`,
+ * and similar duration-flavored methods. Re-exported from moment's
+ * `unitOfTime.DurationConstructor` so the checker has the full union (long
+ * names, plurals, and single-letter shortcuts) to validate against.
  */
-export type DurationUnit =
-  | "year" | "years" | "y"
-  | "quarter" | "quarters" | "Q"
-  | "month" | "months" | "M"
-  | "week" | "weeks" | "w"
-  | "isoWeek" | "isoWeeks"
-  | "day" | "days" | "d"
-  | "date" | "dates" | "D"
-  | "hour" | "hours" | "h"
-  | "minute" | "minutes" | "m"
-  | "second" | "seconds" | "s";
+export type DurationUnit = unitOfTime.DurationConstructor;
