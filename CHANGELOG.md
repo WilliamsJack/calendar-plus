@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.7.9
+
+Focus: clearing the last two Obsidian community-plugin review errors from the 1.7.8 resubmission. Settings-tab section headings renamed; no other behavior change.
+
+User-visible
+- Renamed the settings section headings to comply with Obsidian community-plugin review guidance, which discourages the word "Settings" and the generic label "General" inside a settings tab.
+- "General Settings" is now "Calendar behavior".
+- "Advanced Settings" is now "Locale".
+- The "Periodic Notes" section heading and all per-period sub-headings ("Daily notes", "Weekly notes", "Monthly notes", "Quarterly notes", "Yearly notes") are unchanged.
+
 ## 1.7.8
 
 Focus: polish pass on top of 1.7.7 — README presentation, a friendlier first-run experience, and a more recognizable sidebar icon. No code-quality or behavior regressions relative to 1.7.7.
