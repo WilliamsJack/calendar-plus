@@ -80,3 +80,18 @@ Reasoning:
 - Svelte 3's component-class type generation is loose by default; the methods are typed permissively enough that the checker's `no-unsafe-call` rule fires on every call. The underlying calls work at runtime and have for many releases.
 - A proper fix needs one of: a thin typed wrapper around the generated `Calendar` Svelte component, a declaration-merge file that tightens the generated component types, or a Svelte tooling bump. Each option deserves its own focused investigation and validation pass.
 - Revisit only if the Obsidian checker starts treating these warnings as blocking errors, or as part of a dedicated Svelte typing cleanup.
+
+### 6. settings.ts moment destructure consistency cleanup
+
+`src/settings.ts:138` (`addWeekStartSetting`) and `src/settings.ts:285` (`addLocaleOverrideSetting`) still source `moment` via `const { moment } = window;`. These were missed by the 1.7.10 moment migration because the migration grep matched only the `window.moment.X` dot-access pattern, not the destructure form. Surfaced by the post-1.7.12 sanity audit.
+
+Reasoning:
+- **Not blocking and not user-visible.** Obsidian assigns the bundled moment to the global `window` at runtime, so `const { moment } = window;` resolves to the same value as `import { moment } from "obsidian"`. Runtime behavior is identical.
+- This is a purely-internal consistency cleanup, not a checker warning. The Obsidian community-plugin checker has not flagged these two sites in its current report.
+- The 1.7.10 / 1.7.11 / 1.7.12 changelog wording ("no `window.moment` runtime access reintroduced") becomes strictly accurate only after these two sites are migrated. A future contributor could otherwise copy the pattern, and a future checker rule could escalate `window`-global moment access.
+
+Suggested fix (small, low-risk, ~3-line diff):
+- In `src/settings.ts`, add `moment` to the existing `import { App, PluginSettingTab, Setting } from "obsidian";` line.
+- Remove the two `const { moment } = window;` lines.
+
+Defer until the next cleanup pass — could be folded into the Moment / type-resolution work in §1, or shipped as a one-line patch on its own.
