@@ -1,6 +1,7 @@
-import { moment, Notice, normalizePath, TFile, TFolder, Vault } from "obsidian";
+import { Notice, normalizePath, TFile, TFolder, Vault } from "obsidian";
 
 import type { Periodicity, PeriodicNoteSettings } from "src/settings";
+import { moment } from "src/types/moment";
 import type { DurationUnit, Moment } from "src/types/moment";
 import type {
   AppWithFold,

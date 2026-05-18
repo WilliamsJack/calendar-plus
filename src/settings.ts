@@ -9,6 +9,7 @@ import {
   DEFAULT_WEEKLY_NOTE_FORMAT,
   DEFAULT_YEARLY_NOTE_FORMAT,
 } from "src/constants";
+import { moment } from "src/types/moment";
 import { FileSuggest, FolderSuggest } from "src/ui/file-suggest";
 
 import type CalendarPlugin from "./main";
@@ -135,8 +136,6 @@ export class CalendarSettingsTab extends PluginSettingTab {
   }
 
   addWeekStartSetting(): void {
-    const { moment } = window;
-
     const localizedWeekdays = moment.weekdays();
     const localeWeekStartNum = window._bundledLocaleWeekSpec.dow;
     const localeWeekStart = moment.weekdays()[localeWeekStartNum];
@@ -282,8 +281,6 @@ export class CalendarSettingsTab extends PluginSettingTab {
   }
 
   addLocaleOverrideSetting(): void {
-    const { moment } = window;
-
     const sysLocale = navigator.language?.toLowerCase();
 
     new Setting(this.containerEl)

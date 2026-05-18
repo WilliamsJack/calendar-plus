@@ -1,5 +1,6 @@
-import { Platform, moment } from "obsidian";
+import { Platform } from "obsidian";
 
+import { moment } from "src/types/moment";
 import type { Moment } from "src/types/moment";
 
 import type { IMonth, IWeek } from "./types";

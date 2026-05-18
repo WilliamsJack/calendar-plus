@@ -1,7 +1,6 @@
 <svelte:options immutable />
 
 <script lang="ts">
-  import { moment } from "obsidian";
   import { onDestroy } from "svelte";
 
   import CalendarBase from "./calendar-ui/components/Calendar.svelte";
@@ -9,6 +8,7 @@
   import type { ICalendarSource } from "./calendar-ui/types";
 
   import type { ISettings } from "src/settings";
+  import { moment } from "src/types/moment";
   import type { Moment } from "src/types/moment";
   import { activeFile, dailyNotes, monthlyNotes, quarterlyNotes, settings, weeklyNotes, yearlyNotes } from "./stores";
 

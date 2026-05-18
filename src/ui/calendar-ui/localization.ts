@@ -1,5 +1,4 @@
-import { moment } from "obsidian";
-
+import { moment } from "src/types/moment";
 import type { WeekSpec } from "src/types/moment";
 import type { LocaleDataWithWeek } from "src/types/obsidian-internal";
 

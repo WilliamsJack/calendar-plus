@@ -1,4 +1,4 @@
-import { App, Plugin, WorkspaceLeaf, moment } from "obsidian";
+import { App, Plugin, WorkspaceLeaf } from "obsidian";
 
 import { VIEW_TYPE_CALENDAR } from "./constants";
 import { settings } from "./ui/stores";
@@ -6,6 +6,7 @@ import {
   CalendarSettingsTab,
   ISettings,
 } from "./settings";
+import { moment } from "./types/moment";
 import type { WeekSpec } from "./types/moment";
 import CalendarView from "./view";
 

@@ -1,20 +1,35 @@
+import { moment as obsidianMoment } from "obsidian";
 import type { Locale, Moment, unitOfTime } from "moment";
 
 // ---------------------------------------------------------------------------
-// Central moment-type seam.
+// Central moment seam.
 //
-// Obsidian bundles moment.js and re-exports the runtime `moment` value, so
-// every source file gets the runtime `moment` via `import { moment } from
-// "obsidian"`. Type-only access, however, has to come from the moment package
-// itself: deriving `ReturnType<typeof moment>` from Obsidian's re-export
-// collapses to `any` under the community-plugin checker's type-aware lint
-// pass, which then flags every `.format` / `.clone` / `.add` / etc. call as
-// unsafe-member-access / unsafe-call. To avoid that warning explosion AND
-// avoid scattering `"moment"` imports across the source tree, this single
-// file imports types from `"moment"` and re-exports them. Consumers
-// `import type { Moment } from "src/types/moment"` everywhere else. The
-// import below is the only `"moment"` import in `src/`; the Obsidian checker
-// flags it as a single non-blocking `no-restricted-imports` warning.
+// Two responsibilities:
+//   1. Re-export precise `Moment` / `Locale` / `WeekSpec` / `DurationUnit`
+//      types, so consumer files can `import type { Moment } from
+//      "src/types/moment"` and get full method-surface typing.
+//   2. Re-export the runtime `moment` value with a typed `MomentFactory`
+//      shape, so consumer files can `import { moment } from
+//      "src/types/moment"` and get precise return types on `moment()` and
+//      `moment.X()` calls.
+//
+// Background:
+//   - The type-only `import type { ... } from "moment"` below is the only
+//     `"moment"` import in `src/`. The Obsidian community-plugin checker
+//     flags it as a single non-blocking `no-restricted-imports` warning,
+//     which we intentionally accept in exchange for keeping consumer files
+//     clean of `"moment"` imports.
+//   - The runtime `moment` value lives in `"obsidian"` (Obsidian bundles
+//     moment.js and re-exports it). Importing the value directly into
+//     consumer files leaves it error-typed under the checker because the
+//     checker can't resolve through Obsidian's `import * as Moment from
+//     'moment'` re-export chain — every `moment(...)` call site cascades
+//     into `unsafe-call` / `unsafe-member-access` warnings.
+//   - This module casts the obsidian-exported moment to a locally-defined
+//     `MomentFactory` interface. The cast is type-only (zero runtime
+//     change — the underlying value is still Obsidian's bundled moment),
+//     and the local interface gives the checker a resolvable shape so
+//     consumer-side `moment()` and `moment.X()` calls type precisely.
 // ---------------------------------------------------------------------------
 
 export type { Locale, Moment };
@@ -36,3 +51,32 @@ export interface WeekSpec {
  * names, plurals, and single-letter shortcuts) to validate against.
  */
 export type DurationUnit = unitOfTime.DurationConstructor;
+
+/**
+ * Call signature + static-method shape of moment's factory namespace,
+ * narrowed to what Calendar Plus actually uses. Extend as new call sites
+ * are added rather than hand-rolling moment's entire API.
+ */
+export interface MomentFactory {
+  // Call signatures (factory invocations).
+  (): Moment;
+  (input: string, format: string, strict?: boolean): Moment;
+
+  // Static methods (factory members) Calendar Plus calls.
+  locale(): string;
+  locale(loc: string): string;
+  locales(): string[];
+  weekdays(): string[];
+  weekdaysShort(start?: boolean): string[];
+  updateLocale(name: string, config: { week: WeekSpec }): void;
+  localeData(): Locale;
+}
+
+/**
+ * Runtime moment value — the bundled instance Obsidian provides, retyped via
+ * `MomentFactory` so consumer-side `moment()` and `moment.X()` calls have
+ * precise return types under the Obsidian checker. The cast is type-only;
+ * the underlying value is still `import { moment } from "obsidian"`.
+ */
+export const moment: MomentFactory =
+  obsidianMoment as unknown as MomentFactory;

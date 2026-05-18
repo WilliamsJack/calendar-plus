@@ -1,8 +1,9 @@
 <svelte:options immutable />
 
 <script lang="ts">
-  import { Platform, moment } from "obsidian";
+  import { Platform } from "obsidian";
 
+  import { moment } from "src/types/moment";
   import type { Locale, Moment } from "src/types/moment";
 
   import Day from "./Day.svelte";
