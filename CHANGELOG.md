@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.7.13
+
+Focus: clear the remaining Moment / type-resolution checker warnings from the 1.7.12 baseline, plus two small independent type-shape cleanups. No intended user-visible behavior change.
+
+Code quality (no behavior change)
+- Routed all runtime `moment` usage through `src/types/moment.ts` instead of importing `moment` directly from `"obsidian"`. Six source files (and the two missed `const { moment } = window;` destructures in `src/settings.ts`) now `import { moment } from "src/types/moment"`. The seam casts Obsidian's bundled moment to a small local `MomentFactory` interface covering the call signatures and static methods Calendar Plus actually uses, so the Obsidian checker no longer treats `moment()` / `moment.locale()` / `moment.localeData()` / `moment.weekdays()` etc. as error-typed. This clears the cluster of `unsafe-assignment` / `unsafe-call` / `unsafe-member-access` warnings that cascaded from every Moment call site in `periodicNoteHelpers.ts`, `main.ts`, `localization.ts`, and `calendar-ui/utils.ts`.
+- Runtime moment still comes from Obsidian's bundled `moment` export — the cast is type-only, the underlying value is unchanged, and `window.moment` access remains gone.
+- Simplified `ILocaleOverride` to plain `string` (the prior `"system-default" | string` union flattened to `string` anyway) and documented the `"system-default"` sentinel in JSDoc, satisfying the checker's redundant-literal-in-union warning without depending on the `(string & {})` idiom (which the locally-pinned `@typescript-eslint` v4.20.0 `ban-types` rule rejects).
+- Typed the `month` accumulator in `getMonth` (`src/ui/calendar-ui/utils.ts`) as `IMonth` instead of letting it infer to `any[]`, clearing the unsafe-return warning. The function's declared return type was already `IMonth`; the local annotation just makes the accumulator's type match.
+
+Known remaining warnings
+- The single non-blocking `no-restricted-imports` warning on `src/types/moment.ts:2` (the type-only `import type { ... } from "moment"`) remains intentional — it's the central seam.
+- `localStorage.getItem("language")` and the Svelte component instance typing warnings on `this.calendar` are still deferred per `FUTURE_PLANS.md` §2 and §5.
+
 ## 1.7.12
 
 Focus: clear the single blocking Error the Obsidian community-plugin checker raised against 1.7.11. No intended user-visible behavior change.
