@@ -22,7 +22,7 @@ Revisit only if visible active styling for header labels is wanted. Until then, 
 
 ## Resolve remaining Obsidian plugin warnings (deferred)
 
-After the 1.7.13 release, the Obsidian community-plugin checker reports **zero blocking Errors** and a substantially narrower set of non-blocking Source Code warnings than the 1.7.12 baseline. 1.7.13 cleared the Moment-resolution cascade across `periodicNoteHelpers.ts` / `main.ts` / `localization.ts` / `utils.ts`, the `ILocaleOverride` literal-union flatten, the `getMonth` `any[]` return, and the two `const { moment } = window;` destructures in `src/settings.ts`. The remaining warnings cluster into three root causes — none block submission, none are user-visible, and each has a known follow-up path that is intentionally deferred.
+After the 1.7.13 release and the in-prep 1.7.14 (which replaces the single `localStorage.getItem("language")` call with Obsidian's `getLanguage()` API and raises the pinned d.ts + `minAppVersion` to 1.8.7), the Obsidian community-plugin checker reports **zero blocking Errors** and a substantially narrower set of non-blocking Source Code warnings than the 1.7.12 baseline. 1.7.13 cleared the Moment-resolution cascade across `periodicNoteHelpers.ts` / `main.ts` / `localization.ts` / `utils.ts`, the `ILocaleOverride` literal-union flatten, the `getMonth` `any[]` return, and the two `const { moment } = window;` destructures in `src/settings.ts`. 1.7.14 clears the `localStorage.getItem("language")` warning. The remaining Source Code warnings cluster into two root causes — none block submission, none are user-visible, and each has a known follow-up path that is intentionally deferred.
 
 ### 1. Type-only `"moment"` import in `src/types/moment.ts`
 
@@ -35,18 +35,7 @@ Reasoning:
 - The deeper alternative — hand-rolling local interfaces for `Moment` and `Locale` so the source tree has zero `"moment"` imports at all — remains an option but is no longer urgent. Cost: ~50 lines of hand-rolled interface definitions covering the 16 Moment instance methods Calendar Plus uses. Risk: missing an overload or a method a future caller needs (manageable — extend the interface as needed).
 - Revisit only if the Obsidian checker escalates the type-only import warning to a blocking Error, or as part of a future "zero `moment` imports" cleanup.
 
-### 2. Language detection / localStorage warning
-
-The checker reports two related warnings on the same line in `src/ui/calendar-ui/localization.ts`:
-- "Unexpected use of `localStorage`. Prefer `App#saveLocalStorage` / `App#loadLocalStorage`."
-- "Use Obsidian's `getLanguage()` instead of `localStorage.getItem('language')` to detect the user's language."
-
-Reasoning:
-- `App.getLanguage()` is **not** available in the currently pinned Obsidian API d.ts (commit `23947b58…`, version 1.7.2).
-- Resolving these two warnings is paired with bumping the pinned Obsidian API dependency. That bump has its own risk profile (new APIs may surface new lint warnings, removed APIs would surface as type errors) and should be a focused, separately-validated change.
-- Revisit only when intentionally upgrading the pin. Do not treat as a quick fix without verifying API availability against the new pin.
-
-### 3. Svelte component instance typing warnings
+### 2. Svelte component instance typing warnings
 
 The checker reports several "Unsafe call of an `any` typed value" warnings in `src/view.ts` on calls against `this.calendar` (the Svelte `Calendar` component reference) — specifically `tick` / `$set` / `$destroy`.
 
@@ -54,3 +43,26 @@ Reasoning:
 - Svelte 3's component-class type generation is loose by default; the methods are typed permissively enough that the checker's `no-unsafe-call` rule fires on every call. The underlying calls work at runtime and have for many releases.
 - A proper fix needs one of: a thin typed wrapper around the generated `Calendar` Svelte component, a declaration-merge file that tightens the generated component types, or a Svelte tooling bump. Each option deserves its own focused investigation and validation pass.
 - Revisit only if the Obsidian checker starts treating these warnings as blocking errors, or as part of a dedicated Svelte typing cleanup.
+
+## Accepted Obsidian checker behavior recommendations
+
+After 1.7.14 the checker has no source-code Errors and reports a small residual set of warnings (see the section above). The two **Behavior** recommendations it reports separately are deliberate architectural choices documented below so future sessions don't try to "fix" them without understanding the trade-off.
+
+### Vault enumeration — required for note-existence dots and settings autocomplete
+
+The checker flags Calendar Plus as a plugin that enumerates the vault. The flagged call sites are:
+- `Vault.recurseChildren(folderObj, ...)` in `getAllPeriodicNotes` (`src/io/periodicNoteHelpers.ts:363`) — `folderObj` is `vault.getRoot()` when the user has left the per-period folder field empty.
+- `this.app.vault.getAllLoadedFiles()` in `FolderSuggest` and `FileSuggest` (`src/ui/file-suggest.ts:13` and `:45`).
+
+Why this is intentional:
+- **Note-existence dots are the plugin's main feature.** `getAllPeriodicNotes` walks the configured periodic-note folder (or the vault root if the user left the folder field empty) to find files whose basenames match the user's Moment date-format string. Without this enumeration, dots disappear and the calendar loses its primary signal.
+- **Already scoped when possible**: if the user configures a folder (e.g. `Notes/Daily`), `recurseChildren` is called on that folder only — not the vault root. Heavy users with organized vaults already get scoped behavior; the only full-vault case is when the user leaves the folder field blank.
+- **Already bounded in frequency**: enumeration runs once per periodicity at view-mount, and once per affected periodicity when settings change. It does **not** run per frame or per file event. Per-event updates use incremental `addFile` / `removeFile` / `removeByOldPath` store mutations.
+- **Folder and template autocomplete in settings** uses `vault.getAllLoadedFiles()` per keystroke — required to make the autocomplete dropdown responsive. Caching per-modal-session would save a few calls but doesn't change the checker classification.
+
+Alternatives considered and rejected:
+- Requiring users to set a folder (never scan root) — UX regression for existing users.
+- Removing folder/template autocomplete — major UX regression in settings.
+- Using `MetadataCache` instead of the vault scan — `metadataCache.getFileCache(file)` still requires a `TFile`, so it doesn't avoid enumeration.
+
+**Accepted as an architectural trade-off.** Revisit only if Obsidian introduces a scoped-discovery API that meets the same requirements, if large-vault performance becomes a real issue in practice, or if the checker escalates this from a recommendation to a blocking error.
