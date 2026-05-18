@@ -1,7 +1,7 @@
 {
   "id": "calendar-plus",
   "name": "Calendar Plus",
-  "description": "Calendar view with integrated daily, weekly, monthly, quarterly, and yearly notes.",
+  "description": "Calendar view with integrated daily, weekly, monthly, quarterly, and yearly notes. An update of the Calendar plugin.",
   "version": "1.7.14",
   "author": "Matt Maiorana",
   "authorUrl": "https://github.com/mattmaiorana",
