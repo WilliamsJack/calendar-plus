@@ -1,3 +1,5 @@
+import { getLanguage } from "obsidian";
+
 import { moment } from "src/types/moment";
 import type { WeekSpec } from "src/types/moment";
 import type { LocaleDataWithWeek } from "src/types/obsidian-internal";
@@ -96,7 +98,7 @@ export function configureGlobalMomentLocale(
   localeOverride: ILocaleOverride = "system-default",
   weekStart: IWeekStartOption = "locale"
 ): string {
-  const obsidianLang = localStorage.getItem("language") || "en";
+  const obsidianLang = getLanguage();
   const systemLang = navigator.language?.toLowerCase();
 
   let momentLocale = langToMomentLocale[obsidianLang];

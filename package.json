@@ -10,7 +10,7 @@
     "build": "npm run lint && rollup -c"
   },
   "dependencies": {
-    "obsidian": "obsidianmd/obsidian-api#23947b58d372ea02225324308e31d36b4aa95869",
+    "obsidian": "obsidianmd/obsidian-api#165ccdd",
     "svelte": "3.35.0",
     "tslib": "2.1.0"
   },
