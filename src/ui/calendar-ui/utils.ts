@@ -27,7 +27,7 @@ export function getStartOfWeek(days: Moment[]): Moment {
  */
 export function getMonth(displayedMonth: Moment, ..._args: unknown[]): IMonth {
   const locale = moment().locale();
-  const month = [];
+  const month: IMonth = [];
   let week: IWeek;
 
   const startOfMonth = displayedMonth.clone().locale(locale).date(1);

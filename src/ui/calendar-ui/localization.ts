@@ -8,7 +8,15 @@ declare global {
   }
 }
 
-export type ILocaleOverride = "system-default" | string;
+/**
+ * Moment locale override string. The literal `"system-default"` is a sentinel
+ * meaning "use the user's system locale"; any other string is passed straight
+ * through to `moment.locale(...)`. Typed as plain `string` because the union
+ * `"system-default" | string` flattens (the literal is a subtype of `string`)
+ * — keeping it as a literal would only mislead readers into thinking it
+ * narrowed the type. Compare against the literal at the call site.
+ */
+export type ILocaleOverride = string;
 export type IWeekStartOption =
   | "sunday"
   | "monday"
