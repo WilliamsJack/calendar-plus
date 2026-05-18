@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.7.15
+
+Focus: tiny metadata-only release. No runtime behavior changes.
+
+- Updated the plugin description / tagline in `manifest.json` (and the matching `package.json` field) to clarify that Calendar Plus is an update of the original Calendar plugin. The Obsidian community-plugin listing will pick this up on the next index refresh.
+
 ## 1.7.14
 
 Focus: replace the last `localStorage` usage with Obsidian's `getLanguage()` API. No intended user-visible behavior change for users on Obsidian 1.8.7 or newer.
