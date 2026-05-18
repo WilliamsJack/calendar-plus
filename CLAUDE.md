@@ -8,8 +8,8 @@ Read this before making changes. It captures project state, intentional decision
 - Intentionally a **separate** plugin from the original Calendar plugin — both can be installed and enabled simultaneously.
 - Plugin id: `calendar-plus`
 - User-facing name: `Calendar Plus`
-- Current version: `1.7.12` (kept in sync across `manifest.json`, `package.json`, `package-lock.json`, `versions.json`)
-- **Active branch is `main`.** Calendar Plus 1.7.12 is the current stable local baseline and lives on `main`. Earlier sessions worked on a `merge-periodic-notes` branch that has since been promoted to `main` — that name is no longer the working branch. If a branch named `old-main` exists, treat it as archival/reference only (the pre-merge upstream state); do not commit to it or use it as a base for new work.
+- Current version: `1.7.13` (kept in sync across `manifest.json`, `package.json`, `package-lock.json`, `versions.json`)
+- **Active branch is `main`.** Calendar Plus 1.7.13 is the current stable local baseline and lives on `main`. Earlier sessions worked on a `merge-periodic-notes` branch that has since been promoted to `main` — that name is no longer the working branch. If a branch named `old-main` exists, treat it as archival/reference only (the pre-merge upstream state); do not commit to it or use it as a base for new work.
 
 ## Important product decisions
 
@@ -73,7 +73,7 @@ See `FUTURE_PLANS.md` for full descriptions. Short list:
 
 - **Optional: active-file correctness for monthly / quarterly / yearly (deferred)** — `getDateUIDFromFile` only handles daily / weekly. Nav.svelte doesn't consume `selectedId` for month / year / quarter labels, so M/Q/Y active UIDs would be dead code today. Revisit only if active-file styling for header labels is wanted.
 - **Optional: Svelte settings migration (deferred)** — cleaner conditional UI, slide animations. Not planned; the current per-section re-render in `src/settings.ts` works well. Revisit only if the settings UI becomes harder to extend.
-- **Optional: Resolve remaining Obsidian plugin warnings (deferred)** — after 1.7.12 the community-plugin checker reports zero Errors but ~34 non-blocking warnings clustered into five root causes (Moment / type-resolution cascade in `periodicNoteHelpers.ts` / `main.ts` / `localization.ts` / `utils.ts`; localStorage → `getLanguage()` paired with the d.ts pin bump; `ILocaleOverride` literal-union flatten; `any[]` return in `calendar-ui/utils.ts`; Svelte component instance typing on `this.calendar.tick` / `$set` / `$destroy` in `view.ts`). Plus one internal-consistency cleanup surfaced by the post-1.7.12 audit (two missed `const { moment } = window;` destructures in `src/settings.ts` — runtime-equivalent today, but inconsistent with the rest of the moment migration). Each is documented with a follow-up path in `FUTURE_PLANS.md`. Revisit as a dedicated 1.7.13-style cleanup pass.
+- **Optional: Resolve remaining Obsidian plugin warnings (deferred)** — after 1.7.13 the checker reports zero Errors and a substantially narrower warning set than the 1.7.12 baseline (1.7.13 cleared the Moment-resolution cascade, the `ILocaleOverride` literal-union flatten, the `getMonth` `any[]` return, and the two `settings.ts` `const { moment } = window;` destructures). Three root causes remain: the intentional single `no-restricted-imports` warning on `src/types/moment.ts:2` (the type-only seam that lets the checker resolve `Moment` precisely); `localStorage` → `getLanguage()` paired with the Obsidian d.ts pin bump; and Svelte component instance typing on `this.calendar.tick` / `$set` / `$destroy` in `view.ts`. Each is documented with a follow-up path in `FUTURE_PLANS.md`. Revisit as a dedicated cleanup pass.
 
 ## Release prep
 

@@ -22,25 +22,18 @@ Revisit only if visible active styling for header labels is wanted. Until then, 
 
 ## Resolve remaining Obsidian plugin warnings (deferred)
 
-After the 1.7.12 release, the Obsidian community-plugin checker reports **zero blocking Errors** and roughly **34 non-blocking Source Code warnings**. These warnings cluster into five root causes — none block submission, none are user-visible, and each has a known follow-up path that is intentionally deferred until we choose to invest in another focused warning-cleanup pass. Group items here rather than chasing individual line-numbers; the bot's specific line counts shift slightly across releases.
+After the 1.7.13 release, the Obsidian community-plugin checker reports **zero blocking Errors** and a substantially narrower set of non-blocking Source Code warnings than the 1.7.12 baseline. 1.7.13 cleared the Moment-resolution cascade across `periodicNoteHelpers.ts` / `main.ts` / `localization.ts` / `utils.ts`, the `ILocaleOverride` literal-union flatten, the `getMonth` `any[]` return, and the two `const { moment } = window;` destructures in `src/settings.ts`. The remaining warnings cluster into three root causes — none block submission, none are user-visible, and each has a known follow-up path that is intentionally deferred.
 
-### 1. Moment / type-resolution warnings
+### 1. Type-only `"moment"` import in `src/types/moment.ts`
 
-The checker reports unresolved or "error-typed" warnings around Moment values in:
-- `src/io/periodicNoteHelpers.ts`
-- `src/main.ts`
-- `src/ui/calendar-ui/localization.ts`
-- `src/ui/calendar-ui/utils.ts`
-
-Representative messages: "Unsafe assignment of an error typed value", "Unsafe call of a type that could not be resolved", "Unsafe member access `.get` / `.format` / `.isValid` / `.locale` on an unresolved type", "Unsafe argument of error typed value assigned to `string` / `Moment` / `LocaleSpecifier`", "Unsafe return of a value of type error", and the central-seam "restricted type-only import from `'moment'` in `src/types/moment.ts`".
+The checker continues to report one non-blocking `no-restricted-imports` warning on `src/types/moment.ts:2`:
+- `import type { Locale, Moment, unitOfTime } from "moment";`
 
 Reasoning:
-- Runtime moment usage now imports from `"obsidian"` and Calendar Plus does **not** reintroduce `window.moment` runtime access. Do not regress that.
-- `src/types/moment.ts` is intentionally the single type-only seam for precise `Moment` / `Locale` / `WeekSpec` / `DurationUnit` types — accept the one restricted-import warning on that file in exchange for keeping consumer files clean.
-- 1.7.10 attempted to derive `Moment` as `ReturnType<typeof moment>` (where `moment` came from `"obsidian"`) precisely to avoid the `"moment"` import. The Obsidian checker's TypeScript could not resolve through Obsidian's `import * as Moment from 'moment'` re-export and treated Moment instances as `any` / "error", which inflated the warning count by ~56. Reverted in 1.7.11. 1.7.12 then removed the `// eslint-disable-next-line no-restricted-imports` directive on the central seam (the Obsidian checker forbids that disable), accepting the single restricted-import warning instead.
-- The deeper fix is to hand-roll a local `Moment` interface (and a `MomentFactory` / `Locale` interface) inside `src/types/moment.ts`, and route all runtime `moment` imports through that typed local seam (so consumer files do `import { moment } from "src/types/moment"` instead of `from "obsidian"`). That eliminates the cascade because the bot no longer needs to resolve through Obsidian's transitive `'moment'` re-export.
-- Cost: ~50 lines of hand-rolled interface definitions covering the 16 Moment instance methods and 6 MomentFactory methods Calendar Plus uses, plus a mechanical import-path change across ~15 source files. Risk: missing an overload or a method that a future caller needs (manageable — extend the interface as needed).
-- Defer until we want a dedicated 1.7.13-style warning-cleanup pass.
+- This is the single type-only seam that lets the Obsidian checker resolve `Moment` and `Locale` precisely. Without it, the checker's TypeScript can't follow Obsidian's `import * as Moment from 'moment'` re-export — every Moment instance access cascades into `unsafe-*` warnings (as 1.7.10 demonstrated when we tried `ReturnType<typeof moment>` and the warning count jumped by ~56).
+- 1.7.13 paired this type seam with a typed runtime seam: `src/types/moment.ts` also exports a `moment` value cast to a local `MomentFactory` interface. All six runtime moment consumers (plus the two former `const { moment } = window;` destructures in `src/settings.ts`) now import the runtime `moment` from `src/types/moment` instead of from `"obsidian"`. Runtime moment still comes from Obsidian's bundled `moment` export — the cast is type-only.
+- The deeper alternative — hand-rolling local interfaces for `Moment` and `Locale` so the source tree has zero `"moment"` imports at all — remains an option but is no longer urgent. Cost: ~50 lines of hand-rolled interface definitions covering the 16 Moment instance methods Calendar Plus uses. Risk: missing an overload or a method a future caller needs (manageable — extend the interface as needed).
+- Revisit only if the Obsidian checker escalates the type-only import warning to a blocking Error, or as part of a future "zero `moment` imports" cleanup.
 
 ### 2. Language detection / localStorage warning
 
@@ -53,26 +46,7 @@ Reasoning:
 - Resolving these two warnings is paired with bumping the pinned Obsidian API dependency. That bump has its own risk profile (new APIs may surface new lint warnings, removed APIs would surface as type errors) and should be a focused, separately-validated change.
 - Revisit only when intentionally upgrading the pin. Do not treat as a quick fix without verifying API availability against the new pin.
 
-### 3. ILocaleOverride union warning
-
-The checker reports one warning in `src/ui/calendar-ui/localization.ts`:
-- `"system-default" is overridden by string in this union type.`
-
-Reasoning:
-- The type `export type ILocaleOverride = "system-default" | string;` flattens to plain `string` because the literal is a subtype of `string`. This is type-shape noise rather than a behavioral issue.
-- Possible fix: replace with a branded-string pattern such as `"system-default" | (string & {})` so the literal is preserved alongside an opaque-string variant. Verify that downstream comparisons and the settings save/load round-trip still read clearly and behave identically.
-- Low priority. Single line of impact.
-
-### 4. Utility `any[]` return warning in calendar-ui/utils.ts
-
-The checker reports one warning in `src/ui/calendar-ui/utils.ts`:
-- "Unsafe return of a value of type `any[]`."
-
-Reasoning:
-- Likely a local typing gap in `getMonth` (the function constructs an array via mutation in a loop and the implicit type widens). Investigate with a focused type pass — annotate the local accumulator and the return type explicitly.
-- Keep this work separate from the broader Moment-typing pass above; it's a distinct, smaller cleanup.
-
-### 5. Svelte component instance typing warnings
+### 3. Svelte component instance typing warnings
 
 The checker reports several "Unsafe call of an `any` typed value" warnings in `src/view.ts` on calls against `this.calendar` (the Svelte `Calendar` component reference) — specifically `tick` / `$set` / `$destroy`.
 
@@ -80,18 +54,3 @@ Reasoning:
 - Svelte 3's component-class type generation is loose by default; the methods are typed permissively enough that the checker's `no-unsafe-call` rule fires on every call. The underlying calls work at runtime and have for many releases.
 - A proper fix needs one of: a thin typed wrapper around the generated `Calendar` Svelte component, a declaration-merge file that tightens the generated component types, or a Svelte tooling bump. Each option deserves its own focused investigation and validation pass.
 - Revisit only if the Obsidian checker starts treating these warnings as blocking errors, or as part of a dedicated Svelte typing cleanup.
-
-### 6. settings.ts moment destructure consistency cleanup
-
-`src/settings.ts:138` (`addWeekStartSetting`) and `src/settings.ts:285` (`addLocaleOverrideSetting`) still source `moment` via `const { moment } = window;`. These were missed by the 1.7.10 moment migration because the migration grep matched only the `window.moment.X` dot-access pattern, not the destructure form. Surfaced by the post-1.7.12 sanity audit.
-
-Reasoning:
-- **Not blocking and not user-visible.** Obsidian assigns the bundled moment to the global `window` at runtime, so `const { moment } = window;` resolves to the same value as `import { moment } from "obsidian"`. Runtime behavior is identical.
-- This is a purely-internal consistency cleanup, not a checker warning. The Obsidian community-plugin checker has not flagged these two sites in its current report.
-- The 1.7.10 / 1.7.11 / 1.7.12 changelog wording ("no `window.moment` runtime access reintroduced") becomes strictly accurate only after these two sites are migrated. A future contributor could otherwise copy the pattern, and a future checker rule could escalate `window`-global moment access.
-
-Suggested fix (small, low-risk, ~3-line diff):
-- In `src/settings.ts`, add `moment` to the existing `import { App, PluginSettingTab, Setting } from "obsidian";` line.
-- Remove the two `const { moment } = window;` lines.
-
-Defer until the next cleanup pass — could be folded into the Moment / type-resolution work in §1, or shipped as a one-line patch on its own.
