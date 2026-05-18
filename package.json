@@ -1,6 +1,6 @@
 {
   "name": "calendar-plus",
-  "version": "1.7.13",
+  "version": "1.7.14",
   "description": "Calendar view with integrated daily, weekly, monthly, quarterly, and yearly notes.",
   "author": "Matt Maiorana",
   "main": "main.js",

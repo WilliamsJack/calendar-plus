@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.7.14
+
+Focus: replace the last `localStorage` usage with Obsidian's `getLanguage()` API. No intended user-visible behavior change for users on Obsidian 1.8.7 or newer.
+
+Code quality
+- Replaced `localStorage.getItem("language")` in `src/ui/calendar-ui/localization.ts` with Obsidian's documented `getLanguage()` top-level export. The `|| "en"` fallback drops because `getLanguage()` returns `"en"` by default per the Obsidian API documentation.
+- Bumped the pinned `obsidian` dev dependency from `obsidianmd/obsidian-api#23947b58…` (v1.7.2) to `obsidianmd/obsidian-api#165ccdd` (v1.8.7), which is the minimum version that introduced `getLanguage()`. No other dependency drift — `@types/codemirror` and the bundled `moment` types stayed at the same versions.
+
+Compatibility
+- Raised `minAppVersion` from `0.9.11` to `1.8.7` to match the API floor `getLanguage()` requires. Users on older Obsidian builds remain on 1.7.13 via the `versions.json` mechanism (`versions.json` now maps `"1.7.14": "1.8.7"` while every prior version stays at `"0.9.11"`).
+
+Expected Obsidian checker outcome
+- The Local Storage behavior recommendation should clear (the source tree no longer contains `localStorage` or `sessionStorage`).
+- The Vault Enumeration behavior recommendation remains an accepted architectural trade-off — Calendar Plus needs `Vault.recurseChildren` for note-existence dots and `vault.getAllLoadedFiles()` for settings autocomplete. Documented in `FUTURE_PLANS.md` → "Accepted Obsidian checker behavior recommendations".
+- The single non-blocking `no-restricted-imports` warning on `src/types/moment.ts:2` (the type-only seam) remains intentional, as does the Svelte component instance typing noise on `view.ts`. Both deferred per `FUTURE_PLANS.md`.
+
 ## 1.7.13
 
 Focus: clear the remaining Moment / type-resolution checker warnings from the 1.7.12 baseline, plus two small independent type-shape cleanups. No intended user-visible behavior change.
