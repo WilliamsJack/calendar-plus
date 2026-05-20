@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.7.17
+
+Focus: checker-recovery styling patch after 1.7.16. No changes to note-opening behavior.
+
+Calendar UI
+- Simplified the weekend column shading CSS to remove style overrides the Obsidian community-plugin checker flagged in 1.7.16. The weekend tint now applies as a single straightforward rule on the header (`th.weekend`) and body (`td.weekend`) cells, with no aggressive resets on the inner day card.
+- Preserved the **Shade weekend columns** setting (defaults ON) — toggling it off remains the user-facing workaround for themes whose day-cell styling makes weekend tinting look busy or inconsistent.
+- Preserved the 1.7.16 active-quarter visual polish: the current quarter label remains accent text only with no background pill, gradient, or shadow.
+- Weekend shading is intentionally simple and theme-friendly. Under themes that paint their own opaque background on day cells, the weekend tint may render unevenly — that's accepted; the toggle is the remedy for those users.
+
 ## 1.7.16
 
 Focus: visual polish for the calendar header and weekend column shading, plus a new toggle for users who prefer no weekend tint. No changes to note-opening behavior.
