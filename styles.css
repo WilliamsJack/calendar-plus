@@ -87,16 +87,16 @@
    cell paints as a flat rectangle no matter how a theme styles table
    cells (some themes round td corners or add an inset shadow that
    reads as a per-cell border, fragmenting the column visually). */
-.calendar-plus-wrapper #calendar-container th.weekend,
-.calendar-plus-wrapper #calendar-container td.weekend {
+.calendar-plus-wrapper.weekend-shading-enabled #calendar-container th.weekend,
+.calendar-plus-wrapper.weekend-shading-enabled #calendar-container td.weekend {
   background-color: var(--color-background-weekend) !important;
   border-radius: 0 !important;
   box-shadow: none !important;
 }
-.calendar-plus-wrapper #calendar-container th.weekend::before,
-.calendar-plus-wrapper #calendar-container th.weekend::after,
-.calendar-plus-wrapper #calendar-container td.weekend::before,
-.calendar-plus-wrapper #calendar-container td.weekend::after {
+.calendar-plus-wrapper.weekend-shading-enabled #calendar-container th.weekend::before,
+.calendar-plus-wrapper.weekend-shading-enabled #calendar-container th.weekend::after,
+.calendar-plus-wrapper.weekend-shading-enabled #calendar-container td.weekend::before,
+.calendar-plus-wrapper.weekend-shading-enabled #calendar-container td.weekend::after {
   display: none !important;
   content: none !important;
 }
@@ -119,7 +119,7 @@
    border-radius (.day defaults to 4px; we flatten it on weekend rest
    so no rounded silhouette remains), filter (drop-shadow themes), and
    outline (themes that draw a 1px card outline). */
-.calendar-plus-wrapper #calendar-container td.weekend .day:not(.active):not(:hover):not(:active) {
+.calendar-plus-wrapper.weekend-shading-enabled #calendar-container td.weekend .day:not(.active):not(:hover):not(:active) {
   background: transparent !important;
   background-color: transparent !important;
   background-image: none !important;
@@ -133,8 +133,8 @@
    paint a card behind it — pseudo-elements would otherwise paint right
    through our `.day` reset above. Same :not() carve-out so selected/
    hover/press states keep any pseudo-element behavior unchanged. */
-.calendar-plus-wrapper #calendar-container td.weekend .day:not(.active):not(:hover):not(:active)::before,
-.calendar-plus-wrapper #calendar-container td.weekend .day:not(.active):not(:hover):not(:active)::after {
+.calendar-plus-wrapper.weekend-shading-enabled #calendar-container td.weekend .day:not(.active):not(:hover):not(:active)::before,
+.calendar-plus-wrapper.weekend-shading-enabled #calendar-container td.weekend .day:not(.active):not(:hover):not(:active)::after {
   display: none !important;
   content: none !important;
   background: transparent !important;

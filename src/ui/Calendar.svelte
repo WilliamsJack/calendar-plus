@@ -66,6 +66,7 @@
   class:monthly-enabled={$settings.monthly.enabled}
   class:quarterly-enabled={$settings.quarterly.enabled}
   class:yearly-enabled={$settings.yearly.enabled}
+  class:weekend-shading-enabled={$settings.shadeWeekendColumns}
 >
   <CalendarBase
     {sources}

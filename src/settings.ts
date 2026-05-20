@@ -33,6 +33,7 @@ export interface ISettings {
   shouldConfirmBeforeCreate: boolean;
   ctrlClickOpensInNewTab: boolean;
   showWeeklyNoteRight: boolean;
+  shadeWeekendColumns: boolean;
 
   localeOverride: ILocaleOverride;
 
@@ -60,6 +61,7 @@ export const defaultSettings = Object.freeze({
   ctrlClickOpensInNewTab: false,
 
   showWeeklyNoteRight: false,
+  shadeWeekendColumns: true,
 
   localeOverride: "system-default",
 
@@ -119,6 +121,7 @@ export class CalendarSettingsTab extends PluginSettingTab {
     this.addCtrlClickSetting();
     this.addConfirmCreateSetting();
     this.addShowWeeklyNoteRightSetting();
+    this.addShadeWeekendColumnsSetting();
 
     new Setting(this.containerEl).setName("Periodic Notes").setHeading();
     this.containerEl.createEl("p", {
@@ -197,6 +200,20 @@ export class CalendarSettingsTab extends PluginSettingTab {
         toggle.setValue(this.plugin.options.showWeeklyNoteRight);
         toggle.onChange(async (value) => {
           void this.plugin.writeOptions(() => ({ showWeeklyNoteRight: value }));
+        });
+      });
+  }
+
+  addShadeWeekendColumnsSetting(): void {
+    new Setting(this.containerEl)
+      .setName("Shade weekend columns")
+      .setDesc(
+        "Tint Saturday and Sunday columns so weekends stand out from weekdays"
+      )
+      .addToggle((toggle) => {
+        toggle.setValue(this.plugin.options.shadeWeekendColumns);
+        toggle.onChange(async (value) => {
+          void this.plugin.writeOptions(() => ({ shadeWeekendColumns: value }));
         });
       });
   }
