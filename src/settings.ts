@@ -128,9 +128,7 @@ export class CalendarSettingsTab extends PluginSettingTab {
     this.addWeekStartSetting();
     this.addCtrlClickSetting();
     this.addConfirmCreateSetting();
-    this.addShowWeeklyNoteRightSetting();
-    this.addShadeWeekendColumnsSetting();
-    this.addWeekendDaysSetting();
+    this.displayWeekendShadingSection();
 
     new Setting(this.containerEl).setName("Periodic Notes").setHeading();
     this.containerEl.createEl("p", {
@@ -201,20 +199,15 @@ export class CalendarSettingsTab extends PluginSettingTab {
       });
   }
 
-  addShowWeeklyNoteRightSetting(): void {
-    new Setting(this.containerEl)
-      .setName("Change week number side")
-      .setDesc("Enable this to show week numbers to the right of the calendar")
-      .addToggle((toggle) => {
-        toggle.setValue(this.plugin.options.showWeeklyNoteRight);
-        toggle.onChange(async (value) => {
-          void this.plugin.writeOptions(() => ({ showWeeklyNoteRight: value }));
-        });
-      });
+  private displayWeekendShadingSection(): void {
+    const sectionEl = this.containerEl.createDiv();
+    this.renderWeekendShadingSection(sectionEl);
   }
 
-  addShadeWeekendColumnsSetting(): void {
-    new Setting(this.containerEl)
+  private renderWeekendShadingSection(sectionEl: HTMLElement): void {
+    sectionEl.empty();
+
+    new Setting(sectionEl)
       .setName("Shade weekend columns")
       .setDesc(
         "Tint weekend day columns so they stand out from weekdays. Off by default; customise which days count as weekend below."
@@ -222,18 +215,22 @@ export class CalendarSettingsTab extends PluginSettingTab {
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.options.shadeWeekendColumns);
         toggle.onChange(async (value) => {
-          void this.plugin.writeOptions(() => ({ shadeWeekendColumns: value }));
+          await this.plugin.writeOptions(() => ({ shadeWeekendColumns: value }));
+          // Re-render only this section's wrapper so the "Weekend days" picker
+          // appears/disappears in place. Saved `weekendDays` is untouched, so
+          // toggling back on restores the user's previous day selections.
+          this.renderWeekendShadingSection(sectionEl);
         });
       });
-  }
 
-  addWeekendDaysSetting(): void {
+    if (!this.plugin.options.shadeWeekendColumns) return;
+
     // Locale-aware day names indexed by JS weekday: 0 = Sunday … 6 = Saturday.
     // Matches the index space used by `weekendDays` in settings and the
     // `date.day()` lookup in `isWeekend` (src/ui/calendar-ui/utils.ts).
     const localizedWeekdays = moment.weekdays();
 
-    new Setting(this.containerEl)
+    new Setting(sectionEl)
       .setName("Weekend days")
       .setDesc(
         'Choose which days are shaded when "Shade weekend columns" is enabled. Independent of the "Start week on" setting.'
@@ -241,7 +238,7 @@ export class CalendarSettingsTab extends PluginSettingTab {
 
     for (let i = 0; i < 7; i++) {
       const dayNum = i;
-      new Setting(this.containerEl)
+      new Setting(sectionEl)
         .setName(localizedWeekdays[dayNum])
         .addToggle((toggle) => {
           toggle.setValue(this.plugin.options.weekendDays.includes(dayNum));
@@ -333,6 +330,26 @@ export class CalendarSettingsTab extends PluginSettingTab {
         });
         new FileSuggest(this.app, text.inputEl);
       });
+
+    // Weekly-only display setting: which side the week-number column lives on.
+    // Only relevant when Weekly notes are enabled (the column is hidden
+    // otherwise), so it lives here and disappears with the rest of the
+    // weekly section when the user toggles Weekly off. The persisted
+    // `showWeeklyNoteRight` key/default is unchanged from when it lived
+    // under "Calendar behavior".
+    if (periodicity === "weekly") {
+      new Setting(sectionEl)
+        .setName("Change week number side")
+        .setDesc(
+          "Show week numbers to the right of the calendar instead of the left."
+        )
+        .addToggle((toggle) => {
+          toggle.setValue(this.plugin.options.showWeeklyNoteRight);
+          toggle.onChange(async (value) => {
+            void this.plugin.writeOptions(() => ({ showWeeklyNoteRight: value }));
+          });
+        });
+    }
   }
 
   addLocaleOverrideSetting(): void {
