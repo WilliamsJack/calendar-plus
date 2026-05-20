@@ -67,9 +67,9 @@ In rough order:
 - Added Calendar Plus ribbon icon; clicking reveals the existing leaf or creates one.
 - Visual affordance refinements: cursor/hover behavior gated by enabled-class wrappers (`monthly-enabled`, etc.), TODAY/arrow hover opacity, suppressed transient `.day:active` purple flash, weekend column shading via `--color-background-weekend`, week-num font-size matched to day numbers, dot-container reservation to prevent week-num jitter, `localeData` spread to a fresh object so `<svelte:options immutable />` re-renders weekend cols on weekStart change.
 
-## UI internals cleanup (post-1.7.17, uncommitted at time of writing)
+## UI internals cleanup (landed in 1.7.18)
 
-A small behavior-preserving polish pass landed after 1.7.17. Items **kept**:
+A small behavior-preserving polish pass landed as part of the 1.7.18 release, alongside the configurable-weekend-days work. Items **kept**:
 
 - **Dot data model trim**: dropped the unused `color` field from `IDot`, made `className` optional, removed the unused `isActive` prop from `Dot.svelte` and its unreachable `.active.filled` / `.active.hollow` CSS rules, trimmed the streak-source dot payload to `{ isFilled: true }`.
 - **Dead `th { ... }` block removed from `WeekNum.svelte`** (the component renders only `<td>`, so the rule fired on nothing).
@@ -92,6 +92,7 @@ None of the above blocks shipping.
 
 See `FUTURE_PLANS.md` for full descriptions. Short list:
 
+- **Optional: per-period note wrapper consolidation / Ctrl-click consistency (deferred)** — `src/io/{daily,weekly,monthly,quarterly,yearly}Notes.ts` are five near-identical wrappers (~120 lines of duplication). Consolidation is tied to a product/design question — should `ctrlClickOpensInNewTab` apply uniformly to monthly/quarterly/yearly header-label Ctrl-clicks (currently only daily/weekly respect it)? Treat this as a dedicated design pass; **not a casual cleanup**. Full description in `FUTURE_PLANS.md`.
 - **Optional: active-file correctness for monthly / quarterly / yearly (deferred)** — `getDateUIDFromFile` only handles daily / weekly. Nav.svelte doesn't consume `selectedId` for month / year / quarter labels, so M/Q/Y active UIDs would be dead code today. Revisit only if active-file styling for header labels is wanted.
 - **Optional: Svelte settings migration (deferred)** — cleaner conditional UI, slide animations. Not planned; the current per-section re-render in `src/settings.ts` works well. Revisit only if the settings UI becomes harder to extend.
 - **Optional: Resolve remaining Obsidian plugin warnings (deferred)** — after 1.7.15 (1.7.14 was the last release that touched checker state, replacing `localStorage.getItem("language")` with `getLanguage()` via a d.ts pin bump to 1.8.7) the checker reports zero source-code Errors and a small residual warning set. Two root causes remain: the intentional single `no-restricted-imports` warning on `src/types/moment.ts:2` (the type-only seam that lets the checker resolve `Moment` precisely — only fixable by hand-rolling local Moment interfaces); and Svelte component instance typing on `this.calendar.tick` / `$set` / `$destroy` in `view.ts` (framework-typing noise). Both documented in `FUTURE_PLANS.md`.
