@@ -52,6 +52,7 @@ Calendar Plus owns its own settings for all five periodic-note types and doesn't
 - **Ctrl + Click behaviour**: when Ctrl/Cmd-clicking a date cell, open the note in a new tab or in a new split.
 - **Confirm before creating new note**: show a confirmation modal before creating a new note. Turn off for one-click creation.
 - **Change week number side**: show week-number cells on the right side of the calendar instead of the left.
+- **Shade weekend columns**: tint Saturday and Sunday columns so weekends stand out from weekdays. On by default.
 
 #### Periodic Notes
 

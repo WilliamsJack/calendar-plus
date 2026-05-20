@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.7.16
+
+Focus: visual polish for the calendar header and weekend column shading, plus a new toggle for users who prefer no weekend tint. No changes to note-opening behavior.
+
+Calendar UI
+- Polished the calendar header so the month/year title and the quarter row (Q1·Q2·Q3·Q4) read as a single left-aligned cluster with consistent spacing.
+- The active quarter label now uses accent text only — no background, pill, gradient, or shadow under themes like Minimal that style generic active-state elements.
+- Weekend column shading now renders as a continuous column from the SAT/SUN headers through every body row under both the default Obsidian theme and Minimal. Previously, Saturday/Sunday cells could render as rounded individual cards under some themes; the new shading paints flat at the cell level.
+
+Settings
+- Added **Shade weekend columns** under Settings → Calendar Plus → Calendar behavior. Defaults to ON for new and existing users (existing users keep weekend shading unless they turn it off). When off, weekend columns render the same as weekday columns — only the background tint is removed; weekend text color, today styling, selected-day styling, note dots, hover/press behavior, and click behavior are all unaffected.
+
 ## 1.7.15
 
 Focus: tiny metadata-only release. No runtime behavior changes.
