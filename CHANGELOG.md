@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.7.18
+
+Focus: settings polish and configurable weekend-day shading. No note-opening behavior changes.
+
+Calendar UI / settings
+- Added configurable weekend days for weekend column shading. Saturday/Sunday remains the default weekend-day selection, but users can now choose Friday/Saturday, Saturday-only, Sunday-only, or any other combination.
+- Weekend shading now defaults off for new installs and users without a saved weekend-shading preference. Existing saved preferences are preserved.
+- Weekend-day selection is independent of the "Start week on" setting: week start controls column order; weekend days control which columns are shaded.
+- The Weekend days picker now appears only when "Shade weekend columns" is enabled.
+- Moved "Change week number side" into the Weekly Notes settings section, where it appears only when Weekly notes are enabled.
+- Reordered Calendar behavior settings for clarity and standardized user-facing settings text to American English.
+
+Code quality
+- Tidied calendar UI internals with no intended behavior change: cleaned up the dot data model, removed unreachable dot styling, removed dead WeekNum styles, and clarified the Day active selector.
+
 ## 1.7.17
 
 Focus: checker-recovery styling patch after 1.7.16. No changes to note-opening behavior.

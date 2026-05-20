@@ -51,8 +51,9 @@ Calendar Plus owns its own settings for all five periodic-note types and doesn't
 - **Start week on**: choose the first day of the week. "Locale default" uses your system locale.
 - **Ctrl + Click behaviour**: when Ctrl/Cmd-clicking a date cell, open the note in a new tab or in a new split.
 - **Confirm before creating new note**: show a confirmation modal before creating a new note. Turn off for one-click creation.
-- **Change week number side**: show week-number cells on the right side of the calendar instead of the left.
-- **Shade weekend columns**: tint Saturday and Sunday columns so weekends stand out from weekdays. On by default.
+- **Change week number side**: show week-number cells on the right side of the calendar instead of the left. (Shown under Weekly notes when Weekly notes are enabled.)
+- **Shade weekend columns**: tint weekend day columns so they stand out from weekdays. Off by default.
+- **Weekend days**: when weekend shading is enabled, choose which days count as weekend (default Saturday + Sunday). Independent of **Start week on** — week start controls column order, not which columns are shaded.
 
 #### Periodic Notes
 
