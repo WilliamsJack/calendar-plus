@@ -53,94 +53,24 @@
   opacity: 0.7;
 }
 
-/* Theme-resistant defenses for the in-calendar UI. These live here, not in
-   the per-component <style> blocks, because Svelte's component-scoped CSS
-   tops out at specificity (0,4,0) — not enough to beat themes like Minimal
-   that target generic `.active` / `.day` with higher specificity or
-   !important. Prefixing with `#calendar-container` gives an ID-level
-   boost; `!important` covers the !important-using themes. */
-
 /* Current-quarter label is a navigation highlight, not a button. Keep it
-   accent text only — strip any background, gradient, pill, shadow, or
-   border-radius a theme tries to paint behind it. */
+   accent text only — strip any background, gradient, pill, or shadow a
+   theme paints behind the `.active` state. */
 .calendar-plus-wrapper #calendar-container .quarter.active {
-  background: transparent !important;
-  background-color: transparent !important;
-  background-image: none !important;
-  box-shadow: none !important;
-  border-radius: 0 !important;
-}
-.calendar-plus-wrapper #calendar-container .quarter.active::before,
-.calendar-plus-wrapper #calendar-container .quarter.active::after {
-  display: none !important;
+  background: transparent;
+  background-image: none;
+  box-shadow: none;
+  border-radius: 0;
 }
 
-/* Uniform weekend column shading. The shading lives on the cells (th + td)
-   rather than the <col>, because col-level paint shows up as a colored
-   ring around the rounded `.day` card under themes that give .day its
-   own opaque background. With cell-level paint plus the .day resets
-   below, weekend columns render as flat, full-rectangle shaded columns
-   spanning header + body.
-
-   th.weekend / td.weekend get the column tint AND have their own
-   border-radius / box-shadow / pseudo-element overlays reset, so the
-   cell paints as a flat rectangle no matter how a theme styles table
-   cells (some themes round td corners or add an inset shadow that
-   reads as a per-cell border, fragmenting the column visually). */
+/* Weekend column shading on header (th) and body (td) cells. Gated by
+   `.weekend-shading-enabled` so the "Shade weekend columns" setting can
+   turn the tint off. Themes that give `.day` its own opaque background
+   may paint over this tint on the body cells — that's intentional, the
+   setting is the user-side workaround for those cases. */
 .calendar-plus-wrapper.weekend-shading-enabled #calendar-container th.weekend,
 .calendar-plus-wrapper.weekend-shading-enabled #calendar-container td.weekend {
-  background-color: var(--color-background-weekend) !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-}
-.calendar-plus-wrapper.weekend-shading-enabled #calendar-container th.weekend::before,
-.calendar-plus-wrapper.weekend-shading-enabled #calendar-container th.weekend::after,
-.calendar-plus-wrapper.weekend-shading-enabled #calendar-container td.weekend::before,
-.calendar-plus-wrapper.weekend-shading-enabled #calendar-container td.weekend::after {
-  display: none !important;
-  content: none !important;
-}
-
-/* Force the inner `.day` card flat-transparent on weekend body cells so
-   the td's weekend tint paints the full cell rectangle uniformly. The
-   :not() chain carves out the four states whose existing styling must
-   win unchanged:
-     .active  — selected daily-note cell keeps its accent fill
-     :hover   — .day:hover keeps its hover background
-     :active  — Day.svelte's press accent (and the daily-disabled press
-                override earlier in this file) keep working
-   So weekend shading shows at rest; hover/press/selected behavior is
-   unchanged from non-weekend cells.
-
-   The reset covers every paint property a theme can use to draw a
-   rounded card behind .day even when background-color is transparent:
-   the background shorthand + background-image (gradient cards), the
-   box-shadow (inset/outset shadows that read as visible card borders),
-   border-radius (.day defaults to 4px; we flatten it on weekend rest
-   so no rounded silhouette remains), filter (drop-shadow themes), and
-   outline (themes that draw a 1px card outline). */
-.calendar-plus-wrapper.weekend-shading-enabled #calendar-container td.weekend .day:not(.active):not(:hover):not(:active) {
-  background: transparent !important;
-  background-color: transparent !important;
-  background-image: none !important;
-  box-shadow: none !important;
-  border-radius: 0 !important;
-  filter: none !important;
-  outline: none !important;
-}
-
-/* Kill any ::before / ::after pseudo-element a theme attaches to .day to
-   paint a card behind it — pseudo-elements would otherwise paint right
-   through our `.day` reset above. Same :not() carve-out so selected/
-   hover/press states keep any pseudo-element behavior unchanged. */
-.calendar-plus-wrapper.weekend-shading-enabled #calendar-container td.weekend .day:not(.active):not(:hover):not(:active)::before,
-.calendar-plus-wrapper.weekend-shading-enabled #calendar-container td.weekend .day:not(.active):not(:hover):not(:active)::after {
-  display: none !important;
-  content: none !important;
-  background: transparent !important;
-  background-color: transparent !important;
-  background-image: none !important;
-  box-shadow: none !important;
+  background-color: var(--color-background-weekend);
 }
 
 /* Settings autocomplete dropdown (folder/template fields). The visual look —
