@@ -150,7 +150,7 @@
     /* Background / pill defenses against theme overrides (e.g. Minimal)
        live in styles.css with a `#calendar-container` ID prefix — Svelte's
        component-scoped specificity (0,4,0) isn't enough to beat a theme
-       targeting generic `.active` with !important or its own ID prefix. */
+       targeting generic `.active` with higher specificity. */
   }
 
   .divider {

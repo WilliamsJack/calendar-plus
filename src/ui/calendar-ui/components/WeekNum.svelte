@@ -92,13 +92,4 @@
     justify-content: center;
     min-height: 6px;
   }
-
-  th {
-    background-color: var(--color-background-heading);
-    color: var(--color-text-heading);
-    font-size: 0.6em;
-    letter-spacing: 1px;
-    padding: 4px;
-    text-transform: uppercase;
-  }
 </style>

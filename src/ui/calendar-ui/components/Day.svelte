@@ -82,8 +82,8 @@
   }
 
   .day:active,
-  .active,
-  .active.today {
+  .day.active,
+  .day.active.today {
     color: var(--text-on-accent);
     background-color: var(--interactive-accent);
   }

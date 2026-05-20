@@ -15,7 +15,7 @@ const getStreakClasses = (file: TFile): string[] => {
 
 const getNoteExistsDots = (file: TFile | null): IDot[] => {
   if (!file) return [];
-  return [{ color: "default", isFilled: true }];
+  return [{ isFilled: true }];
 };
 
 export const streakSource: ICalendarSource = {
