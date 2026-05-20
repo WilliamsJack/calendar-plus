@@ -7,7 +7,7 @@
   import Dot from "./Dot.svelte";
   import MetadataResolver from "./MetadataResolver.svelte";
   import type { IDayMetadata } from "../types";
-  import { isMetaPressed } from "../utils";
+  import { isMetaPressed, isWeekend } from "../utils";
 
   // Properties
   export let date: Moment;
@@ -24,9 +24,11 @@
   export let today: Moment;
   export let displayedMonth: Moment = null;
   export let selectedId: string = null;
+
+  $: isWeekendDay = isWeekend(date);
 </script>
 
-<td>
+<td class:weekend="{isWeekendDay}">
   <MetadataResolver metadata="{metadata}" let:metadata>
     <div
       class="{`day ${metadata.classes.join(' ')}`}"

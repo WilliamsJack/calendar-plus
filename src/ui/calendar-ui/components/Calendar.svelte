@@ -86,8 +86,8 @@
       {#if showWeekNums && !showWeekNumsRight}
         <col />
       {/if}
-      {#each month[1].days as date}
-        <col class:weekend="{isWeekend(date)}" />
+      {#each month[1].days as _date}
+        <col />
       {/each}
     </colgroup>
     <thead>
@@ -95,8 +95,8 @@
         {#if showWeekNums && !showWeekNumsRight}
           <th class="week-num-heading">W</th>
         {/if}
-        {#each daysOfWeek as dayOfWeek}
-          <th>{dayOfWeek}</th>
+        {#each daysOfWeek as dayOfWeek, i}
+          <th class:weekend="{isWeekend(month[1].days[i])}">{dayOfWeek}</th>
         {/each}
         {#if showWeekNums && showWeekNumsRight}
           <th class="week-num-heading">W</th>
@@ -175,10 +175,6 @@
 
   th {
     text-align: center;
-  }
-
-  .weekend {
-    background-color: var(--color-background-weekend);
   }
 
   .calendar {

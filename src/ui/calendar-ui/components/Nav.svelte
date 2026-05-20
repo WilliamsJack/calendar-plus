@@ -95,7 +95,7 @@
   .title-container {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
   }
 
   .title {
@@ -137,6 +137,10 @@
   .quarter.active {
     color: var(--interactive-accent);
     font-weight: bold;
+    /* Background / pill defenses against theme overrides (e.g. Minimal)
+       live in styles.css with a `#calendar-container` ID prefix — Svelte's
+       component-scoped specificity (0,4,0) isn't enough to beat a theme
+       targeting generic `.active` with !important or its own ID prefix. */
   }
 
   .divider {
