@@ -125,10 +125,10 @@ export class CalendarSettingsTab extends PluginSettingTab {
     );
 
     new Setting(this.containerEl).setName("Calendar behavior").setHeading();
-    this.addWeekStartSetting();
-    this.addCtrlClickSetting();
     this.addConfirmCreateSetting();
+    this.addWeekStartSetting();
     this.displayWeekendShadingSection();
+    this.addCtrlClickSetting();
 
     new Setting(this.containerEl).setName("Periodic Notes").setHeading();
     this.containerEl.createEl("p", {
@@ -170,8 +170,8 @@ export class CalendarSettingsTab extends PluginSettingTab {
   }
   addCtrlClickSetting(): void {
     new Setting(this.containerEl)
-      .setName("Ctrl + Click Behaviour")
-      .setDesc("Set the behaviour of Ctrl + Clicking on a date")
+      .setName("Ctrl + Click Behavior")
+      .setDesc("Set the behavior of Ctrl + Clicking on a date")
       .addDropdown((dropdown) => {
         dropdown.addOption("new-tab", "Open in new tab");
         dropdown.addOption("new-split", "Open in new split");
@@ -210,7 +210,7 @@ export class CalendarSettingsTab extends PluginSettingTab {
     new Setting(sectionEl)
       .setName("Shade weekend columns")
       .setDesc(
-        "Tint weekend day columns so they stand out from weekdays. Off by default; customise which days count as weekend below."
+        "Tint weekend day columns so they stand out from weekdays. Off by default. When enabled you can customize which days count as the weekend."
       )
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.options.shadeWeekendColumns);
@@ -290,6 +290,27 @@ export class CalendarSettingsTab extends PluginSettingTab {
 
     if (!pnSettings.enabled) return;
 
+    // Weekly-only display setting: which side the week-number column lives on.
+    // Placed right after Enable so the display preference is easy to find
+    // when configuring Weekly notes. Only relevant when Weekly notes are
+    // enabled (the column is hidden otherwise), so it lives here and
+    // disappears with the rest of the weekly section when the user toggles
+    // Weekly off. The persisted `showWeeklyNoteRight` key/default is
+    // unchanged from when it lived under "Calendar behavior".
+    if (periodicity === "weekly") {
+      new Setting(sectionEl)
+        .setName("Change week number side")
+        .setDesc(
+          "Show week numbers to the right of the calendar instead of the left."
+        )
+        .addToggle((toggle) => {
+          toggle.setValue(this.plugin.options.showWeeklyNoteRight);
+          toggle.onChange(async (value) => {
+            void this.plugin.writeOptions(() => ({ showWeeklyNoteRight: value }));
+          });
+        });
+    }
+
     new Setting(sectionEl)
       .setName("Date format")
       .setDesc("Moment.js format string for note filenames")
@@ -330,26 +351,6 @@ export class CalendarSettingsTab extends PluginSettingTab {
         });
         new FileSuggest(this.app, text.inputEl);
       });
-
-    // Weekly-only display setting: which side the week-number column lives on.
-    // Only relevant when Weekly notes are enabled (the column is hidden
-    // otherwise), so it lives here and disappears with the rest of the
-    // weekly section when the user toggles Weekly off. The persisted
-    // `showWeeklyNoteRight` key/default is unchanged from when it lived
-    // under "Calendar behavior".
-    if (periodicity === "weekly") {
-      new Setting(sectionEl)
-        .setName("Change week number side")
-        .setDesc(
-          "Show week numbers to the right of the calendar instead of the left."
-        )
-        .addToggle((toggle) => {
-          toggle.setValue(this.plugin.options.showWeeklyNoteRight);
-          toggle.onChange(async (value) => {
-            void this.plugin.writeOptions(() => ({ showWeeklyNoteRight: value }));
-          });
-        });
-    }
   }
 
   addLocaleOverrideSetting(): void {
