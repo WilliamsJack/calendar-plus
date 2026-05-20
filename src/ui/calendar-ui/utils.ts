@@ -13,8 +13,14 @@ export function getDaysOfWeek(..._args: unknown[]): string[] {
   return moment.weekdaysShort(true);
 }
 
-export function isWeekend(date: Moment): boolean {
-  return date.isoWeekday() === 6 || date.isoWeekday() === 7;
+/**
+ * Returns true when the given date falls on one of the configured weekend
+ * days. `weekendDays` carries JS/Moment weekday numbers
+ * (0 = Sunday … 6 = Saturday); the lookup uses `date.day()` which is in the
+ * same index space. Independent of locale week-start.
+ */
+export function isWeekend(date: Moment, weekendDays: number[]): boolean {
+  return weekendDays.includes(date.day());
 }
 
 export function getStartOfWeek(days: Moment[]): Moment {

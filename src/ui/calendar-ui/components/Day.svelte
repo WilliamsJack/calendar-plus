@@ -24,8 +24,9 @@
   export let today: Moment;
   export let displayedMonth: Moment = null;
   export let selectedId: string = null;
+  export let weekendDays: number[] = [0, 6];
 
-  $: isWeekendDay = isWeekend(date);
+  $: isWeekendDay = isWeekend(date, weekendDays);
 </script>
 
 <td class:weekend="{isWeekendDay}">

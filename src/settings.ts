@@ -34,6 +34,13 @@ export interface ISettings {
   ctrlClickOpensInNewTab: boolean;
   showWeeklyNoteRight: boolean;
   shadeWeekendColumns: boolean;
+  /**
+   * JS/Moment weekday numbers (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+   * for the days that should receive the weekend tint when
+   * `shadeWeekendColumns` is on. Independent of `weekStart`, which only
+   * controls column order. Default is `[0, 6]` (Sunday + Saturday).
+   */
+  weekendDays: number[];
 
   localeOverride: ILocaleOverride;
 
@@ -61,7 +68,8 @@ export const defaultSettings = Object.freeze({
   ctrlClickOpensInNewTab: false,
 
   showWeeklyNoteRight: false,
-  shadeWeekendColumns: true,
+  shadeWeekendColumns: false,
+  weekendDays: [0, 6],
 
   localeOverride: "system-default",
 
@@ -122,6 +130,7 @@ export class CalendarSettingsTab extends PluginSettingTab {
     this.addConfirmCreateSetting();
     this.addShowWeeklyNoteRightSetting();
     this.addShadeWeekendColumnsSetting();
+    this.addWeekendDaysSetting();
 
     new Setting(this.containerEl).setName("Periodic Notes").setHeading();
     this.containerEl.createEl("p", {
@@ -208,7 +217,7 @@ export class CalendarSettingsTab extends PluginSettingTab {
     new Setting(this.containerEl)
       .setName("Shade weekend columns")
       .setDesc(
-        "Tint Saturday and Sunday columns so weekends stand out from weekdays"
+        "Tint weekend day columns so they stand out from weekdays. Off by default; customise which days count as weekend below."
       )
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.options.shadeWeekendColumns);
@@ -216,6 +225,35 @@ export class CalendarSettingsTab extends PluginSettingTab {
           void this.plugin.writeOptions(() => ({ shadeWeekendColumns: value }));
         });
       });
+  }
+
+  addWeekendDaysSetting(): void {
+    // Locale-aware day names indexed by JS weekday: 0 = Sunday … 6 = Saturday.
+    // Matches the index space used by `weekendDays` in settings and the
+    // `date.day()` lookup in `isWeekend` (src/ui/calendar-ui/utils.ts).
+    const localizedWeekdays = moment.weekdays();
+
+    new Setting(this.containerEl)
+      .setName("Weekend days")
+      .setDesc(
+        'Choose which days are shaded when "Shade weekend columns" is enabled. Independent of the "Start week on" setting.'
+      );
+
+    for (let i = 0; i < 7; i++) {
+      const dayNum = i;
+      new Setting(this.containerEl)
+        .setName(localizedWeekdays[dayNum])
+        .addToggle((toggle) => {
+          toggle.setValue(this.plugin.options.weekendDays.includes(dayNum));
+          toggle.onChange(async (selected) => {
+            const current = this.plugin.options.weekendDays;
+            const next = selected
+              ? [...current, dayNum].sort((a, b) => a - b)
+              : current.filter((d) => d !== dayNum);
+            void this.plugin.writeOptions(() => ({ weekendDays: next }));
+          });
+        });
+    }
   }
 
   private displayPeriodicNoteSettings(

@@ -86,5 +86,6 @@
     showWeekNums={$settings.weekly.enabled}
     showWeekNumsRight={$settings.showWeeklyNoteRight}
     quarterVisible={$settings.quarterly.enabled}
+    weekendDays={$settings.weekendDays}
   />
 </div>

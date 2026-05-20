@@ -19,6 +19,10 @@
   // Settings
   export let showWeekNums: boolean = false;
   export let showWeekNumsRight: boolean = false;
+  // JS weekday numbers (0 = Sunday … 6 = Saturday) treated as weekend days
+  // for the `class:weekend` binding on header and body cells. Independent of
+  // week-start ordering.
+  export let weekendDays: number[] = [0, 6];
 
   // Event Handlers
   export let onHoverDay: (
@@ -96,7 +100,7 @@
           <th class="week-num-heading">W</th>
         {/if}
         {#each daysOfWeek as dayOfWeek, i}
-          <th class:weekend="{isWeekend(month[1].days[i])}">{dayOfWeek}</th>
+          <th class:weekend="{isWeekend(month[1].days[i], weekendDays)}">{dayOfWeek}</th>
         {/each}
         {#if showWeekNums && showWeekNumsRight}
           <th class="week-num-heading">W</th>
@@ -122,6 +126,7 @@
               date="{day}"
               {today}
               {displayedMonth}
+              {weekendDays}
               onClick="{onClickDay}"
               onContextMenu="{onContextMenuDay}"
               onHover="{onHoverDay}"
