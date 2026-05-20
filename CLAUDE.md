@@ -62,6 +62,19 @@ In rough order:
 - Added Calendar Plus ribbon icon; clicking reveals the existing leaf or creates one.
 - Visual affordance refinements: cursor/hover behavior gated by enabled-class wrappers (`monthly-enabled`, etc.), TODAY/arrow hover opacity, suppressed transient `.day:active` purple flash, weekend column shading via `--color-background-weekend`, week-num font-size matched to day numbers, dot-container reservation to prevent week-num jitter, `localeData` spread to a fresh object so `<svelte:options immutable />` re-renders weekend cols on weekStart change.
 
+## UI internals cleanup (post-1.7.17, uncommitted at time of writing)
+
+A small behavior-preserving polish pass landed after 1.7.17. Items **kept**:
+
+- **Dot data model trim**: dropped the unused `color` field from `IDot`, made `className` optional, removed the unused `isActive` prop from `Dot.svelte` and its unreachable `.active.filled` / `.active.hollow` CSS rules, trimmed the streak-source dot payload to `{ isFilled: true }`.
+- **Dead `th { ... }` block removed from `WeekNum.svelte`** (the component renders only `<td>`, so the rule fired on nothing).
+- **`.active` selector in `Day.svelte`** rewritten as `.day.active` / `.day.active.today` for clarity. No behavior change — Svelte-scoped CSS already pinned the selector to elements inside Day.svelte.
+- **`Nav.svelte` comment rephrase**: removed the only remaining `!important` mention anywhere in `src/`, so grep / checker output stays clean.
+
+Item intentionally **not kept**:
+
+- **Unused helper parameters** (the `..._args: unknown[]` rest params on `getDaysOfWeek`, `getMonth`, `getDailyMetadata`, `getWeeklyMetadata`) were briefly removed in the same pass, but the cleanup was reverted. Removing the params required `(localeData, getMonth(...))` / `(today, getDailyMetadata(...))` comma-operator expressions in `Calendar.svelte` to keep Svelte's reactive-dependency chain intact. The comma-operator pattern is technically correct but less readable and more surprising than passing `localeData` / `today` as ordinary arguments — a reader shouldn't have to recognize the comma-operator idiom to see the reactive deps. The current code keeps the rest-args; `Calendar.svelte` keeps `localeData` / `today` as ordinary call arguments so reactivity is obvious at the call site. A future pass that wants to clean these up should pick a style that doesn't hide reactive deps from readers (e.g. a named `_trigger?: unknown` param is fine, comma operators are not).
+
 ## Known baseline / non-blocking issues
 
 These are catalogued in `FUTURE_PLANS.md`. Highlights:

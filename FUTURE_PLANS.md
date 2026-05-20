@@ -8,6 +8,21 @@ Migrating the settings tab to Svelte would potentially give cleaner conditional 
 
 **Not planned.** The current per-section re-render in `src/settings.ts` works well, doesn't scroll-jump, and is straightforward to maintain. Only worth revisiting if the settings UI grows substantially harder to extend — until then this is a "nice to have" with no concrete trigger, kept here only as a parking lot for the idea.
 
+## Optional: per-period note wrapper consolidation / Ctrl-click consistency (deferred)
+
+`src/io/{daily,weekly,monthly,quarterly,yearly}Notes.ts` are five near-identical wrappers around `tryToCreatePeriodicNote(...)` — ~120 lines of duplication. They exist for naming clarity at call sites (documented in `CLAUDE.md` § Current architecture) and the duplication is non-load-bearing. Consolidation into a single helper in `periodicNotes.ts` + thin re-exports is possible but **intentionally deferred** until there is a concrete reason to touch that area.
+
+Bundled with consolidation is a real product/design question: **should Ctrl/Cmd-click on monthly, quarterly, and yearly header labels respect the `ctrlClickOpensInNewTab` setting, matching daily/weekly click behavior?** Currently:
+
+- Daily / weekly cells: Ctrl-click respects `ctrlClickOpensInNewTab` (tab vs split based on the setting).
+- Monthly / quarterly / yearly header labels: Ctrl-click always opens in a new split; the setting is ignored.
+
+This asymmetry isn't documented in the settings tab (the description reads "Set the behaviour of Ctrl + Clicking on a date"), and consolidating the per-period wrappers would naturally surface the unify-or-clarify question.
+
+**Not a bug fix to do casually** — changing monthly/quarterly/yearly behavior is user-visible. Anyone who relies on the current always-split semantics for header labels would see a tab open instead. Treat this as a dedicated design pass: either update the setting description to clarify it applies only to date cells, or unify the behavior across all five periodicities and document the change in `CHANGELOG.md` + `README.md`. Pick a direction first, then consolidate the per-period wrapper files around it.
+
+Revisit when the per-period IO code needs to change for an independent reason, or when a user reports the asymmetry as confusing.
+
 ## Optional: active-file correctness for monthly / quarterly / yearly (deferred)
 
 `getDateUIDFromFile` (`src/ui/utils.ts`) currently only checks daily and weekly periodicities. Opening a monthly / quarterly / yearly note today produces a `null` active UID instead of e.g. `"month-2024-05-01T..."`.
