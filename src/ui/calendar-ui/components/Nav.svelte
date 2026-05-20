@@ -121,16 +121,26 @@
 
   .quarters {
     display: flex;
-    justify-content: center;
     align-items: center;
     margin-top: 4px;
-    padding: 0 2px;
+    /* 2px optical nudge to the right — sits the cluster just inside the
+       month title's left edge instead of perfectly flush, which reads
+       better at this font size. Not restoring the old per-item margins
+       or container padding (those caused the larger 6px indent). */
+    margin-left: 2px;
+    /* gap replaces per-item horizontal margins + the container's side
+       padding. The previous setup gave Q1 a 4px margin-left plus 2px of
+       container padding-left, leaving the row visually indented relative
+       to the month title (which has margin: 0). Using gap puts the first
+       child flush at the container's left edge while preserving the same
+       6px spacing between adjacent items (was 4px quarter-margin + 2px
+       divider-margin = 6px between each quarter and its divider). */
+    gap: 6px;
   }
 
   .quarter {
     font-size: 0.6em;
     color: var(--text-muted);
-    margin: 0 4px;
     cursor: pointer;
   }
 
@@ -146,7 +156,6 @@
   .divider {
     font-size: 0.4em;
     color: var(--text-muted);
-    margin: 0 2px;
   }
 
   .right-nav {
