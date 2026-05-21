@@ -4,7 +4,7 @@ Calendar Plus is a sidebar calendar for [Obsidian](https://obsidian.md/) with da
 
 1. **Periodic notes are integrated.** Daily, weekly, monthly, quarterly, and yearly notes are configured directly in Calendar Plus — no separate Periodic Notes plugin required.
 2. **Month, year, and quarter labels are clickable.** Click the labels in the calendar header to open or create the corresponding periodic note, the same way day and week-number cells work.
-3. **Dots only mean "a note exists."** This simplifies the indicator and creates a cleaner look. The dots no longer represent word count or task completion — they are just a presence indicator.
+3. **Dots default to "a note exists."** By default, a dot on a day or week-number cell simply indicates that the corresponding note exists. If you prefer richer indicators, the **Dot style** setting can show word-count dots and an open-task dot for daily and weekly notes.
 
 There are also many bug fixes that bring both the calendar view and periodic note functionality up to modern Obsidian plugin standards.
 
@@ -15,7 +15,7 @@ There are also many bug fixes that bring both the calendar view and periodic not
 - A calendar view for navigating your vault by date.
 - Built-in periodic notes for daily, weekly, monthly, quarterly, and yearly periodicities. Each periodicity has its own folder, filename format, and optional template — no separate Periodic Notes plugin required.
 - Click a day cell to open or create that day's note. Click a week-number cell to open or create the weekly note. Click the month, year, or quarter labels in the calendar header to open or create the corresponding monthly / yearly / quarterly note.
-- A filled dot on a day cell means a periodic note exists for that day. A dot on a week-number cell means a weekly note exists for that week. Dots don't represent anything else — no word counts, no task counts, no streak metadata.
+- By default, a filled dot on a day cell means a periodic note exists for that day, and a dot on a week-number cell means a weekly note exists. The optional **Dot style** setting can switch this to word-count dots plus an open-task dot for daily and weekly notes.
 - The calendar view can live anywhere. Drag it to the left sidebar, into the main content area, pin it as a tab, or pop it into its own window — Calendar Plus preserves the placement across plugin reloads.
 - Theme-friendly: the calendar inherits Obsidian's CSS variables and respects the active theme out of the box.
 
@@ -49,7 +49,7 @@ Calendar Plus owns its own settings for all five periodic-note types and doesn't
 #### General
 
 - **Start week on**: choose the first day of the week. "Locale default" uses your system locale.
-- **Ctrl + Click behaviour**: when Ctrl/Cmd-clicking a date cell, open the note in a new tab or in a new split.
+- **Ctrl + Click Behavior**: when Ctrl/Cmd-clicking a date cell, open the note in a new tab or in a new split.
 - **Confirm before creating new note**: show a confirmation modal before creating a new note. Turn off for one-click creation.
 - **Change week number side**: show week-number cells on the right side of the calendar instead of the left. (Shown under Weekly notes when Weekly notes are enabled.)
 - **Shade weekend columns**: tint weekend day columns so they stand out from weekdays. Off by default.
@@ -73,7 +73,7 @@ It's intended to. Calendar Plus uses a separate plugin id, view type, and ribbon
 
 ### What do the dots mean?
 
-A filled dot on a day cell means a periodic note exists for that day. A dot on a week-number cell means a weekly note exists for that week. Dots have no other meaning — they don't reflect word count or task status.
+By default, a filled dot on a day cell means a periodic note exists for that day, and a dot on a week-number cell means a weekly note exists. If you'd like dots to reflect word count and open tasks instead, switch the **Dot style** setting to "Word count and open tasks" — daily and weekly notes will then show filled dots based on word count plus one hollow dot when the note has open `- [ ]` or `* [ ]` tasks.
 
 ### How do I add week numbers to the calendar?
 
@@ -115,7 +115,7 @@ Hold Ctrl or Cmd while hovering a day cell to preview the corresponding daily no
 
 ### Open in a split
 
-Ctrl/Cmd-click a date cell to open the note in a new split or new tab, depending on the **Ctrl + Click behaviour** setting.
+Ctrl/Cmd-click a date cell to open the note in a new split or new tab, depending on the **Ctrl + Click Behavior** setting.
 
 ### Reveal an open periodic note on the calendar
 
