@@ -41,6 +41,21 @@ export interface ISettings {
    * controls column order. Default is `[0, 6]` (Sunday + Saturday).
    */
   weekendDays: number[];
+  /**
+   * What the dots on day and week cells represent.
+   *  - `"exists"` (default): one filled dot when the corresponding periodic
+   *    note exists. Current Calendar Plus behavior.
+   *  - `"word-count-tasks"`: filled dots based on the note's word count
+   *    (1 dot per `wordsPerDot` words, max 5) plus one hollow task dot when
+   *    the note has any open `- [ ]` / `* [ ]` checkboxes.
+   * Applies to daily and weekly cells only.
+   */
+  dotMode: "exists" | "word-count-tasks";
+  /**
+   * Words per filled dot when `dotMode === "word-count-tasks"`. Default 250.
+   * A value <= 0 disables word-count dots while leaving task dots in place.
+   */
+  wordsPerDot: number;
 
   localeOverride: ILocaleOverride;
 
@@ -70,6 +85,8 @@ export const defaultSettings = Object.freeze({
   showWeeklyNoteRight: false,
   shadeWeekendColumns: false,
   weekendDays: [0, 6],
+  dotMode: "exists" as "exists" | "word-count-tasks",
+  wordsPerDot: 250,
 
   localeOverride: "system-default",
 
@@ -128,6 +145,7 @@ export class CalendarSettingsTab extends PluginSettingTab {
     this.addConfirmCreateSetting();
     this.addWeekStartSetting();
     this.displayWeekendShadingSection();
+    this.displayDotStyleSection();
     this.addCtrlClickSetting();
 
     new Setting(this.containerEl).setName("Periodic Notes").setHeading();
@@ -251,6 +269,50 @@ export class CalendarSettingsTab extends PluginSettingTab {
           });
         });
     }
+  }
+
+  private displayDotStyleSection(): void {
+    const sectionEl = this.containerEl.createDiv();
+    this.renderDotStyleSection(sectionEl);
+  }
+
+  private renderDotStyleSection(sectionEl: HTMLElement): void {
+    sectionEl.empty();
+
+    new Setting(sectionEl)
+      .setName("Dot style")
+      .setDesc("Choose what the dots on day and week cells represent.")
+      .addDropdown((dropdown) => {
+        dropdown.addOption("exists", "Note exists");
+        dropdown.addOption("word-count-tasks", "Word count and open tasks");
+        dropdown.setValue(this.plugin.options.dotMode);
+        dropdown.onChange(async (value) => {
+          await this.plugin.writeOptions(() => ({
+            dotMode: value as "exists" | "word-count-tasks",
+          }));
+          // Re-render only this section's wrapper so the "Words per dot"
+          // sub-setting appears/disappears in place. Saved `wordsPerDot` is
+          // untouched, so toggling back into "word-count-tasks" restores the
+          // user's previous threshold.
+          this.renderDotStyleSection(sectionEl);
+        });
+      });
+
+    if (this.plugin.options.dotMode !== "word-count-tasks") return;
+
+    new Setting(sectionEl)
+      .setName("Words per dot")
+      .setDesc("Number of words per filled dot. Up to 5 dots per cell.")
+      .addText((text) => {
+        text.inputEl.type = "number";
+        text.setPlaceholder("250");
+        text.setValue(String(this.plugin.options.wordsPerDot));
+        text.onChange(async (value) => {
+          const parsed = value === "" ? 250 : Number(value);
+          if (!Number.isFinite(parsed)) return;
+          void this.plugin.writeOptions(() => ({ wordsPerDot: parsed }));
+        });
+      });
   }
 
   private displayPeriodicNoteSettings(

@@ -25,7 +25,12 @@ import {
   yearlyNotes,
   settings,
 } from "./ui/stores";
-import { customTagsSource, streakSource } from "./ui/sources";
+import {
+  customTagsSource,
+  streakSource,
+  tasksSource,
+  wordCountSource,
+} from "./ui/sources";
 
 export default class CalendarView extends ItemView {
   private calendar: Calendar;
@@ -75,8 +80,15 @@ export default class CalendarView extends ItemView {
 
   async onOpen(): Promise<void> {
     // Integration point: external plugins can listen for `calendar-plus:open`
-    // (TRIGGER_ON_OPEN) to feed in additional sources.
-    const sources = [customTagsSource, streakSource];
+    // (TRIGGER_ON_OPEN) to feed in additional sources. wordCountSource and
+    // tasksSource self-gate on `dotMode === "word-count-tasks"`, so they have
+    // zero cost in the default "exists" mode.
+    const sources = [
+      customTagsSource,
+      streakSource,
+      wordCountSource,
+      tasksSource,
+    ];
     this.app.workspace.trigger(TRIGGER_ON_OPEN, sources);
 
     this.calendar = new Calendar({

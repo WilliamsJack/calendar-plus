@@ -4,7 +4,7 @@ import type { ICalendarSource, IDayMetadata, IDot } from "src/ui/calendar-ui/typ
 import { getPeriodicNote as helperGetPeriodicNote } from "src/io/periodicNoteHelpers";
 import { get } from "svelte/store";
 
-import { dailyNotes, weeklyNotes } from "../stores";
+import { dailyNotes, settings, weeklyNotes } from "../stores";
 import { classList } from "../utils";
 
 const getStreakClasses = (file: TFile): string[] => {
@@ -15,6 +15,12 @@ const getStreakClasses = (file: TFile): string[] => {
 
 const getNoteExistsDots = (file: TFile | null): IDot[] => {
   if (!file) return [];
+  // The presence dot is only emitted in "exists" mode. In "word-count-tasks"
+  // mode, the word-count source emits filled dots instead and the tasks
+  // source emits the open-task hollow dot; this source still emits the
+  // `has-note` class either way so themes can target it as a hook.
+  const { dotMode } = get(settings);
+  if (dotMode !== "exists") return [];
   return [{ isFilled: true }];
 };
 
