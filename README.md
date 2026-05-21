@@ -54,6 +54,8 @@ Calendar Plus owns its own settings for all five periodic-note types and doesn't
 - **Change week number side**: show week-number cells on the right side of the calendar instead of the left. (Shown under Weekly notes when Weekly notes are enabled.)
 - **Shade weekend columns**: tint weekend day columns so they stand out from weekdays. Off by default.
 - **Weekend days**: when weekend shading is enabled, choose which days count as weekend (default Saturday + Sunday). Independent of **Start week on** — week start controls column order, not which columns are shaded.
+- **Dot style**: choose what the dots on day and week cells represent. "Note exists" (default) shows a single dot when the corresponding daily/weekly note exists. "Word count and open tasks" shows filled dots based on word count plus one hollow dot when the note has open `- [ ]` / `* [ ]` tasks.
+- **Words per dot**: when **Dot style** is set to "Word count and open tasks", this controls how many words count as one filled dot (default 250). Dots are capped at 5 per cell.
 
 #### Periodic Notes
 

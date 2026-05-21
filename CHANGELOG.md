@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.8.0
+
+Focus: configurable dot styles. Calendar Plus now supports both simple note-existence dots and optional word-count/open-task dots. No note-opening behavior changes.
+
+Calendar UI / settings
+- Added a new **Dot style** setting under Calendar behavior.
+- **Note exists** remains the default: day and week cells show a simple dot when the corresponding note exists.
+- Added an optional **Word count and open tasks** mode: filled dots represent word count, and one hollow task dot appears when a daily or weekly note has open `- [ ]` or `* [ ]` tasks. Completed `- [x]` boxes are intentionally excluded.
+- Added a **Words per dot** setting for the word-count threshold (default 250). Dots are capped at 5 per cell.
+- Dot style applies to daily and weekly cells only. Monthly, quarterly, and yearly header labels are unchanged.
+- The new setting uses descriptive copy and does not change existing note-opening behavior.
+- The `has-note` class on day/week cells is preserved as a stable theme hook in both dot modes.
+
+Code quality / performance
+- The word-count and task-dot sources are opt-in and self-gated. In the default **Note exists** mode, they return no dots and do not read note contents.
+- The optional mode uses Obsidian's `vault.cachedRead` for visible daily/weekly notes only — no vault enumeration, no scans beyond the existing periodic-note index.
+
 ## 1.7.18
 
 Focus: settings polish and configurable weekend-day shading. No note-opening behavior changes.
