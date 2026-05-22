@@ -1,5 +1,25 @@
 # Changelog
 
+## 1.8.1
+
+Focus: mobile polish, modifier-click consistency, and repository hygiene. No note path/date/template behavior changes.
+
+Calendar UI
+- Improved mobile alignment so the month/year title and quarter row sit more naturally with the calendar grid.
+- Desktop layout is unchanged.
+
+Modifier-click behavior
+- Fixed Ctrl-click handling on month, quarter, and year labels for Windows/Linux.
+- Month, quarter, and year labels now use the same cross-platform modifier-click behavior as day and week-number cells.
+- Month, quarter, and year note openings now respect the existing "Ctrl + Click Behavior" setting.
+- Plain-click behavior is unchanged.
+
+Code quality
+- Consolidated periodic-note open/create helper logic after unifying modifier-click behavior.
+
+Repository
+- Added a security policy.
+
 ## 1.8.0
 
 Focus: configurable dot styles. Calendar Plus now supports both simple note-existence dots and optional word-count/open-task dots. No note-opening behavior changes.
