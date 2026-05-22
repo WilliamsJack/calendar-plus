@@ -2,6 +2,7 @@
   import type { Moment } from "src/types/moment";
   import { Platform } from "obsidian";
   import Arrow from "./Arrow.svelte";
+  import { isMetaPressed } from "../utils";
   export let displayedMonth: Moment;
   export let today: Moment;
   export let resetDisplayedMonth: () => void;
@@ -33,13 +34,13 @@
       <span
         class="month"
         on:click="{(event) => {
-          onClickMonth(displayedMonth, event.metaKey);
+          onClickMonth(displayedMonth, isMetaPressed(event));
         }}">{displayedMonth.format("MMM")}</span
       >
       <span
         class="year"
         on:click="{(event) => {
-          onClickYear(displayedMonth, event.metaKey);
+          onClickYear(displayedMonth, isMetaPressed(event));
         }}">{displayedMonth.format("YYYY")}</span
       >
     </h3>
@@ -52,7 +53,7 @@
             on:click="{(event) =>
               onClickQuarter(
                 getStartOfQuarter(displayedMonth.year(), quarter),
-                event.metaKey,
+                isMetaPressed(event),
               )}">Q{quarter}</span
           >
           {#if index < 3}

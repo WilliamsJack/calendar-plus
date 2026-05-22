@@ -189,7 +189,7 @@ export class CalendarSettingsTab extends PluginSettingTab {
   addCtrlClickSetting(): void {
     new Setting(this.containerEl)
       .setName("Ctrl + Click Behavior")
-      .setDesc("Set the behavior of Ctrl + Clicking on a date")
+      .setDesc("Set the behavior of Ctrl/Cmd-clicking calendar items.")
       .addDropdown((dropdown) => {
         dropdown.addOption("new-tab", "Open in new tab");
         dropdown.addOption("new-split", "Open in new split");

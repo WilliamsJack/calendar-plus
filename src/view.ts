@@ -456,7 +456,7 @@ export default class CalendarView extends ItemView {
 
   openOrCreateMonthlyNote = async (
     date: Moment,
-    inNewSplit: boolean
+    ctrlPressed: boolean
   ): Promise<void> => {
     if (!this.settings.monthly.enabled) return;
     const { workspace } = this.app;
@@ -467,7 +467,7 @@ export default class CalendarView extends ItemView {
     if (!existingFile) {
       void tryToCreateMonthlyNote(
         startOfMonth,
-        inNewSplit,
+        ctrlPressed,
         this.settings,
         (file) => {
           activeFile.setFile(file);
@@ -476,9 +476,16 @@ export default class CalendarView extends ItemView {
       return;
     }
 
-    const leaf = inNewSplit
-      ? workspace.getLeaf("split", "vertical")
-      : workspace.getLeaf(false);
+    let leaf: WorkspaceLeaf;
+    if (ctrlPressed) {
+      if (this.settings.ctrlClickOpensInNewTab) {
+        leaf = workspace.getLeaf("tab");
+      } else {
+        leaf = workspace.getLeaf("split", "vertical");
+      }
+    } else {
+      leaf = workspace.getLeaf(false);
+    }
     await leaf.openFile(existingFile);
 
     activeFile.setFile(existingFile);
@@ -487,7 +494,7 @@ export default class CalendarView extends ItemView {
 
   openOrCreateQuarterlyNote = async (
     date: Moment,
-    inNewSplit: boolean
+    ctrlPressed: boolean
   ): Promise<void> => {
     if (!this.settings.quarterly.enabled) return;
     const { workspace } = this.app;
@@ -499,7 +506,7 @@ export default class CalendarView extends ItemView {
     if (!existingFile) {
       void tryToCreateQuarterlyNote(
         startOfQuarter,
-        inNewSplit,
+        ctrlPressed,
         this.settings,
         (file) => {
           activeFile.setFile(file);
@@ -508,9 +515,16 @@ export default class CalendarView extends ItemView {
       return;
     }
 
-    const leaf = inNewSplit
-      ? workspace.getLeaf("split", "vertical")
-      : workspace.getLeaf(false);
+    let leaf: WorkspaceLeaf;
+    if (ctrlPressed) {
+      if (this.settings.ctrlClickOpensInNewTab) {
+        leaf = workspace.getLeaf("tab");
+      } else {
+        leaf = workspace.getLeaf("split", "vertical");
+      }
+    } else {
+      leaf = workspace.getLeaf(false);
+    }
     await leaf.openFile(existingFile);
 
     activeFile.setFile(existingFile);
@@ -519,7 +533,7 @@ export default class CalendarView extends ItemView {
 
   openOrCreateYearlyNote = async (
     date: Moment,
-    inNewSplit: boolean
+    ctrlPressed: boolean
   ): Promise<void> => {
     if (!this.settings.yearly.enabled) return;
     const { workspace } = this.app;
@@ -529,15 +543,22 @@ export default class CalendarView extends ItemView {
     const existingFile = helperGetPeriodicNote(date, "yearly", get(yearlyNotes) ?? {});
 
     if (!existingFile) {
-      void tryToCreateYearlyNote(startOfYear, inNewSplit, this.settings, (file) => {
+      void tryToCreateYearlyNote(startOfYear, ctrlPressed, this.settings, (file) => {
         activeFile.setFile(file);
       });
       return;
     }
 
-    const leaf = inNewSplit
-      ? workspace.getLeaf("split", "vertical")
-      : workspace.getLeaf(false);
+    let leaf: WorkspaceLeaf;
+    if (ctrlPressed) {
+      if (this.settings.ctrlClickOpensInNewTab) {
+        leaf = workspace.getLeaf("tab");
+      } else {
+        leaf = workspace.getLeaf("split", "vertical");
+      }
+    } else {
+      leaf = workspace.getLeaf(false);
+    }
     await leaf.openFile(existingFile);
 
     activeFile.setFile(existingFile);
