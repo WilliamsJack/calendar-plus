@@ -49,7 +49,7 @@ Calendar Plus owns its own settings for all five periodic-note types and doesn't
 #### General
 
 - **Start week on**: choose the first day of the week. "Locale default" uses your system locale.
-- **Ctrl + Click Behavior**: when Ctrl/Cmd-clicking a date cell, open the note in a new tab or in a new split.
+- **Ctrl + Click Behavior**: when Ctrl/Cmd-clicking any calendar item — a day cell, week-number cell, or the month/quarter/year header label — open the note in a new tab or in a new split.
 - **Confirm before creating new note**: show a confirmation modal before creating a new note. Turn off for one-click creation.
 - **Change week number side**: show week-number cells on the right side of the calendar instead of the left. (Shown under Weekly notes when Weekly notes are enabled.)
 - **Shade weekend columns**: tint weekend day columns so they stand out from weekdays. Off by default.
@@ -115,7 +115,7 @@ Hold Ctrl or Cmd while hovering a day cell to preview the corresponding daily no
 
 ### Open in a split
 
-Ctrl/Cmd-click a date cell to open the note in a new split or new tab, depending on the **Ctrl + Click Behavior** setting.
+Ctrl/Cmd-click any calendar item — a day cell, a week-number cell, or a month/quarter/year header label — to open the note in a new tab or new split, depending on the **Ctrl + Click Behavior** setting.
 
 ### Reveal an open periodic note on the calendar
 
