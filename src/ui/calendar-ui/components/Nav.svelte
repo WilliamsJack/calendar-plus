@@ -16,6 +16,10 @@
   // the current month *and* invokes this with `today` so the parent can open
   // or create today's daily note via the same path day-cell clicks use.
   export let onClickToday: ((date: Moment) => void) | undefined = undefined;
+  // Mobile-only opt-in: render the Today button in the mobile header. Off
+  // by default to keep the mobile header uncrowded. Desktop always shows
+  // the Today button regardless of this prop.
+  export let showTodayButtonOnMobile: boolean = false;
   // Get the word 'Today' but localized to the current language
   const todayDisplayStr = today.calendar().split(/\d|\s/)[0];
   let isMobile = Platform.isMobile;
@@ -73,15 +77,17 @@
       onClick="{decrementDisplayedMonth}"
       tooltip="Previous Month"
     />
-    <div
-      class="reset-button"
-      on:click="{() => {
-        resetDisplayedMonth();
-        onClickToday?.(today);
-      }}"
-    >
-      {todayDisplayStr}
-    </div>
+    {#if !isMobile || showTodayButtonOnMobile}
+      <div
+        class="reset-button"
+        on:click="{() => {
+          resetDisplayedMonth();
+          onClickToday?.(today);
+        }}"
+      >
+        {todayDisplayStr}
+      </div>
+    {/if}
     <Arrow
       direction="right"
       onClick="{incrementDisplayedMonth}"
@@ -191,9 +197,5 @@
 
   .reset-button:hover {
     opacity: 0.7;
-  }
-
-  .is-mobile .reset-button {
-    display: none;
   }
 </style>

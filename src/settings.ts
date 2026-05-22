@@ -56,6 +56,13 @@ export interface ISettings {
    * A value <= 0 disables word-count dots while leaving task dots in place.
    */
   wordsPerDot: number;
+  /**
+   * When true, render the Today button in the mobile calendar header.
+   * Desktop always shows the Today button regardless of this setting.
+   * Default false to preserve historical mobile behavior and avoid
+   * crowding the mobile header by default.
+   */
+  showTodayButtonOnMobile: boolean;
 
   localeOverride: ILocaleOverride;
 
@@ -87,6 +94,7 @@ export const defaultSettings = Object.freeze({
   weekendDays: [0, 6],
   dotMode: "exists" as "exists" | "word-count-tasks",
   wordsPerDot: 250,
+  showTodayButtonOnMobile: false,
 
   localeOverride: "system-default",
 
@@ -147,6 +155,7 @@ export class CalendarSettingsTab extends PluginSettingTab {
     this.displayDotStyleSection();
     this.addWeekStartSetting();
     this.displayWeekendShadingSection();
+    this.addShowTodayButtonOnMobileSetting();
 
     new Setting(this.containerEl).setName("Periodic Notes").setHeading();
     this.containerEl.createEl("p", {
@@ -212,6 +221,20 @@ export class CalendarSettingsTab extends PluginSettingTab {
         toggle.onChange(async (value) => {
           void this.plugin.writeOptions(() => ({
             shouldConfirmBeforeCreate: value,
+          }));
+        });
+      });
+  }
+
+  addShowTodayButtonOnMobileSetting(): void {
+    new Setting(this.containerEl)
+      .setName("Show Today button on mobile")
+      .setDesc("Show the Today button in the mobile calendar header.")
+      .addToggle((toggle) => {
+        toggle.setValue(this.plugin.options.showTodayButtonOnMobile);
+        toggle.onChange(async (value) => {
+          void this.plugin.writeOptions(() => ({
+            showTodayButtonOnMobile: value,
           }));
         });
       });

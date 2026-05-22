@@ -89,5 +89,6 @@
     showWeekNumsRight={$settings.showWeeklyNoteRight}
     quarterVisible={$settings.quarterly.enabled}
     weekendDays={$settings.weekendDays}
+    showTodayButtonOnMobile={$settings.showTodayButtonOnMobile}
   />
 </div>
