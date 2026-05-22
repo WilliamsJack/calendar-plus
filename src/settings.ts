@@ -153,9 +153,9 @@ export class CalendarSettingsTab extends PluginSettingTab {
     this.addConfirmCreateSetting();
     this.addCtrlClickSetting();
     this.displayDotStyleSection();
+    this.addShowTodayButtonOnMobileSetting();
     this.addWeekStartSetting();
     this.displayWeekendShadingSection();
-    this.addShowTodayButtonOnMobileSetting();
 
     new Setting(this.containerEl).setName("Periodic Notes").setHeading();
     this.containerEl.createEl("p", {
