@@ -43,6 +43,7 @@
   export let onClickMonth: (date: Moment, isMetaPressed: boolean) => boolean;
   export let onClickYear: (date: Moment, isMetaPressed: boolean) => boolean;
   export let onClickQuarter: (date: Moment, isMetaPressed: boolean) => boolean;
+  export let onClickToday: ((date: Moment) => void) | undefined = undefined;
   // External sources (All optional)
   export let sources: ICalendarSource[] = [];
   export let selectedId: string;
@@ -83,6 +84,7 @@
     {onClickMonth}
     {onClickYear}
     {onClickQuarter}
+    {onClickToday}
     {resetDisplayedMonth}
   />
   <table class="calendar">

@@ -12,6 +12,10 @@
   export let onClickMonth: (date: Moment, isMetaPressed: boolean) => boolean;
   export let onClickYear: (date: Moment, isMetaPressed: boolean) => boolean;
   export let onClickQuarter: (date: Moment, isMetaPressed: boolean) => boolean;
+  // Optional Today-click callback. When provided, the Today button jumps to
+  // the current month *and* invokes this with `today` so the parent can open
+  // or create today's daily note via the same path day-cell clicks use.
+  export let onClickToday: ((date: Moment) => void) | undefined = undefined;
   // Get the word 'Today' but localized to the current language
   const todayDisplayStr = today.calendar().split(/\d|\s/)[0];
   let isMobile = Platform.isMobile;
@@ -69,7 +73,13 @@
       onClick="{decrementDisplayedMonth}"
       tooltip="Previous Month"
     />
-    <div class="reset-button" on:click="{resetDisplayedMonth}">
+    <div
+      class="reset-button"
+      on:click="{() => {
+        resetDisplayedMonth();
+        onClickToday?.(today);
+      }}"
+    >
       {todayDisplayStr}
     </div>
     <Arrow

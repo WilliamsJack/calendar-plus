@@ -25,7 +25,8 @@
   export let onClickMonth: (date: Moment, isMetaPressed: boolean) => boolean;
   export let onClickYear: (date: Moment, isMetaPressed: boolean) => boolean;
   export let onClickQuarter: (date: Moment, isMetaPressed: boolean) => boolean;
- 
+  export let onClickToday: (date: Moment) => void;
+
   export let onContextMenuDay: (date: Moment, event: MouseEvent) => boolean;
   export let onContextMenuWeek: (date: Moment, event: MouseEvent) => boolean;
 
@@ -80,6 +81,7 @@
     {onClickMonth}
     {onClickYear}
     {onClickQuarter}
+    {onClickToday}
     bind:displayedMonth
     localeData={{...today.localeData()}}
     selectedId={$activeFile}
