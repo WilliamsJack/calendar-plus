@@ -143,10 +143,10 @@ export class CalendarSettingsTab extends PluginSettingTab {
 
     new Setting(this.containerEl).setName("Calendar behavior").setHeading();
     this.addConfirmCreateSetting();
+    this.addCtrlClickSetting();
+    this.displayDotStyleSection();
     this.addWeekStartSetting();
     this.displayWeekendShadingSection();
-    this.displayDotStyleSection();
-    this.addCtrlClickSetting();
 
     new Setting(this.containerEl).setName("Periodic Notes").setHeading();
     this.containerEl.createEl("p", {
@@ -188,7 +188,7 @@ export class CalendarSettingsTab extends PluginSettingTab {
   }
   addCtrlClickSetting(): void {
     new Setting(this.containerEl)
-      .setName("Ctrl + Click Behavior")
+      .setName("Ctrl/Cmd + Click Behavior")
       .setDesc("Set the behavior of Ctrl/Cmd-clicking calendar items.")
       .addDropdown((dropdown) => {
         dropdown.addOption("new-tab", "Open in new tab");
