@@ -89,7 +89,8 @@
   }
 
   .nav.is-mobile {
-    padding: 0;
+    /* Match desktop left padding so the mobile title aligns with the grid. */
+    padding: 0 0 0 8px;
   }
 
   .title-container {
