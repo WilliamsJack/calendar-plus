@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.8.2
+
+Focus: Today button behavior and settings polish. No note path/date/template behavior changes.
+
+Calendar UI
+- The Today button now still jumps to the current month, and if Daily notes are enabled it also opens or creates today's daily note.
+- Added a "Show Today button on mobile" setting. Mobile keeps the Today button hidden by default, while desktop always shows it.
+- Reordered Calendar behavior settings for clarity.
+- Renamed "Ctrl + Click Behavior" to "Ctrl/Cmd + Click Behavior" to better reflect cross-platform modifier-click behavior.
+
+Behavior notes
+- Today uses the existing daily-note open/create flow and respects "Confirm before creating new note."
+- If Daily notes are disabled, Today only jumps to the current month.
+- Today uses current-pane behavior; modifier-click behavior was not added to the Today button.
+
 ## 1.8.1
 
 Focus: mobile polish, modifier-click consistency, and repository hygiene. No note path/date/template behavior changes.
