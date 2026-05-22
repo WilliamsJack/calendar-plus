@@ -12,6 +12,7 @@ import { tryToCreateWeeklyNote } from "src/io/weeklyNotes";
 import { tryToCreateMonthlyNote } from "src/io/monthlyNotes";
 import { tryToCreateYearlyNote } from "src/io/yearlyNotes";
 import { tryToCreateQuarterlyNote } from "src/io/quarterlyNotes";
+import { getLeafForModifierClick } from "src/io/periodicNotes";
 import type { ISettings } from "src/settings";
 
 import Calendar from "./ui/Calendar.svelte";
@@ -409,16 +410,7 @@ export default class CalendarView extends ItemView {
       return;
     }
 
-    let leaf: WorkspaceLeaf;
-    if (ctrlPressed) {
-      if (this.settings.ctrlClickOpensInNewTab) {
-        leaf = workspace.getLeaf("tab");
-      } else {
-        leaf = workspace.getLeaf("split", "vertical");
-      }
-    } else {
-      leaf = workspace.getLeaf(false);
-    }
+    const leaf = getLeafForModifierClick(ctrlPressed, this.settings, workspace);
     await leaf.openFile(existingFile);
   };
 
@@ -441,16 +433,7 @@ export default class CalendarView extends ItemView {
       return;
     }
 
-    let leaf: WorkspaceLeaf;
-    if (ctrlPressed) {
-      if (this.settings.ctrlClickOpensInNewTab) {
-        leaf = workspace.getLeaf("tab");
-      } else {
-        leaf = workspace.getLeaf("split", "vertical");
-      }
-    } else {
-      leaf = workspace.getLeaf(false);
-    }
+    const leaf = getLeafForModifierClick(ctrlPressed, this.settings, workspace);
     await leaf.openFile(existingFile);
   };
 
@@ -476,16 +459,7 @@ export default class CalendarView extends ItemView {
       return;
     }
 
-    let leaf: WorkspaceLeaf;
-    if (ctrlPressed) {
-      if (this.settings.ctrlClickOpensInNewTab) {
-        leaf = workspace.getLeaf("tab");
-      } else {
-        leaf = workspace.getLeaf("split", "vertical");
-      }
-    } else {
-      leaf = workspace.getLeaf(false);
-    }
+    const leaf = getLeafForModifierClick(ctrlPressed, this.settings, workspace);
     await leaf.openFile(existingFile);
 
     activeFile.setFile(existingFile);
@@ -515,16 +489,7 @@ export default class CalendarView extends ItemView {
       return;
     }
 
-    let leaf: WorkspaceLeaf;
-    if (ctrlPressed) {
-      if (this.settings.ctrlClickOpensInNewTab) {
-        leaf = workspace.getLeaf("tab");
-      } else {
-        leaf = workspace.getLeaf("split", "vertical");
-      }
-    } else {
-      leaf = workspace.getLeaf(false);
-    }
+    const leaf = getLeafForModifierClick(ctrlPressed, this.settings, workspace);
     await leaf.openFile(existingFile);
 
     activeFile.setFile(existingFile);
@@ -549,16 +514,7 @@ export default class CalendarView extends ItemView {
       return;
     }
 
-    let leaf: WorkspaceLeaf;
-    if (ctrlPressed) {
-      if (this.settings.ctrlClickOpensInNewTab) {
-        leaf = workspace.getLeaf("tab");
-      } else {
-        leaf = workspace.getLeaf("split", "vertical");
-      }
-    } else {
-      leaf = workspace.getLeaf(false);
-    }
+    const leaf = getLeafForModifierClick(ctrlPressed, this.settings, workspace);
     await leaf.openFile(existingFile);
 
     activeFile.setFile(existingFile);

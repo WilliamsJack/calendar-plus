@@ -1,6 +1,6 @@
 import type { Moment } from "src/types/moment";
 import { Notice } from "obsidian";
-import type { TFile } from "obsidian";
+import type { TFile, Workspace, WorkspaceLeaf } from "obsidian";
 
 import type {
   ISettings,
@@ -114,4 +114,40 @@ export async function tryToCreatePeriodicNote(
   } else {
     await create();
   }
+}
+
+/**
+ * Pick the destination leaf for a click on a periodic-note target.
+ * Plain click → current pane. Modifier + tab-setting → new tab.
+ * Modifier + !tab-setting → vertical split.
+ */
+export function getLeafForModifierClick(
+  ctrlPressed: boolean,
+  settings: ISettings,
+  workspace: Workspace
+): WorkspaceLeaf {
+  if (!ctrlPressed) return workspace.getLeaf(false);
+  return settings.ctrlClickOpensInNewTab
+    ? workspace.getLeaf("tab")
+    : workspace.getLeaf("split", "vertical");
+}
+
+/**
+ * Create a periodic note (with confirm-before-create UX) and open it in the
+ * leaf chosen by the modifier-click logic. Optional callback fires after the
+ * file is opened, useful for caller-side activeFile bookkeeping.
+ */
+export async function tryToCreatePeriodicNoteAndOpen(
+  periodicity: Periodicity,
+  date: Moment,
+  ctrlPressed: boolean,
+  settings: ISettings,
+  cb?: (newFile: TFile) => void
+): Promise<void> {
+  await tryToCreatePeriodicNote(periodicity, date, settings, async (newFile) => {
+    const { workspace } = window.app;
+    const leaf = getLeafForModifierClick(ctrlPressed, settings, workspace);
+    await leaf.openFile(newFile, { active: true });
+    cb?.(newFile);
+  });
 }
