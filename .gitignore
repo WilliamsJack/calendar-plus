@@ -5,3 +5,6 @@ main.js
 .vscode/
 *.code-workspace
 .DS_Store
+
+# Local reference source trees
+reference/
