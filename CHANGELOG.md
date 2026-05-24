@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.8.3
+
+Focus: active-note highlighting reliability. No note path/date/template behavior changes.
+
+Calendar UI
+- Improved active-note highlighting reliability after opening daily and weekly notes from the calendar.
+- Daily and weekly existing-note opens now update the active-file store immediately after the note opens, matching the active-file sync pattern already used by other periodic note types.
+- When the Calendar view opens, it now syncs the currently active file so an already-open daily or weekly note can be highlighted immediately.
+
+Behavior notes
+- No note-opening behavior changed.
+- No modifier-click behavior changed.
+- No Today button behavior changed.
+- No settings/defaults changed.
+
 ## 1.8.2
 
 Focus: Today button behavior and settings polish. No note path/date/template behavior changes.
