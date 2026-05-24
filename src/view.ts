@@ -114,6 +114,15 @@ export default class CalendarView extends ItemView {
         sources,
       },
     });
+
+    // Initial active-file sync: file-open only catches transitions after
+    // the constructor's listener attaches. If a daily/weekly note was
+    // already open when this view mounts (e.g. user opens a note, then
+    // reveals the calendar sidebar — common on mobile), without this the
+    // active highlight stays missing until the user switches files.
+    if (this.app.workspace.layoutReady) {
+      this.updateActiveFile();
+    }
   }
 
   onHoverDay = (
@@ -421,6 +430,13 @@ export default class CalendarView extends ItemView {
 
     const leaf = getLeafForModifierClick(ctrlPressed, this.settings, workspace);
     await leaf.openFile(existingFile);
+
+    // Synchronously update the active-file store so the highlight lands
+    // immediately, instead of waiting on workspace.on("file-open") — that
+    // event's mobile timing isn't reliable enough to drive the highlight.
+    // Matches the original Calendar plugin's pattern and the monthly /
+    // quarterly / yearly existing-file paths below.
+    activeFile.setFile(existingFile);
   };
 
   openOrCreateDailyNote = async (
@@ -444,6 +460,9 @@ export default class CalendarView extends ItemView {
 
     const leaf = getLeafForModifierClick(ctrlPressed, this.settings, workspace);
     await leaf.openFile(existingFile);
+
+    // Synchronous active-file update — see note in openOrCreateWeeklyNote.
+    activeFile.setFile(existingFile);
   };
 
   openOrCreateMonthlyNote = async (
