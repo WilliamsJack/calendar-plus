@@ -2,7 +2,7 @@
   import type { Moment } from "src/types/moment";
   import { Platform } from "obsidian";
   import Arrow from "./Arrow.svelte";
-  import { isMetaPressed } from "../utils";
+  import { isMetaPressed, isMiddleClick } from "../utils";
   export let displayedMonth: Moment;
   export let today: Moment;
   export let resetDisplayedMonth: () => void;
@@ -15,7 +15,9 @@
   // Optional Today-click callback. When provided, the Today button jumps to
   // the current month *and* invokes this with `today` so the parent can open
   // or create today's daily note via the same path day-cell clicks use.
-  export let onClickToday: ((date: Moment) => void) | undefined = undefined;
+  export let onClickToday:
+    | ((date: Moment, inNewLeaf: boolean) => void)
+    | undefined = undefined;
   // Mobile-only opt-in: render the Today button in the mobile header. Off
   // by default to keep the mobile header uncrowded. Desktop always shows
   // the Today button regardless of this prop.
@@ -43,13 +45,29 @@
         class="month"
         on:click="{(event) => {
           onClickMonth(displayedMonth, isMetaPressed(event));
-        }}">{displayedMonth.format("MMM")}</span
+        }}"
+        on:auxclick="{(event) => {
+          if (isMiddleClick(event)) {
+            event.preventDefault();
+            onClickMonth(displayedMonth, true);
+          }
+        }}"
+        on:mousedown="{(event) => isMiddleClick(event) && event.preventDefault()}"
+        >{displayedMonth.format("MMM")}</span
       >
       <span
         class="year"
         on:click="{(event) => {
           onClickYear(displayedMonth, isMetaPressed(event));
-        }}">{displayedMonth.format("YYYY")}</span
+        }}"
+        on:auxclick="{(event) => {
+          if (isMiddleClick(event)) {
+            event.preventDefault();
+            onClickYear(displayedMonth, true);
+          }
+        }}"
+        on:mousedown="{(event) => isMiddleClick(event) && event.preventDefault()}"
+        >{displayedMonth.format("YYYY")}</span
       >
     </h3>
     {#if quarterVisible}
@@ -62,7 +80,19 @@
               onClickQuarter(
                 getStartOfQuarter(displayedMonth.year(), quarter),
                 isMetaPressed(event),
-              )}">Q{quarter}</span
+              )}"
+            on:auxclick="{(event) => {
+              if (isMiddleClick(event)) {
+                event.preventDefault();
+                onClickQuarter(
+                  getStartOfQuarter(displayedMonth.year(), quarter),
+                  true,
+                );
+              }
+            }}"
+            on:mousedown="{(event) =>
+              isMiddleClick(event) && event.preventDefault()}"
+            >Q{quarter}</span
           >
           {#if index < 3}
             <span class="divider">•</span>
@@ -82,8 +112,16 @@
         class="reset-button"
         on:click="{() => {
           resetDisplayedMonth();
-          onClickToday?.(today);
+          onClickToday?.(today, false);
         }}"
+        on:auxclick="{(event) => {
+          if (isMiddleClick(event)) {
+            event.preventDefault();
+            resetDisplayedMonth();
+            onClickToday?.(today, true);
+          }
+        }}"
+        on:mousedown="{(event) => isMiddleClick(event) && event.preventDefault()}"
       >
         {todayDisplayStr}
       </div>

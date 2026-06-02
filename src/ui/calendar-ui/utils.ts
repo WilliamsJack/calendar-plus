@@ -9,6 +9,10 @@ export function isMetaPressed(e: MouseEvent): boolean {
   return Platform.isMacOS ? e.metaKey : e.ctrlKey;
 }
 
+export function isMiddleClick(e: MouseEvent): boolean {
+  return e.button === 1;
+}
+
 export function getDaysOfWeek(..._args: unknown[]): string[] {
   return moment.weekdaysShort(true);
 }

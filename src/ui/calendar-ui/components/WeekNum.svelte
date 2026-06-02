@@ -7,7 +7,7 @@
   import Dot from "./Dot.svelte";
   import MetadataResolver from "./MetadataResolver.svelte";
   import type { IDayMetadata } from "../types";
-  import { getStartOfWeek, isMetaPressed } from "../utils";
+  import { getStartOfWeek, isMetaPressed, isMiddleClick } from "../utils";
 
   // Properties
   export let weekNum: number;
@@ -37,6 +37,14 @@
       class="{`week-num ${metadata.classes.join(' ')}`}"
       class:active="{selectedId === getDateUID(days[0], 'weekly')}"
       on:click="{onClick && ((e) => onClick(startOfWeek, isMetaPressed(e)))}"
+      on:auxclick="{onClick &&
+        ((e) => {
+          if (isMiddleClick(e)) {
+            e.preventDefault();
+            onClick(startOfWeek, true);
+          }
+        })}"
+      on:mousedown="{(e) => isMiddleClick(e) && e.preventDefault()}"
       on:contextmenu="{onContextMenu && ((e) => onContextMenu(days[0], e))}"
       on:pointerover="{onHover &&
         ((e) => onHover(startOfWeek, e.target, isMetaPressed(e)))}"

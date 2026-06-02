@@ -43,7 +43,9 @@
   export let onClickMonth: (date: Moment, isMetaPressed: boolean) => boolean;
   export let onClickYear: (date: Moment, isMetaPressed: boolean) => boolean;
   export let onClickQuarter: (date: Moment, isMetaPressed: boolean) => boolean;
-  export let onClickToday: ((date: Moment) => void) | undefined = undefined;
+  export let onClickToday:
+    | ((date: Moment, inNewLeaf: boolean) => void)
+    | undefined = undefined;
   export let showTodayButtonOnMobile: boolean = false;
   // External sources (All optional)
   export let sources: ICalendarSource[] = [];

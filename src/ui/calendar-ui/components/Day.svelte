@@ -7,7 +7,7 @@
   import Dot from "./Dot.svelte";
   import MetadataResolver from "./MetadataResolver.svelte";
   import type { IDayMetadata } from "../types";
-  import { isMetaPressed, isWeekend } from "../utils";
+  import { isMetaPressed, isMiddleClick, isWeekend } from "../utils";
 
   // Properties
   export let date: Moment;
@@ -37,6 +37,14 @@
       class:adjacent-month="{!date.isSame(displayedMonth, 'month')}"
       class:today="{date.isSame(today, 'day')}"
       on:click="{onClick && ((e) => onClick(date, isMetaPressed(e)))}"
+      on:auxclick="{onClick &&
+        ((e) => {
+          if (isMiddleClick(e)) {
+            e.preventDefault();
+            onClick(date, true);
+          }
+        })}"
+      on:mousedown="{(e) => isMiddleClick(e) && e.preventDefault()}"
       on:contextmenu="{onContextMenu && ((e) => onContextMenu(date, e))}"
       on:pointerover="{onHover &&
         ((e) => onHover(date, e.target, isMetaPressed(e)))}"

@@ -406,10 +406,9 @@ export default class CalendarView extends ItemView {
 
   // Today button: jump to the current month (handled by the Calendar
   // component) and, if daily notes are enabled, open or create today's
-  // daily note via the same path day-cell clicks use. Plain pane —
-  // modifier state isn't passed from the Today control.
-  onClickToday = (date: Moment): void => {
-    void this.openOrCreateDailyNote(date, false);
+  // daily note via the same path day-cell clicks use.
+  onClickToday = (date: Moment, inNewLeaf: boolean): void => {
+    void this.openOrCreateDailyNote(date, inNewLeaf);
   };
 
   openOrCreateWeeklyNote = async (
